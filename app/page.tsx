@@ -45,9 +45,9 @@ export default function HomePage() {
             </div>
           </article>
           <div className="sticky-note absolute -right-2 -top-7 z-20 rotate-3">currently<br />tinkering...</div>
-          <div className="click-supervisor" aria-label="Click, the sleepy lab assistant">
+          <div className="click-supervisor">
             <Image
-              src="/images/click/click-sleeping-labcoat.png"
+              src="/images/click/click-sleeping-labcoat.webp"
               alt="Click sleeping under a tiny lab coat"
               width={360}
               height={240}
