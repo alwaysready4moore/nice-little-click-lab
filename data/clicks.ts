@@ -16,7 +16,7 @@ export const clicks: Click[] = [
     number: 1,
     name: "Meeting Cost Ticker",
     shortDescription: "Watch the estimated cost of a meeting rise in real time.",
-    status: "coming-soon",
+    status: "live",
     priceLabel: "Free",
     purchaseMode: "free",
     deliveryMode: "onsite",

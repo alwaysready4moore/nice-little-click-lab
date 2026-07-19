@@ -398,3 +398,672 @@ svg {
 .skip-link { position: fixed; left: 1rem; top: 1rem; z-index: 100; transform: translateY(-200%); border-radius: 999px; background: var(--foreground); color: white; padding: .75rem 1rem; font-weight: 700; }
 .skip-link:focus { transform: translateY(0); }
 a:focus-visible { outline: 3px solid rgba(139,72,28,.35); outline-offset: 4px; border-radius: .25rem; }
+
+/* Click No. 001: Meeting Cost Ticker */
+.meeting-back-link {
+  display: inline-flex;
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: var(--muted);
+}
+
+.meeting-back-link:hover {
+  color: var(--accent-strong);
+}
+
+.meeting-tool {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.meeting-setup {
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.meeting-section-heading,
+.ticker-topline,
+.participant-card-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.meeting-section-heading h2,
+.ticker-topline h2 {
+  margin-top: 0.45rem;
+  font-size: clamp(1.6rem, 3vw, 2.15rem);
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}
+
+.meeting-count,
+.ticker-status {
+  flex: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.48rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.meeting-field {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1.4rem;
+}
+
+.meeting-field > span {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.meeting-field small {
+  font-weight: 600;
+  color: var(--muted-light);
+}
+
+.participant-list {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+}
+
+.participant-card {
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.68);
+  padding: 1rem;
+}
+
+.participant-card-topline h3 {
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  padding: 0.15rem;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.text-button:disabled,
+.lab-button:disabled,
+.quantity-control button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+  transform: none;
+}
+
+.participant-fields {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.participant-fields .meeting-field {
+  margin-top: 0.9rem;
+}
+
+.money-input {
+  position: relative;
+}
+
+.money-input > span {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  z-index: 1;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-weight: 750;
+  pointer-events: none;
+}
+
+.money-input input {
+  padding-left: 2rem;
+}
+
+.quantity-control {
+  display: grid;
+  min-height: 3rem;
+  grid-template-columns: 2.8rem minmax(2.8rem, 1fr) 2.8rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  background: white;
+}
+
+.quantity-control button {
+  border: 0;
+  background: #f6efe5;
+  color: var(--foreground);
+  font-size: 1.25rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.quantity-control output {
+  display: grid;
+  place-items: center;
+  border-right: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  font-weight: 850;
+}
+
+.add-attendee-button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.salary-note,
+.ticker-footnote {
+  margin-top: 1rem;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--muted-light);
+}
+
+.ticker-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-large);
+  background:
+    linear-gradient(rgba(139, 72, 28, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 72, 28, 0.045) 1px, transparent 1px),
+    #fffaf1;
+  background-size: 24px 24px;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  box-shadow: var(--shadow-card);
+}
+
+.ticker-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.35rem;
+  background: var(--accent);
+  content: "";
+}
+
+.ticker-running::before {
+  animation: ticker-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ticker-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.ticker-running .ticker-status {
+  border-color: #9cb49e;
+  background: #edf7ed;
+  color: #35623b;
+}
+
+.ticker-paused .ticker-status {
+  border-color: #dfc475;
+  background: #fff6cf;
+  color: #725612;
+}
+
+.ticker-ended .ticker-status {
+  border-color: var(--accent-soft);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.ticker-display {
+  display: grid;
+  justify-items: center;
+  padding: clamp(2.5rem, 7vw, 5rem) 0;
+  text-align: center;
+}
+
+.ticker-display > p {
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ticker-money {
+  margin-top: 0.6rem;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(4rem, 10vw, 7.4rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.07em;
+  color: var(--accent-strong);
+}
+
+.ticker-time {
+  margin-top: 1.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(1.2rem, 3vw, 1.65rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.ticker-stats {
+  display: grid;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.ticker-stats > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+}
+
+.ticker-stats > div + div {
+  border-top: 1px solid var(--border);
+}
+
+.ticker-stats dt {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.ticker-stats dd {
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.25rem;
+}
+
+.ticker-controls .lab-button {
+  flex: 1 1 10rem;
+}
+
+.meeting-receipt {
+  margin-top: 1.5rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 1.25rem;
+}
+
+.meeting-receipt dl {
+  margin-top: 0.75rem;
+}
+
+.meeting-receipt dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px dotted var(--border);
+}
+
+.meeting-receipt dt {
+  color: var(--muted);
+}
+
+.meeting-receipt dd {
+  max-width: 60%;
+  font-weight: 850;
+  text-align: right;
+}
+
+@media (min-width: 720px) {
+  .participant-fields {
+    grid-template-columns: minmax(11rem, 1.55fr) minmax(9.5rem, 1fr) 8rem;
+  }
+
+  .ticker-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ticker-stats > div {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .ticker-stats > div + div {
+    border-top: 0;
+    border-left: 1px solid var(--border);
+  }
+}
+
+@media (min-width: 980px) {
+  .meeting-tool {
+    grid-template-columns: minmax(29rem, 0.98fr) minmax(30rem, 1.02fr);
+  }
+
+  .ticker-card {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+
+/* Meeting room supporting visual */
+.meeting-room {
+  position: relative;
+  min-height: 11.5rem;
+  margin: 0 0 1.35rem;
+  overflow: hidden;
+  border: 1px solid rgba(139, 72, 28, 0.16);
+  border-radius: 1.15rem;
+  background:
+    linear-gradient(180deg, #f7eee0 0 68%, #dfc8a7 68% 71%, #c9ab84 71% 100%);
+}
+
+.meeting-room::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 29%;
+  background: repeating-linear-gradient(90deg, transparent 0 48px, rgba(91, 65, 42, 0.09) 49px 50px);
+  content: "";
+}
+
+.meeting-room-window {
+  position: absolute;
+  top: 1.15rem;
+  left: 1.25rem;
+  display: grid;
+  width: 5.6rem;
+  height: 3.8rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.18rem;
+  border: 0.35rem solid #fffaf1;
+  background: #bcd2d3;
+  box-shadow: 0 5px 12px rgba(70, 55, 40, 0.08);
+}
+
+.meeting-room-window span:first-child {
+  border-right: 1px solid rgba(70, 92, 92, 0.26);
+}
+
+.meeting-room-table {
+  position: absolute;
+  right: 12%;
+  bottom: 1.9rem;
+  left: 14%;
+  z-index: 2;
+  height: 3.5rem;
+  border-radius: 48% 48% 34% 34%;
+  background: #85664f;
+  box-shadow: inset 0 -0.4rem rgba(64, 43, 30, 0.13), 0 8px 14px rgba(66, 45, 29, 0.12);
+}
+
+.meeting-person {
+  position: absolute;
+  bottom: 2.4rem;
+  width: 1.5rem;
+  height: 2.05rem;
+  border-radius: 50% 50% 42% 42%;
+  background: #7c8f86;
+  box-shadow: inset 0 -0.35rem rgba(31, 43, 38, 0.1);
+  transform-origin: bottom center;
+}
+
+.meeting-person::before {
+  position: absolute;
+  top: -1rem;
+  left: 0.15rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  background: inherit;
+  content: "";
+}
+
+.meeting-person-1 { left: 7%; background: #738b82; }
+.meeting-person-2 { left: 22%; background: #bd8769; }
+.meeting-person-3 { left: 37%; background: #8b7f9b; }
+.meeting-person-4 { right: 37%; background: #b39d63; }
+.meeting-person-5 { right: 22%; background: #778fa5; }
+.meeting-person-6 { right: 7%; background: #9a786c; }
+
+.room-running .meeting-person:nth-child(2n) {
+  animation: meeting-nod 3.8s ease-in-out infinite;
+}
+
+.room-running .meeting-person:nth-child(3n) {
+  animation: meeting-nod 4.6s 0.8s ease-in-out infinite;
+}
+
+@keyframes meeting-nod {
+  0%, 78%, 100% { transform: rotate(0); }
+  84% { transform: rotate(3deg); }
+  90% { transform: rotate(-2deg); }
+}
+
+.meeting-room-click {
+  position: absolute;
+  right: -0.7rem;
+  bottom: -0.4rem;
+  z-index: 3;
+  width: clamp(4.75rem, 12vw, 6.1rem);
+  opacity: 0.96;
+  pointer-events: none;
+}
+
+.meeting-room-click img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 7px 8px rgba(65, 46, 30, 0.14));
+}
+
+.meeting-speech-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.meeting-speech-bubble {
+  position: absolute;
+  max-width: 11rem;
+  margin: 0;
+  border: 1px solid rgba(139, 72, 28, 0.18);
+  background: rgba(255, 253, 248, 0.96);
+  padding: 0.56rem 0.72rem;
+  box-shadow: 0 7px 16px rgba(71, 49, 30, 0.1);
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.25;
+  color: var(--foreground);
+  animation: speech-arrive 220ms ease-out;
+}
+
+.meeting-speech-bubble-0 { top: 0.7rem; left: 7.4rem; border-radius: 0.9rem 0.9rem 0.9rem 0.2rem; }
+.meeting-speech-bubble-1 { top: 0.7rem; right: 1rem; border-radius: 0.9rem 0.9rem 0.2rem 0.9rem; }
+.meeting-speech-bubble-2 { top: 4.2rem; left: 0.8rem; border-radius: 0.9rem 0.9rem 0.9rem 0.2rem; }
+.meeting-speech-bubble-3 { top: 4.3rem; right: 0.9rem; border-radius: 0.9rem 0.9rem 0.2rem 0.9rem; }
+.meeting-speech-bubble-4 { bottom: 1rem; left: 1rem; border-radius: 0.9rem 0.9rem 0.9rem 0.2rem; }
+.meeting-speech-bubble-5 { bottom: 1.1rem; right: 7.2rem; border-radius: 0.9rem 0.9rem 0.2rem 0.9rem; }
+
+@keyframes speech-arrive {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ticker-controls .lab-button-primary {
+  min-height: 3.15rem;
+}
+
+.ticker-running .lab-button-primary {
+  background: #71562f;
+}
+
+.ticker-paused .lab-button-primary {
+  background: #3f6046;
+}
+
+@media (max-width: 719px) {
+  .meeting-room {
+    min-height: 10rem;
+  }
+
+  .meeting-room-table {
+    right: 17%;
+    left: 8%;
+  }
+
+  .meeting-speech-bubble {
+    max-width: 8.2rem;
+    font-size: 0.66rem;
+  }
+
+  .meeting-speech-bubble-0 { left: 6.5rem; }
+  .meeting-speech-bubble-2 { top: 3.8rem; }
+  .meeting-speech-bubble-3 { top: 3.9rem; }
+  .meeting-speech-bubble-5 { right: 5.8rem; }
+}
+
+/* Meeting Cost Ticker: prevent attendee controls from crossing the column gutter */
+.meeting-tool,
+.meeting-setup,
+.ticker-card,
+.participant-card,
+.participant-fields,
+.participant-fields > *,
+.money-input,
+.quantity-control {
+  min-width: 0;
+}
+
+@media (min-width: 720px) {
+  .participant-fields {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(6.75rem, 0.72fr);
+    gap: 0.7rem;
+  }
+
+  .participant-fields .lab-input,
+  .participant-fields select,
+  .money-input input,
+  .quantity-control {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .quantity-control {
+    grid-template-columns: 2.45rem minmax(2.1rem, 1fr) 2.45rem;
+  }
+}
+
+@media (min-width: 720px) and (max-width: 1080px) {
+  .participant-fields {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .participant-fields .meeting-field:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Click No. 001 mobile polish */
+@media (max-width: 639px) {
+  .site-header-inner {
+    gap: 1rem;
+    padding: 0.8rem 1.25rem;
+  }
+
+  .site-brand {
+    min-width: 0;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .site-brand-script {
+    max-width: 8.4rem;
+    font-size: 1.55rem;
+    line-height: 0.82;
+  }
+
+  .site-brand-lab {
+    flex: none;
+    font-size: 0.68rem;
+  }
+
+  .site-primary-nav {
+    flex: none;
+    gap: 1rem;
+    font-size: 0.82rem;
+  }
+
+  .meeting-section-heading h2,
+  .ticker-topline h2 {
+    font-size: 1.7rem;
+    line-height: 1.08;
+  }
+
+  .ticker-topline {
+    gap: 0.75rem;
+  }
+
+  .ticker-status {
+    padding: 0.42rem 0.65rem;
+    font-size: 0.72rem;
+  }
+
+  .ticker-display {
+    padding: 2.75rem 0 2.4rem;
+  }
+
+  .ticker-money {
+    font-size: clamp(4rem, 18vw, 5.4rem);
+  }
+
+  .meeting-receipt {
+    padding: 1rem;
+  }
+
+  .meeting-receipt dl > div {
+    display: grid;
+    grid-template-columns: minmax(5.25rem, 0.72fr) minmax(0, 1.28fr);
+    align-items: start;
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+  }
+
+  .meeting-receipt dt {
+    font-size: 0.92rem;
+  }
+
+  .meeting-receipt dd {
+    max-width: none;
+    overflow-wrap: anywhere;
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  .site-footer-inner {
+    gap: 1.15rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .site-footer-brand {
+    align-items: center;
+  }
+
+  .site-footer-nav {
+    gap: 0.8rem 1rem;
+  }
+}

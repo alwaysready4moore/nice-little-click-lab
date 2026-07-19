@@ -1,19 +1,34 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { MeetingCostTicker } from "@/components/meeting-cost/MeetingCostTicker";
 
-export const metadata = { title: "Meeting Cost Ticker" };
+export const metadata: Metadata = {
+  title: "Meeting Cost Ticker",
+  description:
+    "Add your attendees, press Start, and estimate the cost of your meeting in real time.",
+  alternates: { canonical: "/clicks/meeting-cost-ticker" },
+};
 
 export default function MeetingCostTickerPage() {
   return (
-    <section className="mx-auto max-w-4xl px-6 py-20">
-      <p className="click-number">CLICK NO. 001</p>
-      <h1 className="mt-5 text-6xl font-black tracking-[-0.06em] sm:text-8xl">Meeting Cost Ticker</h1>
-      <p className="mt-6 max-w-2xl text-xl leading-8 text-[var(--muted)]">Watch the estimated cost of a meeting rise in real time.</p>
-      <div className="lab-card paper-grid mt-12 p-8 sm:p-12">
-        <p className="lab-label">BUILDING NOW</p>
-        <h2 className="mt-4 text-3xl font-black tracking-[-0.04em]">The shell is ready. The ticker is next.</h2>
-        <p className="mt-4 leading-7 text-[var(--muted)]">The first working version will include attendee count, meeting duration, hourly team cost, a live total, and an end-of-meeting receipt. No account. No saved salary data.</p>
-        <Link href="/" className="lab-button lab-button-secondary mt-7">Back to the Lab</Link>
-      </div>
-    </section>
+    <>
+      <section className="meeting-hero mx-auto max-w-6xl px-6 pb-10 pt-14 sm:pt-20">
+        <Link href="/clicks" className="meeting-back-link">← All Clicks</Link>
+        <p className="click-number mt-7">CLICK NO. 001</p>
+        <h1 className="mt-5 max-w-4xl text-[clamp(3.5rem,8vw,7rem)] font-black leading-[0.9] tracking-[-0.065em]">
+          Meeting Cost Ticker
+        </h1>
+        <p className="lab-script mt-5 text-4xl text-[var(--accent-strong)] sm:text-5xl">
+          Every second counts. Literally.
+        </p>
+        <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+          Add your attendees, press Start, and estimate the cost of your meeting.
+        </p>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-24">
+        <MeetingCostTicker />
+      </section>
+    </>
   );
 }

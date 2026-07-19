@@ -38,10 +38,10 @@ export default function HomePage() {
             </div>
             <div className="grid gap-5 border-t border-[var(--border)] pt-5 sm:grid-cols-[1fr_auto] sm:items-end">
               <div>
-                <p className="text-xs font-extrabold tracking-[0.16em] text-[var(--accent-strong)]">PROTOTYPE STATUS</p>
-                <p className="mt-3 max-w-md font-mono text-sm leading-6">In active construction. Core timer first. Opinionated receipt shortly after.</p>
+                <p className="text-xs font-extrabold tracking-[0.16em] text-[var(--accent-strong)]">CURRENT STATUS</p>
+                <p className="mt-3 max-w-md font-mono text-sm leading-6">Working prototype. Add attendees and watch the estimate rise in real time.</p>
               </div>
-              <Link href="/clicks/meeting-cost-ticker" className="lab-button lab-button-secondary">See the plan</Link>
+              <Link href="/clicks/meeting-cost-ticker" className="lab-button lab-button-secondary">Open the ticker</Link>
             </div>
           </article>
           <div className="sticky-note absolute -right-2 -top-7 z-20 rotate-3">currently<br />tinkering...</div>
