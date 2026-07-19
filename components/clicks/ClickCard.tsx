@@ -9,6 +9,8 @@ type ClickCardProps = {
 export function ClickCard({ click, featured = false }: ClickCardProps) {
   const href = `/clicks/${click.slug}`;
   const isLive = click.status === "live";
+  const liveButtonLabel =
+    click.slug === "meeting-cost-ticker" ? "Open the ticker" : "Open this Click";
 
   return (
     <article
@@ -62,9 +64,14 @@ export function ClickCard({ click, featured = false }: ClickCardProps) {
 
           <div className={featured ? "md:text-right" : "mt-7"}>
             {isLive ? (
-              <Link href={href} className="lab-button lab-button-primary">
-                Open this Click
-              </Link>
+              <div>
+                <Link href={href} className="lab-button lab-button-primary">
+                  {liveButtonLabel}
+                </Link>
+                <p className="font-handwritten mt-3 rotate-1 text-lg text-[var(--accent-strong)]">
+                  ready for clicking
+                </p>
+              </div>
             ) : (
               <div>
                 <span className="lab-button lab-button-secondary cursor-default">
