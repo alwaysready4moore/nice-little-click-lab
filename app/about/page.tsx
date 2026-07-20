@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About the Lab",
+  title: "About",
   description:
-    "Meet Nice Little Click Lab, an independent studio making focused web tools, games, and gifts without unnecessary bloat.",
-  alternates: { canonical: "/about" },
+    "Nice Little Click Lab makes focused, thoughtful web tools, games, and gifts for oddly specific moments.",
 };
 
 const clickPrinciples = [
@@ -136,27 +136,37 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="lab-card relative mt-16 overflow-hidden p-7 sm:p-10">
+      <section
+        id="meet-click"
+        className="lab-card relative mt-16 overflow-hidden p-7 sm:p-10"
+      >
         <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent-soft)] opacity-60" />
-        <div className="relative max-w-4xl">
-          <p className="lab-label">Behind the workbench</p>
-          <h2 className="lab-heading mt-3 text-5xl sm:text-6xl">
-            Built by Marquetta Moore.
-          </h2>
-          <p className="mt-5 text-lg leading-8 text-[var(--muted)]">
-            I’m a writer, systems thinker, and creative technologist with a
-            habit of turning “someone should make that” into “fine, I’ll make
-            it.” Nice Little Click Lab is where those small ideas get designed,
-            tested, and shipped with care.
-          </p>
-          <a
-            className="lab-button lab-button-primary mt-7"
-            href="https://www.alwaysready4moore.com"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Visit my portfolio
-          </a>
+        <div className="relative grid gap-8 lg:grid-cols-[1fr_18rem] lg:items-center">
+          <div className="max-w-4xl">
+            <p className="lab-label">Behind the workbench</p>
+            <h2 className="lab-heading mt-3 text-5xl sm:text-6xl">
+              Run by Click. Supervised loosely.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--muted)]">
+              Click is the Lab’s resident tinkerer, keeper of tiny useful
+              things, and extremely unofficial head of quality control. He
+              builds Clicks for oddly specific moments, tests them thoroughly,
+              and maintains a very high standard for coziness.
+            </p>
+            <p className="lab-note mt-6">
+              Current duties: building, testing, napping near important equipment.
+            </p>
+          </div>
+
+          <div className="mx-auto w-full max-w-[18rem] rounded-[1.5rem] border border-[var(--border)] bg-white/55 p-5 shadow-[0_20px_45px_rgba(75,50,20,0.12)]">
+            <Image
+              src="/images/click/02-icon-avatar.png"
+              alt="Click, the golden retriever lab assistant"
+              width={560}
+              height={560}
+              className="h-auto w-full"
+            />
+          </div>
         </div>
       </section>
 

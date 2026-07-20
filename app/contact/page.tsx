@@ -1,17 +1,39 @@
-export const metadata = {
-  title: "Contact",
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Contact the Lab",
   description:
-    "Contact Nice Little Click Lab or visit Marquetta Moore’s portfolio for more work.",
+    "Questions, ideas, and tiny emergencies for Nice Little Click Lab.",
   alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
   return (
-    <section className="mx-auto max-w-3xl px-6 py-20">
-      <h1 className="text-5xl font-semibold tracking-[-0.04em]">Contact the Lab</h1>
-      <p className="mt-6 text-lg leading-8 text-[var(--muted)]">
-        Add your preferred support email or contact form here before launch.
+    <section className="mx-auto max-w-4xl px-6 py-20">
+      <p className="lab-label">The lab hatch</p>
+      <h1 className="lab-heading mt-4 text-[clamp(3.8rem,9vw,7rem)]">
+        Questions, ideas, or tiny emergencies?
+      </h1>
+      <p className="mt-7 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+        Click is usually busy testing something, reorganizing the workbench, or
+        sleeping directly beside the most important piece of equipment.
       </p>
+      <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+        For now, the best way to explore the Lab is to try a Click and see what
+        is currently on the workbench.
+      </p>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <Link
+          className="lab-button lab-button-primary"
+          href="/clicks/meeting-cost-ticker"
+        >
+          Try the Meeting Cost Ticker
+        </Link>
+        <Link className="lab-button lab-button-secondary" href="/about#meet-click">
+          Meet Click
+        </Link>
+      </div>
     </section>
   );
 }

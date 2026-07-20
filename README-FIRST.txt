@@ -1,24 +1,23 @@
-NICE LITTLE CLICK LAB — SEO PATCH
+NICE LITTLE CLICK LAB — CLICK RUNS THE LAB PATCH
 
-This patch adds or improves:
+This patch makes the public site fully in-world.
 
-- sitemap.xml
-- robots.txt
-- page-specific titles and descriptions
-- canonical URLs
-- Open Graph and Twitter sharing metadata
-- a 1200×630 social sharing image using the approved brand logo
-- WebSite and Organization structured data
-- SoftwareApplication structured data for Meeting Cost Ticker
-- a web app manifest
-- shared site configuration in lib/site.ts
+It:
+- replaces the founder block with a proper Meet Click section
+- removes the public portfolio link
+- rewrites the Contact page in the Lab voice
+- changes the footer line to “Run by Click. Supervised loosely.”
+- adds a Meet Click footer link
+- removes creator/founder/portfolio fields from shared SEO config
+- redirects old /work routes back into the Lab instead of to a personal portfolio
 
-COPY THESE FOLDERS INTO:
+Copy these folders into:
+
 E:\Dev\nice-little-click-lab
 
 - app
+- components
 - lib
-- public
 
 Choose “Replace the files in the destination.”
 
@@ -26,13 +25,7 @@ Then run:
 
 npm run dev
 
-CHECK THESE URLS LOCALLY:
-
-http://localhost:3000/sitemap.xml
-http://localhost:3000/robots.txt
-http://localhost:3000/manifest.webmanifest
-http://localhost:3000/clicks/meeting-cost-ticker
-
-After deploying, submit this sitemap in Google Search Console:
-
-https://www.nicelittleclick.com/sitemap.xml
+Check:
+http://localhost:3000/about
+http://localhost:3000/contact
+http://localhost:3000/work

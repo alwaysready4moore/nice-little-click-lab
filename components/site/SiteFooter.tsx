@@ -13,7 +13,7 @@ export function SiteFooter() {
           </Link>
 
           <p className="font-handwritten mt-2 text-lg text-[var(--accent-strong)]">
-            Made with curiosity. Built without bloat.
+            Run by Click. Supervised loosely.
           </p>
         </div>
 
@@ -23,6 +23,7 @@ export function SiteFooter() {
         >
           <Link href="/clicks">Clicks</Link>
           <Link href="/about">About</Link>
+          <Link href="/about#meet-click">Meet Click</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
         </nav>

@@ -1067,3 +1067,47 @@ a:focus-visible { outline: 3px solid rgba(139,72,28,.35); outline-offset: 4px; b
     gap: 0.8rem 1rem;
   }
 }
+
+
+/* First-time visitor clarity pass */
+.lab-label {
+  font-size: 1.3rem;
+  line-height: 1.05;
+}
+
+@media (min-width: 640px) {
+  .lab-label {
+    font-size: 1.42rem;
+  }
+}
+
+
+/* Type hierarchy polish */
+.hero-script {
+  font-size: clamp(2.75rem, 5.8vw, 5.35rem);
+  line-height: 0.98;
+}
+
+.click-definition-label {
+  font-size: 1.48rem;
+  line-height: 1;
+}
+
+.click-definition-title {
+  font-size: clamp(2rem, 3.2vw, 2.65rem);
+  line-height: 1;
+}
+
+@media (max-width: 639px) {
+  .hero-script {
+    font-size: clamp(2.65rem, 12vw, 4rem);
+  }
+
+  .click-definition-label {
+    font-size: 1.28rem;
+  }
+
+  .click-definition-title {
+    font-size: 2rem;
+  }
+}

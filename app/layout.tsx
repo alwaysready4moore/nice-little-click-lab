@@ -22,13 +22,6 @@ export const metadata: Metadata = {
     "custom crossword gift",
     "Nice Little Click Lab",
   ],
-  authors: [
-    {
-      name: siteConfig.creator,
-      url: siteConfig.portfolioUrl,
-    },
-  ],
-  creator: siteConfig.creator,
   publisher: siteConfig.name,
   category: "technology",
   referrer: "origin-when-cross-origin",
@@ -86,11 +79,6 @@ const websiteStructuredData = {
     name: siteConfig.name,
     url: siteConfig.url,
     logo: `${siteConfig.url}/images/click/03-badge-circle-mark.png`,
-    founder: {
-      "@type": "Person",
-      name: siteConfig.creator,
-      url: siteConfig.portfolioUrl,
-    },
   },
 };
 
@@ -109,7 +97,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteStructuredData).replace(/</g, "\\u003c"),
+            __html: JSON.stringify(websiteStructuredData).replace(
+              /</g,
+              "\\u003c",
+            ),
           }}
         />
       </body>
