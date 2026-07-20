@@ -1,4 +1,9 @@
-export const metadata = { title: "Terms" };
+export const metadata = {
+  title: "Terms",
+  description:
+    "Terms for using Nice Little Click Lab and its small web tools and products.",
+  alternates: { canonical: "/terms" },
+};
 
 export default function TermsPage() {
   return (

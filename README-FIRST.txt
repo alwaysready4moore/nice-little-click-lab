@@ -1,18 +1,38 @@
-NICE LITTLE CLICK LAB — CLICKS PAGE UPDATE
+NICE LITTLE CLICK LAB — SEO PATCH
 
-This patch:
-- changes Click No. 001 from "Still tinkering" to "Open the ticker"
-- adds "ready for clicking" beneath the live button
-- adds a responsive Meet Click! section to the Clicks page
-- uses the locked Click avatar asset already in public/images/click/02-icon-avatar.png
+This patch adds or improves:
 
-Copy the app and components folders into your existing project:
+- sitemap.xml
+- robots.txt
+- page-specific titles and descriptions
+- canonical URLs
+- Open Graph and Twitter sharing metadata
+- a 1200×630 social sharing image using the approved brand logo
+- WebSite and Organization structured data
+- SoftwareApplication structured data for Meeting Cost Ticker
+- a web app manifest
+- shared site configuration in lib/site.ts
+
+COPY THESE FOLDERS INTO:
 E:\Dev\nice-little-click-lab
 
-Choose "Replace the files in the destination."
+- app
+- lib
+- public
+
+Choose “Replace the files in the destination.”
 
 Then run:
+
 npm run dev
 
-Test:
-http://localhost:3000/clicks
+CHECK THESE URLS LOCALLY:
+
+http://localhost:3000/sitemap.xml
+http://localhost:3000/robots.txt
+http://localhost:3000/manifest.webmanifest
+http://localhost:3000/clicks/meeting-cost-ticker
+
+After deploying, submit this sitemap in Google Search Console:
+
+https://www.nicelittleclick.com/sitemap.xml

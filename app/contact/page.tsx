@@ -1,5 +1,8 @@
 export const metadata = {
   title: "Contact",
+  description:
+    "Contact Nice Little Click Lab or visit Marquetta Moore’s portfolio for more work.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

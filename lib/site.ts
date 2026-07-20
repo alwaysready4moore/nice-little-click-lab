@@ -1,0 +1,11 @@
+export const siteConfig = {
+  name: "Nice Little Click Lab",
+  shortName: "Nice Little Click",
+  url: "https://www.nicelittleclick.com",
+  description: "Tiny tools, games, and gifts for oddly specific moments.",
+  longDescription:
+    "Nice Little Click Lab makes focused, delightful web tools, games, and gifts that solve one small problem at a time.",
+  creator: "Marquetta Moore",
+  portfolioUrl: "https://www.alwaysready4moore.com",
+  socialImage: "/images/social/nice-little-click-lab-og.png",
+} as const;

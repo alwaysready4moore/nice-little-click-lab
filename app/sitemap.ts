@@ -1,11 +1,29 @@
 import type { MetadataRoute } from "next";
+import { siteConfig } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://www.nicelittleclick.com";
-  return ["", "/clicks", "/clicks/meeting-cost-ticker", "/about", "/privacy", "/terms"].map((path) => ({
-    url: `${base}${path}`,
-    lastModified: new Date(),
-    changeFrequency: path === "" ? "weekly" : "monthly",
-    priority: path === "" ? 1 : 0.7,
+  const pages: Array<{
+    path: string;
+    changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+    priority: number;
+  }> = [
+    { path: "", changeFrequency: "weekly", priority: 1 },
+    { path: "/clicks", changeFrequency: "weekly", priority: 0.9 },
+    {
+      path: "/clicks/meeting-cost-ticker",
+      changeFrequency: "monthly",
+      priority: 0.95,
+    },
+    { path: "/about", changeFrequency: "monthly", priority: 0.7 },
+    { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
+    { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
+    { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+  ];
+
+  return pages.map(({ path, changeFrequency, priority }) => ({
+    url: `${siteConfig.url}${path}`,
+    lastModified: new Date("2026-07-19"),
+    changeFrequency,
+    priority,
   }));
 }

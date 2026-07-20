@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "About the Lab",
   description:
-    "Nice Little Click Lab makes focused, thoughtful web tools, games, and gifts for oddly specific moments.",
+    "Meet Nice Little Click Lab, an independent studio making focused web tools, games, and gifts without unnecessary bloat.",
+  alternates: { canonical: "/about" },
 };
 
 const clickPrinciples = [

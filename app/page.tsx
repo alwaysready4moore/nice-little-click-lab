@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Tiny tools for oddly specific moments",
+  description:
+    "Explore useful, delightful web tools, games, and gifts from Nice Little Click Lab.",
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   return (

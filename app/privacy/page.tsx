@@ -1,4 +1,9 @@
-export const metadata = { title: "Privacy" };
+export const metadata = {
+  title: "Privacy",
+  description:
+    "How Nice Little Click Lab handles privacy, hosting logs, and user information.",
+  alternates: { canonical: "/privacy" },
+};
 
 export default function PrivacyPage() {
   return (
