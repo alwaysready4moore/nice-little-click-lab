@@ -1,19 +1,18 @@
-Nice Little Click Lab portfolio update
+NICE LITTLE CLICK LAB: SECOND CLICK LIVE UPDATE
 
-Replace:
-- app/work/page.tsx
+Copy the included app, components, and data folders into the root of your local nice-little-click-lab project. Allow the files to replace the existing versions.
 
-Add:
-- app/work/nice-little-click-lab/page.tsx
+This update:
+- Adds the Moore Family Print Shop LLC relationship to the footer, About, Contact, Terms, and Privacy pages
+- Makes Instant Custom Crossword Gift live at $4
+- Updates the homepage and About page to present the crossword as available
+- Adds the crossword product page to the sitemap
+- Keeps Please Advise in Coming Soon status
 
-Expected existing assets in public/nice-little-click-lab:
-- wordmark-logo.png
-- logo.png
-- 01-studio-homepage.png
-- 02-functional-mvp.png
-- 03-delight-pass.png
-- 04-live-meeting.png
-- 05-mobile-attendee-setup.png
-- 06-mobile-live-ticker.png
-- 07-mobile-summary.png
-- 08-beta-receipt.png
+After copying, run:
+  npm run build
+  git add .
+  git commit -m "Launch custom crossword and add business attribution"
+  git push origin main
+
+Note: TypeScript validation passed in the prepared snapshot. The full Next.js build could not complete in the isolated build environment because the Next.js SWC package download returned a temporary 503 error.

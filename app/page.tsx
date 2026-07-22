@@ -125,16 +125,20 @@ export default function HomePage() {
         </article>
 
         <article className="next-card relative overflow-hidden rounded-[1.4rem] border border-[#e3c783] p-7 sm:p-9">
-          <p className="lab-label">NEXT OUT OF THE LAB</p>
+          <p className="lab-label">NOW READY TO GIFT</p>
           <h2 className="click-definition-title mt-4 font-black tracking-[-0.045em]">
             Instant Custom Crossword Gift
           </h2>
           <p className="mt-4 max-w-lg leading-7 text-[var(--muted)]">
-            A personalized crossword puzzle, ready to print and gift in minutes.
+            Turn shared memories and private jokes into a personalized crossword,
+            ready to print and gift in minutes.
           </p>
-          <p className="mt-6 font-bold text-[var(--accent-strong)]">
-            Coming after Click No. 001 has had its moment.
-          </p>
+          <Link
+            href="/clicks/custom-crossword"
+            className="lab-button lab-button-primary mt-6"
+          >
+            Make a crossword for $4
+          </Link>
           <div className="crossword-mini" aria-hidden="true">
             NICE
             <br />

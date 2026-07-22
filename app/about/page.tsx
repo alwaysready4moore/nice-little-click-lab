@@ -32,10 +32,10 @@ export default function AboutPage() {
         </p>
 
         <p className="mt-8 max-w-3xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
-          Nice Little Click Lab is a tiny web-product studio making useful,
-          playful internet things for oddly specific moments. Some Clicks solve
-          small annoyances. Some make thoughtful gifts. Some simply began with,
-          “Someone should make that.”
+          Nice Little Click Lab is the digital-product studio of Moore Family
+          Print Shop LLC. We make useful, playful internet things for oddly
+          specific moments. Some Clicks solve small annoyances. Some make
+          thoughtful gifts. Some simply began with, “Someone should make that.”
         </p>
       </section>
 
@@ -123,7 +123,7 @@ export default function AboutPage() {
           </article>
 
           <article className="lab-card p-7 sm:p-8">
-            <p className="click-number">Coming next</p>
+            <p className="click-number">Now available</p>
             <h3 className="lab-heading mt-5 text-4xl">
               Instant Custom Crossword Gift
             </h3>
@@ -131,9 +131,27 @@ export default function AboutPage() {
               Turn shared memories, private jokes, and favorite answers into a
               personalized printable crossword gift.
             </p>
-            <p className="lab-note mt-6">Currently gathering clues.</p>
+            <Link
+              className="mt-6 inline-flex font-bold text-[var(--accent-strong)] underline decoration-1 underline-offset-4"
+              href="/clicks/custom-crossword"
+            >
+              Make a crossword
+            </Link>
           </article>
         </div>
+      </section>
+
+      <section className="lab-card mt-16 p-7 sm:p-9">
+        <p className="lab-label">A small studio with a real home</p>
+        <h2 className="lab-heading mt-3 text-4xl sm:text-5xl">
+          Part of Moore Family Print Shop LLC.
+        </h2>
+        <p className="mt-5 max-w-4xl text-lg leading-8 text-[var(--muted)]">
+          Nice Little Click Lab is the digital-product studio of Moore Family
+          Print Shop LLC. The print shop makes physical gifts and creative
+          goods. The Lab makes tiny digital experiences: focused tools, games,
+          and personalized downloads with a little personality built in.
+        </p>
       </section>
 
       <section

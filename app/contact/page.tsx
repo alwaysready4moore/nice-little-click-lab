@@ -20,18 +20,22 @@ export default function ContactPage() {
         sleeping directly beside the most important piece of equipment.
       </p>
       <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+        Nice Little Click Lab is proudly operated by Moore Family Print Shop
+        LLC. Questions, feedback, bug reports, or a simple hello are all welcome.
+      </p>
+      <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--muted)]">
         For now, the best way to explore the Lab is to try a Click and see what
         is currently on the workbench.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
           className="lab-button lab-button-primary"
-          href="/clicks/meeting-cost-ticker"
+          href="/clicks/custom-crossword"
         >
-          Try the Meeting Cost Ticker
+          Make a custom crossword
         </Link>
-        <Link className="lab-button lab-button-secondary" href="/about#meet-click">
-          Meet Click
+        <Link className="lab-button lab-button-secondary" href="/clicks">
+          See all Clicks
         </Link>
       </div>
     </section>
