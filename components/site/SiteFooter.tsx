@@ -15,11 +15,6 @@ export function SiteFooter() {
           <p className="font-handwritten mt-2 text-lg text-[var(--accent-strong)]">
             Run by Click. Supervised loosely.
           </p>
-
-          <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--muted)]">
-            Nice Little Click Lab is a tiny web-product studio operated by Moore
-            Family Print Shop LLC.
-          </p>
         </div>
 
         <nav
