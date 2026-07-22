@@ -39,7 +39,7 @@ export const clicks: Click[] = [
     name: "Please Advise",
     shortDescription:
       "Read the email. Choose who needs your response. Protect your fictional career.",
-    status: "live",
+    status: "coming-soon",
     priceLabel: "Free",
     purchaseMode: "free",
     deliveryMode: "onsite",
