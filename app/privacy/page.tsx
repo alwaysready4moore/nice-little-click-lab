@@ -28,13 +28,27 @@ export default function PrivacyPage() {
         </div>
 
         <div>
+          <h2 className="text-2xl font-bold text-[var(--ink)]">AI use</h2>
+          <p className="mt-3">
+            AI tools may be used to help design, write, or develop the Nice Little
+            Click Lab website. The Clicks themselves do not send the information
+            you enter to an AI model or AI service. For example, the Instant
+            Custom Crossword Gift uses programmed puzzle-generation logic rather
+            than generative AI.
+          </p>
+        </div>
+
+        <div>
           <h2 className="text-2xl font-bold text-[var(--ink)]">Information you enter</h2>
           <p className="mt-3">
             Some Clicks ask you to enter information to create a result. For the
             Instant Custom Crossword Gift, that can include a puzzle title,
-            answers, clues, and optional gift details. This information is sent
-            to the site only when needed to begin checkout, verify the purchase,
-            and generate the PDF. It is not used to create a public profile.
+            answers, clues, and optional gift details. The draft is stored
+            temporarily in your browser using session storage so it can survive
+            the trip to Stripe Checkout and return for download. The information
+            is also processed by the site only when needed to begin checkout,
+            verify the purchase, and generate the PDF. It is not used to create a
+            public profile or sent to an AI service.
           </p>
         </div>
 
@@ -70,10 +84,23 @@ export default function PrivacyPage() {
         <div>
           <h2 className="text-2xl font-bold text-[var(--ink)]">Retention</h2>
           <p className="mt-3">
-            The site does not intentionally maintain user profiles or a library
-            of saved crossword content. Stripe retains transaction records under
+            The site does not intentionally maintain user profiles or a
+            retrievable library of saved crossword content. Browser session data
+            can disappear when the session ends, storage is cleared, or another
+            device or browser is used. Stripe retains transaction records under
             its own policies. Hosting and security logs may also be retained by
             service providers for limited operational purposes.
+          </p>
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--ink)]">Saving purchased files</h2>
+          <p className="mt-3">
+            Downloaded products are not stored in a customer account or purchase
+            library. Please save purchased files somewhere you control and back
+            them up. We may be able to verify a Stripe payment, but we generally
+            cannot recover or recreate the exact personalized product after the
+            browser-held details are gone.
           </p>
         </div>
 

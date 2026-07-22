@@ -397,6 +397,11 @@ export function CustomCrosswordBuilder() {
                   {checkoutState === "loading" ? "Opening checkout..." : "Buy & download PDF"}
                 </button>
               </div>
+              <p className={styles.checkoutHint}>
+                No AI reads your entries. Your puzzle details stay in this browser
+                for checkout and download, and they are not saved to a customer
+                account. Please save the finished PDF somewhere safe.
+              </p>
               {result.unplaced.length > 0 && (
                 <p className={styles.checkoutHint}>Get every memory into the grid before checkout.</p>
               )}

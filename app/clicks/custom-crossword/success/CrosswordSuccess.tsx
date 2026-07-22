@@ -98,6 +98,13 @@ export function CrosswordSuccess() {
         </div>
       )}
 
+      {payload && status !== "error" && (
+        <p className={styles.saveNotice}>
+          Save this PDF somewhere safe. The Lab does not keep a copy of your
+          personalized crossword and cannot retrieve it after your browser data is gone.
+        </p>
+      )}
+
       <div className={styles.actions}>
         {payload && status !== "error" && (
           <button type="button" disabled={status === "downloading"} onClick={downloadPdf}>

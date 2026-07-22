@@ -55,3 +55,15 @@
 .actions button:disabled { opacity: 0.55; cursor: wait; }
 .actions a { color: #8b481c; text-underline-offset: 0.25rem; }
 .help { margin-top: 1.5rem; color: #6e665d; font-size: 0.9rem; }
+
+.saveNotice {
+  margin: 1.4rem auto 0;
+  max-width: 520px;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(139, 72, 28, 0.2);
+  border-radius: 14px;
+  background: rgba(244, 223, 187, 0.32);
+  color: #5f554c;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}

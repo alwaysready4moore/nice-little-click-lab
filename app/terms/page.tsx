@@ -53,8 +53,30 @@ export default function TermsPage() {
           <p className="mt-3">
             Payments are processed securely by Stripe. Prices are shown before
             checkout. After a successful payment, your completed digital product
-            is made available for download. You are responsible for saving your
-            downloaded file.
+            is made available for download. Products are not placed in a customer
+            account or permanent download library. You are responsible for saving
+            and backing up your downloaded file.
+          </p>
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--ink)]">AI and product generation</h2>
+          <p className="mt-3">
+            AI tools may assist with the design or development of the website, but
+            the Clicks do not send your submitted content to generative AI
+            services. Personalized crossword files are assembled using programmed
+            puzzle logic and the information you provide.
+          </p>
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--ink)]">Lost downloads</h2>
+          <p className="mt-3">
+            Because personalized content is not kept in a permanent customer
+            library, we may be unable to recover or recreate a purchased file once
+            your browser-held details are gone. Keep your Stripe receipt for
+            payment support, and save the finished file somewhere secure as soon
+            as it is downloaded.
           </p>
         </div>
 
