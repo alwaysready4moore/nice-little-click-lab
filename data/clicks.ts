@@ -33,4 +33,16 @@ export const clicks: Click[] = [
     deliveryMode: "download",
     featured: false,
   },
+  {
+    slug: "please-advise",
+    number: 3,
+    name: "Please Advise",
+    shortDescription:
+      "Read the email. Choose who needs your response. Protect your fictional career.",
+    status: "live",
+    priceLabel: "Free",
+    purchaseMode: "free",
+    deliveryMode: "onsite",
+    featured: false,
+  },
 ];

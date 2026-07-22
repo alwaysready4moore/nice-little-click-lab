@@ -1,31 +1,25 @@
-NICE LITTLE CLICK LAB — CLICK RUNS THE LAB PATCH
-
-This patch makes the public site fully in-world.
-
-It:
-- replaces the founder block with a proper Meet Click section
-- removes the public portfolio link
-- rewrites the Contact page in the Lab voice
-- changes the footer line to “Run by Click. Supervised loosely.”
-- adds a Meet Click footer link
-- removes creator/founder/portfolio fields from shared SEO config
-- redirects old /work routes back into the Lab instead of to a personal portfolio
+NICE LITTLE CLICK LAB — PDF FIT + OPTIONAL CLICK PATCH
 
 Copy these folders into:
-
 E:\Dev\nice-little-click-lab
 
 - app
-- components
 - lib
 
 Choose “Replace the files in the destination.”
 
-Then run:
+This patch:
+- embeds only MailmanRegular.otf and Mimosa.woff2 in exported PDFs
+- keeps every crossword grid inside safe letter-page margins
+- centers wide and tall grids automatically
+- uses Mimosa for grid letters, numbers, clues, labels, and footer text
+- uses MailmanRegular only for the personalized puzzle title
+- adds an “Include Click on the answer-key page” checkout option
+- uses the existing public/images/click/click-awake-receipt.png asset
 
+Then restart:
+Ctrl+C
 npm run dev
 
-Check:
-http://localhost:3000/about
-http://localhost:3000/contact
-http://localhost:3000/work
+Complete a new sandbox checkout and download a new PDF.
+Old PDF files will not change.

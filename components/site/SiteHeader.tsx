@@ -19,7 +19,12 @@ export function SiteHeader() {
 
         <nav
           aria-label="Primary navigation"
-          className="site-primary-nav flex items-center gap-5 text-sm font-semibold"
+          className="site-primary-nav flex items-center gap-5"
+          style={{
+            fontFamily: "var(--font-handwritten)",
+            fontSize: "clamp(1rem, 1.2vw, 1.2rem)",
+            fontWeight: 400,
+          }}
         >
           <Link
             href="/clicks"

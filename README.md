@@ -1,45 +1,14 @@
-# Nice Little Click Lab
+# Damali Street cool background update
 
-Starter shell for the Nice Little Click Lab website.
+Replace:
 
-## Start locally
+- app/globals.css
 
-```bash
-npm install
-npm run dev
-```
+This changes the site-wide paper/background color from warm cream to a cool smoky near-white:
 
-Then open `http://localhost:3000`.
+- Old: #f5f1e7
+- New: #f1f1ee
 
-## Netlify
+Crimson Confetti keeps its own warm notebook-paper styling because that page uses local era-specific colors.
 
-1. Push this folder to GitHub.
-2. Import the repository into Netlify.
-3. Netlify should detect the Next.js project automatically.
-4. Add secrets in Netlify environment variables when Stripe or email is introduced.
-
-## Project structure
-
-- `app/` routes and pages
-- `components/site/` permanent Lab shell
-- `components/clicks/` shared Click components
-- `data/clicks.ts` product registry
-- `public/brand/` logo and mascot assets
-- `public/fonts/` licensed font files, which must be added locally and not committed if licensing forbids distribution
-
-## Next steps
-
-- Replace placeholder typography with the purchased brand fonts
-- Add final logo and Click artwork
-- Design the homepage
-- Build `/clicks/meeting-cost-ticker`
-- Add Stripe only when the first paid Click is ready
-
-## Brand fonts
-
-Add your licensed font files locally at:
-
-- `public/fonts/FavoriteChild-Regular.woff2`
-- `public/fonts/Mimosa.otf`
-
-The styles are already wired up in `app/globals.css`. The font binaries are intentionally not included in this starter archive.
+No npm install is required.
