@@ -7,14 +7,36 @@ export function puzzleHash(payload: CrosswordPurchasePayload) {
   return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
+export function crosswordReference(sessionId: string) {
+  return createHash("sha256").update(sessionId).digest("hex").slice(0, 8).toUpperCase();
+}
+
 function stripeKey() {
   const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new Error("STRIPE_SECRET_KEY is not configured.");
+  if (!key) throw new Error("Stripe is not configured.");
   return key;
 }
 
-export async function createCrosswordCheckout(payload: CrosswordPurchasePayload, origin: string) {
+function siteOrigin() {
+  const configured = process.env.SITE_URL;
+
+  if (!configured) {
+    if (process.env.NODE_ENV !== "production") return "http://localhost:3000";
+    throw new Error("The production site URL is not configured.");
+  }
+
+  const url = new URL(configured);
+  const isLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  if (!isLocal && url.protocol !== "https:") {
+    throw new Error("The production site URL must use HTTPS.");
+  }
+
+  return url.origin;
+}
+
+export async function createCrosswordCheckout(payload: CrosswordPurchasePayload) {
   const hash = puzzleHash(payload);
+  const origin = siteOrigin();
   const body = new URLSearchParams();
   body.set("mode", "payment");
   body.set("success_url", `${origin}/clicks/custom-crossword/success?session_id={CHECKOUT_SESSION_ID}`);
@@ -47,7 +69,7 @@ export async function createCrosswordCheckout(payload: CrosswordPurchasePayload,
 }
 
 export async function retrieveCheckoutSession(sessionId: string) {
-  if (!/^cs_(test_|live_)?[A-Za-z0-9]+$/.test(sessionId)) {
+  if (!/^cs_(test_|live_)?[A-Za-z0-9]{8,200}$/.test(sessionId)) {
     throw new Error("Invalid checkout session.");
   }
   const response = await fetch(`${STRIPE_API}/checkout/sessions/${encodeURIComponent(sessionId)}`, {
@@ -64,68 +86,4 @@ export async function retrieveCheckoutSession(sessionId: string) {
   };
   if (!response.ok || !data.id) throw new Error(data.error?.message || "Could not verify payment.");
   return data;
-}
-
-
-type StripeCheckoutSession = Awaited<ReturnType<typeof retrieveCheckoutSession>>;
-
-async function listNumberedCrosswordSessions() {
-  const sessions: Array<{ metadata?: Record<string, string> }> = [];
-  let startingAfter: string | undefined;
-
-  do {
-    const params = new URLSearchParams({ limit: "100" });
-    if (startingAfter) params.set("starting_after", startingAfter);
-
-    const response = await fetch(`${STRIPE_API}/checkout/sessions?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${stripeKey()}` },
-      cache: "no-store",
-    });
-    const data = (await response.json()) as {
-      data?: Array<{ id: string; metadata?: Record<string, string> }>;
-      has_more?: boolean;
-      error?: { message?: string };
-    };
-
-    if (!response.ok || !data.data) {
-      throw new Error(data.error?.message || "Could not read the crossword sequence.");
-    }
-
-    sessions.push(...data.data);
-    startingAfter = data.has_more ? data.data.at(-1)?.id : undefined;
-  } while (startingAfter);
-
-  return sessions;
-}
-
-export async function getOrAssignCrosswordNumber(session: StripeCheckoutSession) {
-  const existing = Number.parseInt(session.metadata?.crossword_number ?? "", 10);
-  if (Number.isSafeInteger(existing) && existing > 0) return existing;
-
-  const sessions = await listNumberedCrosswordSessions();
-  const highest = sessions.reduce((max, item) => {
-    const value = Number.parseInt(item.metadata?.crossword_number ?? "", 10);
-    return Number.isSafeInteger(value) && value > max ? value : max;
-  }, 0);
-  const next = highest + 1;
-
-  const body = new URLSearchParams();
-  body.set("metadata[crossword_number]", String(next));
-  body.set("metadata[product]", "custom_crossword");
-
-  const response = await fetch(`${STRIPE_API}/checkout/sessions/${encodeURIComponent(session.id!)}`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${stripeKey()}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body,
-    cache: "no-store",
-  });
-  const data = (await response.json()) as { id?: string; error?: { message?: string } };
-  if (!response.ok || !data.id) {
-    throw new Error(data.error?.message || "Could not reserve a crossword number.");
-  }
-
-  return next;
 }

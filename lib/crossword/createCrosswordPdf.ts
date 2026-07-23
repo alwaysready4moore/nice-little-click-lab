@@ -3,7 +3,7 @@ import path from "node:path";
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb, type PDFImage, type PDFPage, type PDFFont } from "pdf-lib";
 import type { CrosswordPlacement, CrosswordResult } from "./types";
-import type { CrosswordPurchasePayload } from "./purchase";
+import type { CrosswordDocumentPayload } from "./purchase";
 
 const PAGE_WIDTH = 612;
 const PAGE_HEIGHT = 792;
@@ -84,7 +84,7 @@ function drawPageFrame(page: PDFPage) {
 
 function drawHeader(
   page: PDFPage,
-  payload: CrosswordPurchasePayload,
+  payload: CrosswordDocumentPayload,
   mailman: PDFFont,
   mimosa: PDFFont,
   pageLabel: string,
@@ -242,10 +242,10 @@ function drawClueColumn(
 
 function drawFooter(
   page: PDFPage,
-  puzzleNumber: number,
+  puzzleReference: string,
   mimosa: PDFFont,
 ) {
-  page.drawText(`Puzzle No. ${String(puzzleNumber).padStart(6, "0")}`, {
+  page.drawText(`Puzzle ID ${puzzleReference}`, {
     x: SIDE_MARGIN,
     y: 39,
     font: mimosa,
@@ -297,8 +297,8 @@ function drawAnswerNote(page: PDFPage, mimosa: PDFFont, hasClick: boolean) {
 }
 
 export async function createCrosswordPdf(
-  payload: CrosswordPurchasePayload,
-  puzzleNumber: number,
+  payload: CrosswordDocumentPayload,
+  puzzleReference: string,
 ) {
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
@@ -346,7 +346,7 @@ export async function createCrosswordPdf(
     mimosa,
     clueHeight,
   );
-  drawFooter(puzzlePage, puzzleNumber, mimosa);
+  drawFooter(puzzlePage, puzzleReference, mimosa);
 
   const answerPage = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
   drawPageFrame(answerPage);
@@ -360,7 +360,7 @@ export async function createCrosswordPdf(
   });
   drawAnswerNote(answerPage, mimosa, Boolean(click));
   drawClick(answerPage, click);
-  drawFooter(answerPage, puzzleNumber, mimosa);
+  drawFooter(answerPage, puzzleReference, mimosa);
 
   return doc.save();
 }

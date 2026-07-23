@@ -11,16 +11,14 @@ type Status = "checking" | "ready" | "downloading" | "error";
 export function CrosswordSuccess() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const [status, setStatus] = useState<Status>("checking");
+  const [status, setStatus] = useState<Status>(sessionId ? "checking" : "error");
   const [payload, setPayload] = useState<CrosswordPurchasePayload | null>(null);
-  const [message, setMessage] = useState("Click is checking the receipt...");
+  const [message, setMessage] = useState(
+    sessionId ? "Click is checking the receipt..." : "This page is missing its checkout receipt.",
+  );
 
   useEffect(() => {
-    if (!sessionId) {
-      setStatus("error");
-      setMessage("This page is missing its checkout receipt.");
-      return;
-    }
+    if (!sessionId) return;
 
     let cancelled = false;
     async function verify() {
@@ -93,7 +91,7 @@ export function CrosswordSuccess() {
       {payload && status !== "error" && (
         <div className={styles.summary}>
           <span>2 printable pages</span>
-          <span>{payload.result.placements.length} clues</span>
+          <span>{payload.entries.length} clues</span>
           <span>Puzzle + answer key</span>
         </div>
       )}

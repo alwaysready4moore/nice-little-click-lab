@@ -1,24 +1,59 @@
 import { NextResponse } from "next/server";
-import { isCrosswordPurchasePayload } from "../../../../lib/crossword/purchase";
+import {
+  createCrosswordDocument,
+  parseCrosswordPurchasePayload,
+} from "../../../../lib/crossword/purchase";
+import { readJsonBody, RequestBodyError } from "../../../../lib/http";
+import { checkRateLimit } from "../../../../lib/rateLimit";
 import { createCrosswordCheckout } from "../../../../lib/stripe";
 
 export const runtime = "nodejs";
 
+const MAX_BODY_BYTES = 24_000;
+
 export async function POST(request: Request) {
+  const limit = checkRateLimit(request, {
+    scope: "crossword-checkout",
+    limit: 10,
+    windowMs: 10 * 60 * 1000,
+  });
+
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "Too many checkout attempts. Give Click a few minutes to catch up." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limit.retryAfterSeconds) },
+      },
+    );
+  }
+
   try {
-    const payload: unknown = await request.json();
-    if (!isCrosswordPurchasePayload(payload)) {
-      return NextResponse.json({ error: "Finish a valid crossword before checkout." }, { status: 400 });
+    const body = await readJsonBody(request, MAX_BODY_BYTES);
+    const payload = parseCrosswordPurchasePayload(body);
+    if (!payload) {
+      return NextResponse.json(
+        { error: "Finish a valid crossword before checkout." },
+        { status: 400 },
+      );
     }
-    if (JSON.stringify(payload).length > 60_000) {
-      return NextResponse.json({ error: "This puzzle is too large to check out." }, { status: 413 });
+
+    // Rebuild on the server so Stripe never trusts a browser-supplied grid.
+    if (!createCrosswordDocument(payload)) {
+      return NextResponse.json(
+        { error: "Click could not fit every answer. Adjust one or two entries and try again." },
+        { status: 400 },
+      );
     }
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
-    return NextResponse.json(await createCrosswordCheckout(payload, origin));
+
+    return NextResponse.json(await createCrosswordCheckout(payload));
   } catch (error) {
     console.error("Crossword checkout error", error);
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Checkout could not start." },
+      { error: "Checkout could not start. Please try again." },
       { status: 500 },
     );
   }

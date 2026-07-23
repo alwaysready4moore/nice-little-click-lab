@@ -9,10 +9,10 @@ export const metadata = {
 
 export default function CrosswordSuccessPage() {
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <Suspense fallback={<section className={styles.card}><p>Click is checking the receipt...</p></section>}>
         <CrosswordSuccess />
       </Suspense>
-    </main>
+    </div>
   );
 }

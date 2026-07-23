@@ -38,7 +38,7 @@ function emailHref(subject: string) {
 
 export default function ContactPage() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
+    <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
       <section className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
         <div>
           <p className="lab-label">The lab hatch</p>
@@ -67,7 +67,7 @@ export default function ContactPage() {
         <div className="space-y-6">
           <div className="relative mx-auto aspect-square w-full max-w-sm" aria-hidden="true">
             <Image
-              src="/images/click/click-writing.png"
+              src="/images/click/click-writing.webp"
               alt=""
               fill
               priority
@@ -140,6 +140,6 @@ export default function ContactPage() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

@@ -178,7 +178,7 @@ export default function AboutPage() {
 
           <div className="mx-auto w-full max-w-[18rem] rounded-[1.5rem] border border-[var(--border)] bg-white/55 p-5 shadow-[0_20px_45px_rgba(75,50,20,0.12)]">
             <Image
-              src="/images/click/Click-Profile.png"
+              src="/images/click/Click-Profile.webp"
               alt="Click, the golden retriever lab assistant"
               width={560}
               height={560}

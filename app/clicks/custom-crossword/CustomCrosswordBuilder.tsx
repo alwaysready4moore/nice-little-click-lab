@@ -7,7 +7,10 @@ import type {
   CrosswordPlacement,
   CrosswordResult,
 } from "../../../lib/crossword";
-import type { CrosswordPurchasePayload } from "../../../lib/crossword/purchase";
+import {
+  crosswordSeed,
+  type CrosswordPurchasePayload,
+} from "../../../lib/crossword/purchase";
 import styles from "./custom-crossword.module.css";
 
 type DraftEntry = CrosswordInput;
@@ -48,6 +51,12 @@ function makeId() {
   return `memory-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+function completeEntries(entries: DraftEntry[]) {
+  return entries.filter(
+    (entry) => entry.answer.trim().length > 0 && entry.clue.trim().length > 0,
+  );
+}
+
 export function CustomCrosswordBuilder() {
   const [title, setTitle] = useState("A Little Puzzle About Us");
   const [dedication, setDedication] = useState("");
@@ -58,10 +67,7 @@ export function CustomCrosswordBuilder() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [includeClickOnAnswerKey, setIncludeClickOnAnswerKey] = useState(true);
 
-  const completedCount = useMemo(
-    () => entries.filter((entry) => entry.answer.trim() && entry.clue.trim()).length,
-    [entries],
-  );
+  const completedCount = useMemo(() => completeEntries(entries).length, [entries]);
 
   const cellMap = useMemo(() => {
     const map = new Map<string, CrosswordResult["grid"]["cells"][number]>();
@@ -69,28 +75,51 @@ export function CustomCrosswordBuilder() {
     return map;
   }, [result]);
 
+  const entryErrors = useMemo(
+    () => new Map(result?.unplaced.map((entry) => [entry.id, failureCopy[entry.reason]]) ?? []),
+    [result],
+  );
+
   useEffect(() => {
-    const stored = sessionStorage.getItem("nlcl-crossword:draft");
-    if (!stored) return;
-    try {
-      const payload = JSON.parse(stored) as CrosswordPurchasePayload;
-      setTitle(payload.title);
-      setDedication(payload.dedication);
-      setResult(payload.result);
-      setIncludeClickOnAnswerKey(payload.includeClickOnAnswerKey ?? true);
-      setEntries(
-        payload.result.placements.map((placement) => ({
-          id: placement.id,
-          answer: placement.answer,
-          clue: placement.clue,
-        })),
-      );
-      if (new URLSearchParams(window.location.search).get("checkout") === "cancelled") {
-        setNotice("Checkout cancelled. Your crossword is still here.");
+    const frame = window.requestAnimationFrame(() => {
+      const stored = sessionStorage.getItem("nlcl-crossword:draft");
+      if (!stored) return;
+
+      try {
+        const parsed = JSON.parse(stored) as Partial<CrosswordPurchasePayload> & {
+          result?: CrosswordResult;
+        };
+        const restoredEntries = Array.isArray(parsed.entries)
+          ? parsed.entries
+          : parsed.result?.placements.map((placement) => ({
+              id: placement.id,
+              answer: placement.answer,
+              clue: placement.clue,
+            }));
+
+        if (!restoredEntries || restoredEntries.length < 8) return;
+
+        setTitle(typeof parsed.title === "string" ? parsed.title : "A Little Puzzle About Us");
+        setDedication(typeof parsed.dedication === "string" ? parsed.dedication : "");
+        setIncludeClickOnAnswerKey(parsed.includeClickOnAnswerKey ?? true);
+        setEntries(restoredEntries);
+        setResult(
+          generateCrossword(restoredEntries, {
+            maxAttempts: 360,
+            requireAll: false,
+            seed: crosswordSeed(restoredEntries),
+          }),
+        );
+
+        if (new URLSearchParams(window.location.search).get("checkout") === "cancelled") {
+          setNotice("Checkout cancelled. Your crossword is still here.");
+        }
+      } catch {
+        sessionStorage.removeItem("nlcl-crossword:draft");
       }
-    } catch {
-      sessionStorage.removeItem("nlcl-crossword:draft");
-    }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   function updateEntry(id: string, field: "answer" | "clue", value: string) {
@@ -99,6 +128,7 @@ export function CustomCrosswordBuilder() {
     );
     setResult(null);
     setNotice(null);
+    setCheckoutError(null);
   }
 
   function addEntry() {
@@ -121,26 +151,32 @@ export function CustomCrosswordBuilder() {
   }
 
   function buildPuzzle() {
-    const completeEntries = entries.filter(
-      (entry) => entry.answer.trim().length > 0 && entry.clue.trim().length > 0,
-    );
+    const readyEntries = completeEntries(entries);
 
-    if (completeEntries.length < 8) {
+    if (readyEntries.length < 8) {
       setNotice("Add at least eight complete answers and clues before Click starts arranging things.");
       return;
     }
 
-    const nextResult = generateCrossword(completeEntries, {
-      maxAttempts: 240,
+    const nextResult = generateCrossword(readyEntries, {
+      maxAttempts: 360,
       requireAll: false,
+      seed: crosswordSeed(readyEntries),
     });
 
     setResult(nextResult);
     setNotice(
-      nextResult.stats.placedCount === completeEntries.length
+      nextResult.stats.placedCount === readyEntries.length
         ? "Click found a place for everything."
-        : `${nextResult.stats.placedCount} of ${completeEntries.length} memories made it into this version.`,
+        : `${nextResult.stats.placedCount} of ${readyEntries.length} memories made it into this version.`,
     );
+
+    const firstInvalid = nextResult.unplaced[0];
+    if (firstInvalid) {
+      window.requestAnimationFrame(() => {
+        document.getElementById(`answer-${firstInvalid.id}`)?.focus();
+      });
+    }
   }
 
   async function startCheckout() {
@@ -149,7 +185,7 @@ export function CustomCrosswordBuilder() {
     const payload: CrosswordPurchasePayload = {
       title: title.trim() || "A Little Puzzle About Us",
       dedication: dedication.trim(),
-      result,
+      entries: completeEntries(entries),
       includeClickOnAnswerKey,
     };
 
@@ -181,7 +217,7 @@ export function CustomCrosswordBuilder() {
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <section className={styles.hero}>
         <p className={styles.eyebrow}>Click No. 002 · paid experiment</p>
         <h1>Make a crossword out of the things only you two know.</h1>
@@ -224,43 +260,51 @@ export function CustomCrosswordBuilder() {
           </div>
 
           <div className={styles.entryList}>
-            {entries.map((entry, index) => (
-              <div className={styles.entryCard} key={entry.id}>
-                <div className={styles.entryNumber}>{String(index + 1).padStart(2, "0")}</div>
-                <label>
-                  Answer
-                  <textarea
-                    className={styles.answerInput}
-                    value={entry.answer}
-                    maxLength={30}
-                    rows={1}
-                    placeholder={index === 0 ? "The answer in the grid" : ""}
-                    onChange={(event) => updateEntry(entry.id, "answer", event.target.value)}
-                  />
-                </label>
-                <label>
-                  Clue
-                  <textarea
-                    className={styles.clueInput}
-                    value={entry.clue}
-                    maxLength={110}
-                    rows={1}
-                    placeholder={index === 0 ? "A clue only they will understand" : ""}
-                    onChange={(event) => updateEntry(entry.id, "clue", event.target.value)}
-                  />
-                </label>
-                {entries.length > 8 && (
-                  <button
-                    className={styles.removeButton}
-                    type="button"
-                    aria-label={`Remove answer ${index + 1}`}
-                    onClick={() => removeEntry(entry.id)}
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-            ))}
+            {entries.map((entry, index) => {
+              const error = entryErrors.get(entry.id);
+              const errorId = `entry-error-${entry.id}`;
+              return (
+                <div className={styles.entryCard} key={entry.id}>
+                  <div className={styles.entryNumber}>{String(index + 1).padStart(2, "0")}</div>
+                  <label>
+                    Answer
+                    <textarea
+                      id={`answer-${entry.id}`}
+                      className={styles.answerInput}
+                      value={entry.answer}
+                      maxLength={30}
+                      rows={1}
+                      placeholder={index === 0 ? "The answer in the grid" : ""}
+                      aria-invalid={Boolean(error)}
+                      aria-describedby={error ? errorId : undefined}
+                      onChange={(event) => updateEntry(entry.id, "answer", event.target.value)}
+                    />
+                    {error && <span className={styles.fieldError} id={errorId}>{error}</span>}
+                  </label>
+                  <label>
+                    Clue
+                    <textarea
+                      className={styles.clueInput}
+                      value={entry.clue}
+                      maxLength={110}
+                      rows={1}
+                      placeholder={index === 0 ? "A clue only they will understand" : ""}
+                      onChange={(event) => updateEntry(entry.id, "clue", event.target.value)}
+                    />
+                  </label>
+                  {entries.length > 8 && (
+                    <button
+                      className={styles.removeButton}
+                      type="button"
+                      aria-label={`Remove answer ${index + 1}`}
+                      onClick={() => removeEntry(entry.id)}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <div className={styles.editorFooter}>
@@ -302,8 +346,13 @@ export function CustomCrosswordBuilder() {
             <div
               className={styles.paper}
               onContextMenu={(event) => event.preventDefault()}
+              role="region"
               aria-label="Low-resolution watermarked crossword preview"
+              aria-describedby="crossword-preview-description"
             >
+              <p className={styles.visuallyHidden} id="crossword-preview-description">
+                {result.grid.rows} rows by {result.grid.cols} columns, with {result.across.length} Across clues and {result.down.length} Down clues.
+              </p>
               <div className={styles.previewWatermarks} aria-hidden="true">
                 {Array.from({ length: 5 }, (_, index) => (
                   <span key={index}>PREVIEW · PURCHASE TO PRINT</span>
@@ -317,10 +366,8 @@ export function CustomCrosswordBuilder() {
 
               <div
                 className={styles.grid}
-                style={{
-                  gridTemplateColumns: `repeat(${result.grid.cols}, minmax(0, 1fr))`,
-                }}
-                aria-label="Crossword puzzle grid preview"
+                style={{ gridTemplateColumns: `repeat(${result.grid.cols}, minmax(0, 1fr))` }}
+                aria-hidden="true"
               >
                 {Array.from({ length: result.grid.rows * result.grid.cols }, (_, index) => {
                   const row = Math.floor(index / result.grid.cols);
@@ -346,7 +393,7 @@ export function CustomCrosswordBuilder() {
           )}
 
           {result && result.unplaced.length > 0 && (
-            <div className={styles.unplaced}>
+            <div className={styles.unplaced} role="alert">
               <h3>A few memories are refusing to mingle.</h3>
               <ul>
                 {result.unplaced.map((entry) => (
@@ -366,23 +413,11 @@ export function CustomCrosswordBuilder() {
                 <h3>Download the finished crossword</h3>
                 <p>Two-page PDF: the puzzle first, then a separate answer key.</p>
               </div>
-              <label
-                style={{
-                  gridColumn: "1 / -1",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.65rem",
-                  padding: "0.75rem 0.9rem",
-                  border: "1px solid rgba(143, 74, 31, 0.22)",
-                  borderRadius: "14px",
-                  cursor: "pointer",
-                }}
-              >
+              <label className={styles.answerKeyChoice}>
                 <input
                   type="checkbox"
                   checked={includeClickOnAnswerKey}
                   onChange={(event) => setIncludeClickOnAnswerKey(event.target.checked)}
-                  style={{ width: "1.1rem", height: "1.1rem", accentColor: "#8f4a1f" }}
                 />
                 <span>Include Click on the answer-key page</span>
               </label>
@@ -398,9 +433,9 @@ export function CustomCrosswordBuilder() {
                 </button>
               </div>
               <p className={styles.checkoutHint}>
-                No AI reads your entries. Your puzzle details stay in this browser
-                for checkout and download, and they are not saved to a customer
-                account. Please save the finished PDF somewhere safe.
+                No AI reads your entries. At checkout, the Lab securely sends them to its server only
+                to validate the puzzle and assemble your PDF. They are not saved to a customer account,
+                so please keep the finished file somewhere safe.
               </p>
               {result.unplaced.length > 0 && (
                 <p className={styles.checkoutHint}>Get every memory into the grid before checkout.</p>
@@ -410,7 +445,7 @@ export function CustomCrosswordBuilder() {
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }
 

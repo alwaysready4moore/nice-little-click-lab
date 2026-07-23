@@ -187,6 +187,8 @@ export function PleaseAdviseGame() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [sessionLength, setSessionLength] = useState<SessionLength>(10);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const announcedThresholdsRef = useRef(new Set<number>());
+  const announcementRef = useRef<HTMLParagraphElement | null>(null);
 
   const currentEmail = deck[round];
   const emailsReviewed = answers.length;
@@ -205,10 +207,13 @@ export function PleaseAdviseGame() {
   }, [answers]);
 
   useEffect(() => {
-    const storedBest = Number(window.localStorage.getItem(PERSONAL_BEST_KEY) ?? 0);
-    if (Number.isFinite(storedBest)) setPersonalBest(storedBest);
-    const storedSound = window.localStorage.getItem(SOUND_PREFERENCE_KEY);
-    if (storedSound !== null) setSoundEnabled(storedSound === "on");
+    const frame = window.requestAnimationFrame(() => {
+      const storedBest = Number(window.localStorage.getItem(PERSONAL_BEST_KEY) ?? 0);
+      if (Number.isFinite(storedBest)) setPersonalBest(storedBest);
+      const storedSound = window.localStorage.getItem(SOUND_PREFERENCE_KEY);
+      if (storedSound !== null) setSoundEnabled(storedSound === "on");
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const stopTimer = useCallback(() => {
@@ -287,6 +292,27 @@ export function PleaseAdviseGame() {
 
     return stopTimer;
   }, [recordChoice, screen, stopTimer]);
+
+  useEffect(() => {
+    if (screen !== "playing" || !currentEmail) return;
+    announcedThresholdsRef.current.clear();
+    if (announcementRef.current) {
+      announcementRef.current.textContent = `Email ${currentEmailNumber} of ${sessionLength}. ${Math.ceil(roundSeconds)} seconds remaining.`;
+    }
+  }, [currentEmail, currentEmailNumber, roundSeconds, screen, sessionLength]);
+
+  useEffect(() => {
+    if (screen !== "playing") return;
+    for (const threshold of [5, 2]) {
+      if (timeLeft <= threshold && !announcedThresholdsRef.current.has(threshold)) {
+        announcedThresholdsRef.current.add(threshold);
+        if (announcementRef.current) {
+          announcementRef.current.textContent = `${threshold} seconds remaining.`;
+        }
+        break;
+      }
+    }
+  }, [screen, timeLeft]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -414,7 +440,7 @@ export function PleaseAdviseGame() {
     context.fillText("POINTS", 116, 627);
 
     try {
-      const clickImage = await loadCanvasImage("/images/click/Click-Profile.png");
+      const clickImage = await loadCanvasImage("/images/click/Click-Profile.webp");
       context.save();
       context.beginPath();
       context.arc(858, 562, 104, 0, Math.PI * 2);
@@ -564,11 +590,12 @@ export function PleaseAdviseGame() {
   const renderClick = (mood: "calm" | "worried" | "proud") => (
     <div
       className={`${styles.clickPortrait} ${styles[mood]}`}
+      role="img"
       aria-label={`Click looks ${mood}.`}
     >
       <Image
-        src="/images/click/Click-Profile.png"
-        alt="Click, the Nice Little Click Lab mascot, wearing goggles and a cursor tag"
+        src="/images/click/Click-Profile.webp"
+        alt=""
         width={640}
         height={640}
         className={styles.clickPortraitImage}
@@ -578,7 +605,7 @@ export function PleaseAdviseGame() {
   );
 
   return (
-    <main className={styles.pageShell}>
+    <div className={styles.pageShell}>
       <div className={styles.labLabel}>CLICK NO. 003 · PLAYABLE EXPERIMENT</div>
 
       {screen === "start" && (
@@ -617,7 +644,7 @@ export function PleaseAdviseGame() {
             <button className={styles.primaryButton} type="button" onClick={startGame}>
               Open the inbox
             </button>
-            <button className={`${styles.soundToggle} ${styles.startSoundToggle}`} type="button" onClick={toggleSound} aria-pressed={soundEnabled}>
+            <button className={`${styles.soundToggle} ${styles.startSoundToggle}`} type="button" onClick={toggleSound} aria-pressed={soundEnabled} aria-label={soundEnabled ? "Turn sound off" : "Turn sound on"}>
               <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
               Sound {soundEnabled ? "on" : "off"}
             </button>
@@ -642,6 +669,7 @@ export function PleaseAdviseGame() {
 
       {(screen === "playing" || screen === "feedback") && currentEmail && (
         <section className={styles.gameScreen}>
+          <p ref={announcementRef} className={styles.visuallyHidden} aria-live="polite" aria-atomic="true" />
           <header className={styles.gameHeader}>
             <div>
               <p className={styles.eyebrow}>Choose wisely. Protect your job.</p>
@@ -649,12 +677,12 @@ export function PleaseAdviseGame() {
             </div>
             <div>
               <div className={styles.hud}>
-                <div><span>Time</span><strong className={timeLeft < 2.5 ? styles.dangerText : ""}>{timeLeft.toFixed(1)}</strong></div>
+                <div><span>Time</span><strong aria-hidden="true" className={timeLeft < 2.5 ? styles.dangerText : ""}>{timeLeft.toFixed(1)}</strong></div>
                 <div><span>Email</span><strong>{currentEmailNumber}/{sessionLength}</strong></div>
                 <div><span>Mistakes</span><strong>{mistakes}/{MAX_MISTAKES}</strong></div>
                 <div><span>Score</span><strong>{score.toLocaleString()}</strong></div>
               </div>
-              <button className={styles.soundToggle} type="button" onClick={toggleSound} aria-pressed={soundEnabled}>
+              <button className={styles.soundToggle} type="button" onClick={toggleSound} aria-pressed={soundEnabled} aria-label={soundEnabled ? "Turn sound off" : "Turn sound on"}>
                 <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
                 Sound {soundEnabled ? "on" : "off"}
               </button>
@@ -665,7 +693,7 @@ export function PleaseAdviseGame() {
             <span style={{ width: `${Math.max(0, (timeLeft / roundSeconds) * 100)}%` }} />
           </div>
 
-          <article className={styles.emailCard} aria-live="polite">
+          <article className={styles.emailCard}>
             <div className={styles.avatar}>{currentEmail.from.charAt(0).toUpperCase()}</div>
             <dl className={styles.emailMeta}>
               <div><dt>From</dt><dd>{currentEmail.from}</dd></div>
@@ -688,7 +716,7 @@ export function PleaseAdviseGame() {
             </button>
           </div>
 
-          <div className={`${styles.feedbackPanel} ${lastAnswer?.correct ? styles.feedbackCorrect : styles.feedbackWrong}`} aria-live="assertive">
+          <div className={`${styles.feedbackPanel} ${lastAnswer?.correct ? styles.feedbackCorrect : styles.feedbackWrong}`} aria-live="polite" aria-atomic="true">
             {screen === "feedback" && lastAnswer ? (
               <>
                 <strong>{lastAnswer.correct ? "Good call." : "Oh, dear."}</strong>
@@ -767,7 +795,7 @@ export function PleaseAdviseGame() {
             </p>
 
             <div className={styles.resultsSoundToggle}>
-              <button className={styles.soundToggle} type="button" onClick={toggleSound} aria-pressed={soundEnabled}>
+              <button className={styles.soundToggle} type="button" onClick={toggleSound} aria-pressed={soundEnabled} aria-label={soundEnabled ? "Turn sound off" : "Turn sound on"}>
                 <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
                 Sound {soundEnabled ? "on" : "off"}
               </button>
@@ -780,6 +808,6 @@ export function PleaseAdviseGame() {
           </div>
         </section>
       )}
-    </main>
+    </div>
   );
 }

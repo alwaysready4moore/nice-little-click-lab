@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ROLE_SALARIES } from "@/data/role-salaries";
 
 type MeetingStatus = "ready" | "running" | "paused" | "ended";
@@ -129,16 +129,16 @@ export function MeetingCostTicker() {
     teamHourlyCostRef.current = teamHourlyCost;
   }, [teamHourlyCost]);
 
-  function settleRunningCost(now = Date.now()) {
+  const settleRunningCost = useCallback((now = Date.now()) => {
     if (status !== "running" || lastCostUpdateRef.current === null) return;
 
     accumulatedCostRef.current +=
       (teamHourlyCostRef.current * (now - lastCostUpdateRef.current)) / 3_600_000;
     lastCostUpdateRef.current = now;
     setCurrentCost(accumulatedCostRef.current);
-  }
+  }, [status]);
 
-  function finalizeMeeting(now = Date.now(), forcedElapsedMs?: number) {
+  const finalizeMeeting = useCallback((now = Date.now(), forcedElapsedMs?: number) => {
     if (status === "running") {
       const startedAt = startedAtRef.current;
       settleRunningCost(now);
@@ -156,7 +156,7 @@ export function MeetingCostTicker() {
     setElapsedMs(accumulatedMsRef.current);
     setCurrentCost(accumulatedCostRef.current);
     setStatus("ended");
-  }
+  }, [settleRunningCost, status]);
 
   useEffect(() => {
     if (status !== "running") return;
@@ -187,9 +187,9 @@ export function MeetingCostTicker() {
     };
 
     updateTicker();
-    const intervalId = window.setInterval(updateTicker, 250);
+    const intervalId = window.setInterval(updateTicker, 500);
     return () => window.clearInterval(intervalId);
-  }, [status]);
+  }, [finalizeMeeting, status]);
 
   function updateParticipants(updater: (current: Participant[]) => Participant[]) {
     settleRunningCost();
