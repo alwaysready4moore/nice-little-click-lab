@@ -644,3 +644,68 @@
     text-align: center;
   }
 }
+
+/* The performance report uses Mimosa throughout, including labels and figures. */
+.resultsCard,
+.resultsCard button,
+.resultsCard dt,
+.resultsCard dd,
+.resultsCard span,
+.resultsCard small,
+.resultsCard strong,
+.resultsCard p,
+.resultsCard h2 {
+  font-family: var(--font-handwritten, "Mimosa", "Segoe Print", cursive);
+}
+
+.sessionPicker {
+  margin: 1.25rem 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.sessionPicker legend {
+  margin-bottom: 0.65rem;
+  font-family: var(--font-handwritten), cursive;
+  font-size: 1.2rem;
+}
+
+.sessionPicker > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.sessionPicker button {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line, #d9cdb9);
+  border-radius: 16px;
+  background: rgba(255, 250, 240, 0.68);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sessionPicker button strong {
+  font-family: var(--font-handwritten), cursive;
+  font-size: 1.15rem;
+}
+
+.sessionPicker button span {
+  font-size: 0.76rem;
+  opacity: 0.72;
+}
+
+.sessionPicker button.sessionChoiceActive {
+  border-color: #d86f5b;
+  background: rgba(216, 111, 91, 0.11);
+  box-shadow: 0 0 0 2px rgba(216, 111, 91, 0.13);
+}
+
+@media (max-width: 560px) {
+  .sessionPicker > div {
+    grid-template-columns: 1fr;
+  }
+}

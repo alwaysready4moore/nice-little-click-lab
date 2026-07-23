@@ -20,6 +20,8 @@ type AnswerRecord = {
 
 const STARTING_TIME = 8;
 const MAX_MISTAKES = 3;
+const SESSION_LENGTHS = [10, 20] as const;
+type SessionLength = (typeof SESSION_LENGTHS)[number];
 const PERSONAL_BEST_KEY = "nlcl-please-advise-best";
 const SOUND_PREFERENCE_KEY = "nlcl-please-advise-sound";
 
@@ -146,6 +148,31 @@ function wrapCanvasText(
   return lines;
 }
 
+function setMimosaCanvasFont(
+  context: CanvasRenderingContext2D,
+  size: number,
+  weight = 400,
+) {
+  context.font = `${weight} ${size}px "Mimosa", "Segoe Print", cursive`;
+}
+
+function fitMimosaCanvasText(
+  context: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  startingSize: number,
+  minimumSize = 17,
+  weight = 700,
+) {
+  let size = startingSize;
+  setMimosaCanvasFont(context, size, weight);
+  while (context.measureText(text).width > maxWidth && size > minimumSize) {
+    size -= 1;
+    setMimosaCanvasFont(context, size, weight);
+  }
+  return size;
+}
+
 export function PleaseAdviseGame() {
   const [screen, setScreen] = useState<Screen>("start");
   const [deck, setDeck] = useState<PanicEmail[]>([]);
@@ -158,6 +185,7 @@ export function PleaseAdviseGame() {
   const [personalBest, setPersonalBest] = useState(0);
   const [shareMessage, setShareMessage] = useState("");
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [sessionLength, setSessionLength] = useState<SessionLength>(10);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentEmail = deck[round];
@@ -167,6 +195,7 @@ export function PleaseAdviseGame() {
   const rank = getRank(score, survived);
   const employmentStatus = getEmploymentStatus(mistakes, survived);
   const roundSeconds = getRoundTime(round);
+  const currentEmailNumber = Math.min(round + 1, sessionLength);
 
   const notableIncident = useMemo(() => {
     const wrongAnswer = [...answers].reverse().find((answer) => !answer.correct);
@@ -274,7 +303,7 @@ export function PleaseAdviseGame() {
   const startGame = () => {
     playSoundEffect("open", soundEnabled);
     stopTimer();
-    setDeck(shuffle(pleaseAdviseEmails));
+    setDeck(shuffle(pleaseAdviseEmails).slice(0, sessionLength));
     setRound(0);
     setScore(0);
     setMistakes(0);
@@ -300,6 +329,7 @@ export function PleaseAdviseGame() {
     if (!context) throw new Error("Scorecard canvas could not be created.");
 
     await document.fonts?.ready;
+    await document.fonts?.load('48px "Mimosa"');
 
     const drawContainedImage = (
       image: HTMLImageElement,
@@ -329,15 +359,15 @@ export function PleaseAdviseGame() {
     context.textAlign = "center";
     context.textBaseline = "alphabetic";
     context.fillStyle = "#2f2a25";
-    context.font = '400 48px "Favorite Child", "Segoe Print", cursive';
+    setMimosaCanvasFont(context, 48);
     context.fillText("nice little click", 520, 105);
     context.fillStyle = "#8b481c";
-    context.font = "800 21px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 21, 800);
     context.fillText("LAB", 705, 104);
     context.textAlign = "left";
 
     context.fillStyle = "#d86f5b";
-    context.font = '400 112px "Mimosa", "Segoe Print", cursive';
+    setMimosaCanvasFont(context, 112);
     context.textAlign = "center";
     context.fillText("Please Advise", 540, 225);
     context.textAlign = "left";
@@ -351,11 +381,11 @@ export function PleaseAdviseGame() {
     context.stroke();
 
     context.fillStyle = "#657f74";
-    context.font = "700 28px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 28, 700);
     context.fillText("EMPLOYMENT STATUS", 112, 345);
 
     context.fillStyle = "#2f2a25";
-    context.font = '400 72px "Mimosa", "Segoe Print", cursive';
+    setMimosaCanvasFont(context, 72);
     const statusLines = wrapCanvasText(context, employmentStatus, 590).slice(0, 2);
     statusLines.forEach((line, index) => context.fillText(line, 112, 420 + index * 66));
 
@@ -368,19 +398,19 @@ export function PleaseAdviseGame() {
     context.strokeRect(0, 0, 150, 82);
     context.setLineDash([]);
     context.fillStyle = "rgba(216, 111, 91, 0.78)";
-    context.font = "800 23px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 23, 800);
     context.textAlign = "center";
     context.fillText("REVIEWED", 75, 34);
-    context.font = "700 20px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 20, 700);
     context.fillText("✓ CLICK", 75, 64);
     context.restore();
     context.textAlign = "left";
 
     context.fillStyle = "#d86f5b";
-    context.font = "800 108px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 108, 800);
     context.fillText(score.toLocaleString(), 112, 585);
     context.fillStyle = "#756b60";
-    context.font = "600 27px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 27, 600);
     context.fillText("POINTS", 116, 627);
 
     try {
@@ -399,10 +429,10 @@ export function PleaseAdviseGame() {
       context.arc(858, 562, 106, 0, Math.PI * 2);
       context.stroke();
       context.fillStyle = "#756b60";
-      context.font = "600 21px system-ui, sans-serif";
+      setMimosaCanvasFont(context, 21, 600);
       context.textAlign = "center";
       context.fillText("Reviewed by Click", 858, 696);
-      context.font = "500 18px system-ui, sans-serif";
+      setMimosaCanvasFont(context, 18, 500);
       context.fillText("Office Quality Assurance", 858, 723);
       context.textAlign = "left";
     } catch {
@@ -410,7 +440,7 @@ export function PleaseAdviseGame() {
     }
 
     const stats = [
-      ["Final rank", rank],
+      ["Final verdict", rank],
       ["Emails reviewed", String(emailsReviewed)],
       ["Correct decisions", String(survived)],
       ["Mistakes made", `${mistakes} / ${emailsReviewed}`],
@@ -426,11 +456,19 @@ export function PleaseAdviseGame() {
       const y = 785 + row * 82;
 
       context.fillStyle = "#756b60";
-      context.font = "600 25px system-ui, sans-serif";
+      setMimosaCanvasFont(context, 22, 600);
       context.fillText(label, x, y);
       context.fillStyle = "#2f2a25";
-      context.font = "700 28px system-ui, sans-serif";
       context.textAlign = "right";
+      const valueStartX = x + 160;
+      fitMimosaCanvasText(
+        context,
+        value,
+        Math.max(120, valueX - valueStartX),
+        27,
+        17,
+        700,
+      );
       context.fillText(value, valueX, y);
       context.textAlign = "left";
 
@@ -451,16 +489,16 @@ export function PleaseAdviseGame() {
     context.stroke();
 
     context.fillStyle = "#657f74";
-    context.font = "800 23px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 23, 800);
     context.fillText("CLICK'S NOTES", 140, 1082);
 
     context.fillStyle = "#2f2a25";
-    context.font = "600 27px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 27, 600);
     const incidentLines = wrapCanvasText(context, notableIncident, 790).slice(0, 3);
     incidentLines.forEach((line, index) => context.fillText(line, 140, 1125 + index * 34));
 
     context.fillStyle = "#657f74";
-    context.font = "700 26px system-ui, sans-serif";
+    setMimosaCanvasFont(context, 26, 700);
     context.fillText("nicelittleclick.com", 84, 1302);
     context.textAlign = "right";
     context.fillText("Run by Click. Supervised loosely.", 996, 1302);
@@ -492,7 +530,7 @@ export function PleaseAdviseGame() {
 
   const shareResult = async () => {
     playSoundEffect("button", soundEnabled);
-    const text = `I scored ${score.toLocaleString()} points in Please Advise, survived ${survived} emails, and remain ${employmentStatus.toLowerCase()}. Can you beat me?`;
+    const text = `I scored ${score.toLocaleString()} points in Please Advise, reviewed ${emailsReviewed} emails, and finished with “${employmentStatus}.” Can you beat me?`;
 
     try {
       const blob = await createScorecardBlob();
@@ -558,6 +596,24 @@ export function PleaseAdviseGame() {
               <div><span>3</span><strong>Spam / Ignore</strong><small>No response belongs here.</small></div>
             </div>
 
+            <fieldset className={styles.sessionPicker}>
+              <legend>How long is this shift?</legend>
+              <div>
+                {SESSION_LENGTHS.map((length) => (
+                  <button
+                    key={length}
+                    type="button"
+                    className={sessionLength === length ? styles.sessionChoiceActive : ""}
+                    onClick={() => setSessionLength(length)}
+                    aria-pressed={sessionLength === length}
+                  >
+                    <strong>{length} emails</strong>
+                    <span>{length === 10 ? "A quick inbox emergency" : "The full office experience"}</span>
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
             <button className={styles.primaryButton} type="button" onClick={startGame}>
               Open the inbox
             </button>
@@ -565,7 +621,7 @@ export function PleaseAdviseGame() {
               <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
               Sound {soundEnabled ? "on" : "off"}
             </button>
-            <p className={styles.smallPrint}>Three mistakes and HR would like a word.</p>
+            <p className={styles.smallPrint}>{sessionLength} emails. Three mistakes and HR would like a word.</p>
           </div>
 
           <aside className={styles.startVisual}>
@@ -594,7 +650,7 @@ export function PleaseAdviseGame() {
             <div>
               <div className={styles.hud}>
                 <div><span>Time</span><strong className={timeLeft < 2.5 ? styles.dangerText : ""}>{timeLeft.toFixed(1)}</strong></div>
-                <div><span>Survived</span><strong>{survived}</strong></div>
+                <div><span>Email</span><strong>{currentEmailNumber}/{sessionLength}</strong></div>
                 <div><span>Mistakes</span><strong>{mistakes}/{MAX_MISTAKES}</strong></div>
                 <div><span>Score</span><strong>{score.toLocaleString()}</strong></div>
               </div>
@@ -635,11 +691,11 @@ export function PleaseAdviseGame() {
           <div className={`${styles.feedbackPanel} ${lastAnswer?.correct ? styles.feedbackCorrect : styles.feedbackWrong}`} aria-live="assertive">
             {screen === "feedback" && lastAnswer ? (
               <>
-                <strong>{lastAnswer.correct ? "Correct." : "Inbox incident."}</strong>
+                <strong>{lastAnswer.correct ? "Good call." : "Oh, dear."}</strong>
                 <span>{lastAnswer.feedback}</span>
               </>
             ) : (
-              <span>Tip: If in doubt, check who actually needs the answer.</span>
+              <span>Tip: Picture the exact people who need this. Everyone else deserves peace.</span>
             )}
           </div>
 
@@ -667,7 +723,7 @@ export function PleaseAdviseGame() {
                 <p className={styles.statusLabel}>Employment status</p>
                 <h2>{employmentStatus}</h2>
                 <div className={styles.rankBadge}>
-                  <span>Final rank</span>
+                  <span>Final verdict</span>
                   <strong>{rank}</strong>
                 </div>
               </div>
