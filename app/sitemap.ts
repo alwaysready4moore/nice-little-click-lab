@@ -32,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return pages.map(({ path, changeFrequency, priority }) => ({
     url: `${siteConfig.url}${path}`,
-    lastModified: new Date("2026-07-22"),
+    lastModified: new Date(siteConfig.lastUpdated),
     changeFrequency,
     priority,
   }));

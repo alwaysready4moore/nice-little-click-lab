@@ -3,7 +3,7 @@ import { CrosswordSuccess } from "./CrosswordSuccess";
 import styles from "./success.module.css";
 
 export const metadata = {
-  title: "Your crossword is ready | Nice Little Click Lab",
+  title: "Your crossword is ready",
   robots: { index: false, follow: false },
 };
 

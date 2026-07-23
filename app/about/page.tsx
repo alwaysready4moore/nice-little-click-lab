@@ -1,11 +1,49 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbStructuredData, organizationId } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "About the Lab",
   description:
-    "Nice Little Click Lab makes focused, thoughtful web tools, games, and gifts for oddly specific moments.",
+    "Learn how Nice Little Click Lab makes small, focused web tools, games, and personalized gifts without accounts, clutter, or bloated software.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About Nice Little Click Lab",
+    description:
+      "A small web-product studio making useful, playful internet things for oddly specific moments.",
+    url: "/about",
+    type: "website",
+    images: [siteConfig.socialImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Nice Little Click Lab",
+    description:
+      "A small web-product studio making useful, playful internet things for oddly specific moments.",
+    images: [siteConfig.socialImage],
+  },
+};
+
+const aboutStructuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "AboutPage",
+      name: "About Nice Little Click Lab",
+      url: `${siteConfig.url}/about`,
+      description:
+        "How Nice Little Click Lab designs small web tools, games, and personalized digital gifts.",
+      about: { "@id": organizationId },
+      isPartOf: { "@id": `${siteConfig.url}/#website` },
+    },
+    breadcrumbStructuredData([
+      { name: "Home", path: "/" },
+      { name: "About", path: "/about" },
+    ]),
+  ],
 };
 
 const clickPrinciples = [
@@ -19,7 +57,9 @@ const clickPrinciples = [
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-24 pt-16 sm:pt-20">
+    <>
+      <JsonLd data={aboutStructuredData} />
+      <div className="mx-auto max-w-6xl px-6 pb-24 pt-16 sm:pt-20">
       <section className="max-w-4xl">
         <p className="lab-label">About the Lab</p>
 
@@ -196,6 +236,7 @@ export default function AboutPage() {
           Made with curiosity. Built without bloat.
         </p>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

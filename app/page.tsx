@@ -3,10 +3,25 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Tiny tools for oddly specific moments",
+  title: "Tiny Web Tools, Games, and Personalized Gifts",
   description:
-    "Explore useful, delightful web tools, games, and gifts from Nice Little Click Lab.",
+    "Try free browser tools and games or make a personalized crossword gift. Nice Little Click Lab builds small web products for oddly specific moments.",
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "Tiny Web Tools, Games, and Personalized Gifts",
+    description:
+      "Free browser tools, tiny games, and personalized digital gifts from Nice Little Click Lab.",
+    url: "/",
+    type: "website",
+    images: ["/images/social/nice-little-click-lab-og.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tiny Web Tools, Games, and Personalized Gifts",
+    description:
+      "Free browser tools, tiny games, and personalized digital gifts for oddly specific moments.",
+    images: ["/images/social/nice-little-click-lab-og.png"],
+  },
 };
 
 export default function HomePage() {

@@ -2,7 +2,17 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/lib/site";
+
+const verification: Metadata["verification"] = {
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : {}),
+  ...(process.env.BING_SITE_VERIFICATION
+    ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
+    : {}),
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -12,22 +22,10 @@ export const metadata: Metadata = {
     template: "%s | Nice Little Click Lab",
   },
   description: siteConfig.description,
-  keywords: [
-    "tiny web tools",
-    "useful web apps",
-    "online tools",
-    "meeting cost calculator",
-    "meeting cost ticker",
-    "personalized gifts",
-    "custom crossword gift",
-    "Nice Little Click Lab",
-  ],
   publisher: siteConfig.name,
   category: "technology",
   referrer: "origin-when-cross-origin",
-  alternates: {
-    canonical: "/",
-  },
+  verification,
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
@@ -69,17 +67,43 @@ export const metadata: Metadata = {
 
 const websiteStructuredData = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: siteConfig.name,
-  alternateName: siteConfig.shortName,
-  url: siteConfig.url,
-  description: siteConfig.longDescription,
-  publisher: {
-    "@type": "Organization",
-    name: siteConfig.name,
-    url: siteConfig.url,
-    logo: `${siteConfig.url}/images/click/03-badge-circle-mark.png`,
-  },
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteConfig.url}/#organization`,
+      name: siteConfig.name,
+      alternateName: siteConfig.shortName,
+      url: siteConfig.url,
+      description: siteConfig.longDescription,
+      email: siteConfig.email,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteConfig.url}/images/click/03-badge-circle-mark.png`,
+      },
+      parentOrganization: {
+        "@type": "Organization",
+        name: siteConfig.operator,
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: siteConfig.email,
+        availableLanguage: "English",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteConfig.url}/#website`,
+      name: siteConfig.name,
+      alternateName: siteConfig.shortName,
+      url: siteConfig.url,
+      description: siteConfig.longDescription,
+      inLanguage: siteConfig.locale,
+      publisher: {
+        "@id": `${siteConfig.url}/#organization`,
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -94,15 +118,7 @@ export default function RootLayout({
         <SiteHeader />
         <main id="main-content">{children}</main>
         <SiteFooter />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteStructuredData).replace(
-              /</g,
-              "\\u003c",
-            ),
-          }}
-        />
+        <JsonLd data={websiteStructuredData} />
       </body>
     </html>
   );
