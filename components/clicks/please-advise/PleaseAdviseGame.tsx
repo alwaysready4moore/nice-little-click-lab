@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   pleaseAdviseEmails,
@@ -20,6 +21,72 @@ type AnswerRecord = {
 const STARTING_TIME = 8;
 const MAX_MISTAKES = 3;
 const PERSONAL_BEST_KEY = "nlcl-please-advise-best";
+const SOUND_PREFERENCE_KEY = "nlcl-please-advise-sound";
+
+type SoundEffect = "open" | "correct" | "wrong" | "game-over" | "button";
+
+const soundFiles: Record<SoundEffect, string> = {
+  open: "/sounds/please-advise/inbox-open.mp3",
+  correct: "/sounds/please-advise/correct.mp3",
+  wrong: "/sounds/please-advise/wrong.mp3",
+  "game-over": "/sounds/please-advise/game-over.mp3",
+  button: "/sounds/please-advise/button.mp3",
+};
+
+function playFallbackSound(kind: SoundEffect) {
+  const AudioContextClass = window.AudioContext ??
+    (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  const context = new AudioContextClass();
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const now = context.currentTime;
+  const settings: Record<SoundEffect, [number, number, OscillatorType]> = {
+    open: [420, 620, "sine"],
+    correct: [620, 880, "sine"],
+    wrong: [230, 150, "triangle"],
+    "game-over": [260, 110, "sawtooth"],
+    button: [520, 480, "sine"],
+  };
+  const [startFrequency, endFrequency, type] = settings[kind];
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(startFrequency, now);
+  oscillator.frequency.exponentialRampToValueAtTime(Math.max(60, endFrequency), now + 0.16);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(kind === "wrong" ? 0.025 : kind === "game-over" ? 0.045 : 0.07, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + 0.2);
+  oscillator.addEventListener("ended", () => void context.close());
+}
+
+function playSoundEffect(kind: SoundEffect, enabled: boolean) {
+  if (!enabled) return;
+  const audio = new Audio(soundFiles[kind]);
+  audio.preload = "auto";
+  audio.volume = kind === "wrong" ? 0.16 : kind === "game-over" ? 0.28 : 0.34;
+  let usedFallback = false;
+  const fallback = () => {
+    if (usedFallback) return;
+    usedFallback = true;
+    playFallbackSound(kind);
+  };
+  audio.addEventListener("error", fallback, { once: true });
+  void audio.play().catch(fallback);
+}
+
+function loadCanvasImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new window.Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Could not load image: ${src}`));
+    image.src = src;
+  });
+}
 
 const choiceLabels: Record<ReplyChoice, string> = {
   reply: "Reply",
@@ -46,7 +113,7 @@ function getRank(score: number, survived: number) {
   if (survived >= 12 || score >= 1900) return "Cautious Correspondent";
   if (survived >= 7 || score >= 950) return "Inbox Professional";
   if (survived >= 3) return "Probationary Responder";
-  return "Reply-All Menace";
+  return "Inbox Liability";
 }
 
 function getEmploymentStatus(mistakes: number, survived: number) {
@@ -90,10 +157,13 @@ export function PleaseAdviseGame() {
   const [lastAnswer, setLastAnswer] = useState<AnswerRecord | null>(null);
   const [personalBest, setPersonalBest] = useState(0);
   const [shareMessage, setShareMessage] = useState("");
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentEmail = deck[round];
+  const emailsReviewed = answers.length;
   const survived = answers.filter((answer) => answer.correct).length;
+  const accuracy = emailsReviewed > 0 ? Math.round((survived / emailsReviewed) * 100) : 0;
   const rank = getRank(score, survived);
   const employmentStatus = getEmploymentStatus(mistakes, survived);
   const roundSeconds = getRoundTime(round);
@@ -108,6 +178,8 @@ export function PleaseAdviseGame() {
   useEffect(() => {
     const storedBest = Number(window.localStorage.getItem(PERSONAL_BEST_KEY) ?? 0);
     if (Number.isFinite(storedBest)) setPersonalBest(storedBest);
+    const storedSound = window.localStorage.getItem(SOUND_PREFERENCE_KEY);
+    if (storedSound !== null) setSoundEnabled(storedSound === "on");
   }, []);
 
   const stopTimer = useCallback(() => {
@@ -120,13 +192,14 @@ export function PleaseAdviseGame() {
   const endGame = useCallback(
     (finalScore: number) => {
       stopTimer();
+      playSoundEffect("game-over", soundEnabled);
       setScreen("results");
       if (finalScore > personalBest) {
         setPersonalBest(finalScore);
         window.localStorage.setItem(PERSONAL_BEST_KEY, String(finalScore));
       }
     },
-    [personalBest, stopTimer],
+    [personalBest, soundEnabled, stopTimer],
   );
 
   const recordChoice = useCallback(
@@ -147,6 +220,7 @@ export function PleaseAdviseGame() {
       const speedBonus = Math.max(0, Math.round(timeLeft * 18));
       const updatedScore = correct ? score + 100 + speedBonus + round * 4 : Math.max(0, score - 40);
 
+      playSoundEffect(correct ? "correct" : "wrong", soundEnabled);
       setLastAnswer(record);
       setAnswers((previous) => [...previous, record]);
       setMistakes(updatedMistakes);
@@ -164,7 +238,7 @@ export function PleaseAdviseGame() {
         setScreen("playing");
       }, 1350);
     },
-    [currentEmail, deck.length, endGame, mistakes, round, score, screen, stopTimer, timeLeft],
+    [currentEmail, deck.length, endGame, mistakes, round, score, screen, soundEnabled, stopTimer, timeLeft],
   );
 
   useEffect(() => {
@@ -198,6 +272,7 @@ export function PleaseAdviseGame() {
   }, [recordChoice, screen]);
 
   const startGame = () => {
+    playSoundEffect("open", soundEnabled);
     stopTimer();
     setDeck(shuffle(pleaseAdviseEmails));
     setRound(0);
@@ -210,6 +285,13 @@ export function PleaseAdviseGame() {
     setScreen("playing");
   };
 
+  const toggleSound = () => {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    window.localStorage.setItem(SOUND_PREFERENCE_KEY, next ? "on" : "off");
+    if (next) playSoundEffect("button", true);
+  };
+
   const createScorecardBlob = async () => {
     const canvas = document.createElement("canvas");
     canvas.width = 1080;
@@ -217,72 +299,171 @@ export function PleaseAdviseGame() {
     const context = canvas.getContext("2d");
     if (!context) throw new Error("Scorecard canvas could not be created.");
 
+    await document.fonts?.ready;
+
+    const drawContainedImage = (
+      image: HTMLImageElement,
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+    ) => {
+      const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+      const drawWidth = image.naturalWidth * scale;
+      const drawHeight = image.naturalHeight * scale;
+      context.drawImage(
+        image,
+        x + (width - drawWidth) / 2,
+        y + (height - drawHeight) / 2,
+        drawWidth,
+        drawHeight,
+      );
+    };
+
     context.fillStyle = "#f7f0df";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Draw the compact Lab wordmark directly on the canvas.
+    // Using the full raster logo here caused a browser-specific black strip
+    // to appear at the image boundary in some downloaded reports.
+    context.textAlign = "center";
+    context.textBaseline = "alphabetic";
     context.fillStyle = "#2f2a25";
-    context.font = "700 46px system-ui, sans-serif";
-    context.fillText("NICE LITTLE CLICK LAB", 84, 100);
+    context.font = '400 48px "Favorite Child", "Segoe Print", cursive';
+    context.fillText("nice little click", 520, 105);
+    context.fillStyle = "#8b481c";
+    context.font = "800 21px system-ui, sans-serif";
+    context.fillText("LAB", 705, 104);
+    context.textAlign = "left";
 
     context.fillStyle = "#d86f5b";
-    context.font = "800 84px Georgia, serif";
-    context.fillText("Please Advise", 84, 210);
+    context.font = '400 112px "Mimosa", "Segoe Print", cursive';
+    context.textAlign = "center";
+    context.fillText("Please Advise", 540, 225);
+    context.textAlign = "left";
 
     context.fillStyle = "#fffaf0";
     context.strokeStyle = "#dacdb8";
     context.lineWidth = 3;
     context.beginPath();
-    context.roundRect(64, 270, 952, 900, 42);
+    context.roundRect(64, 265, 952, 980, 42);
     context.fill();
     context.stroke();
 
     context.fillStyle = "#657f74";
-    context.font = "700 34px system-ui, sans-serif";
-    context.fillText("EMPLOYMENT STATUS", 112, 360);
+    context.font = "700 28px system-ui, sans-serif";
+    context.fillText("EMPLOYMENT STATUS", 112, 345);
+
     context.fillStyle = "#2f2a25";
-    context.font = "800 64px Georgia, serif";
-    context.fillText(employmentStatus, 112, 440);
+    context.font = '400 72px "Mimosa", "Segoe Print", cursive';
+    const statusLines = wrapCanvasText(context, employmentStatus, 590).slice(0, 2);
+    statusLines.forEach((line, index) => context.fillText(line, 112, 420 + index * 66));
+
+    context.save();
+    context.translate(815, 360);
+    context.rotate(-0.08);
+    context.strokeStyle = "rgba(216, 111, 91, 0.6)";
+    context.lineWidth = 5;
+    context.setLineDash([14, 10]);
+    context.strokeRect(0, 0, 150, 82);
+    context.setLineDash([]);
+    context.fillStyle = "rgba(216, 111, 91, 0.78)";
+    context.font = "800 23px system-ui, sans-serif";
+    context.textAlign = "center";
+    context.fillText("REVIEWED", 75, 34);
+    context.font = "700 20px system-ui, sans-serif";
+    context.fillText("✓ CLICK", 75, 64);
+    context.restore();
+    context.textAlign = "left";
 
     context.fillStyle = "#d86f5b";
     context.font = "800 108px system-ui, sans-serif";
-    context.fillText(score.toLocaleString(), 112, 590);
+    context.fillText(score.toLocaleString(), 112, 585);
     context.fillStyle = "#756b60";
-    context.font = "500 30px system-ui, sans-serif";
-    context.fillText("POINTS", 116, 635);
+    context.font = "600 27px system-ui, sans-serif";
+    context.fillText("POINTS", 116, 627);
+
+    try {
+      const clickImage = await loadCanvasImage("/images/click/Click-Profile.png");
+      context.save();
+      context.beginPath();
+      context.arc(858, 562, 104, 0, Math.PI * 2);
+      context.clip();
+      context.fillStyle = "#f7f0df";
+      context.fillRect(754, 458, 208, 208);
+      drawContainedImage(clickImage, 754, 458, 208, 208);
+      context.restore();
+      context.strokeStyle = "#dacdb8";
+      context.lineWidth = 4;
+      context.beginPath();
+      context.arc(858, 562, 106, 0, Math.PI * 2);
+      context.stroke();
+      context.fillStyle = "#756b60";
+      context.font = "600 21px system-ui, sans-serif";
+      context.textAlign = "center";
+      context.fillText("Reviewed by Click", 858, 696);
+      context.font = "500 18px system-ui, sans-serif";
+      context.fillText("Office Quality Assurance", 858, 723);
+      context.textAlign = "left";
+    } catch {
+      // The report remains downloadable even if the mascot asset cannot load.
+    }
 
     const stats = [
-      ["Rank", rank],
-      ["Emails survived", String(survived)],
-      ["Mistakes made", `${mistakes} / ${MAX_MISTAKES}`],
+      ["Final rank", rank],
+      ["Emails reviewed", String(emailsReviewed)],
+      ["Correct decisions", String(survived)],
+      ["Mistakes made", `${mistakes} / ${emailsReviewed}`],
+      ["Accuracy", `${accuracy}%`],
       ["Personal best", Math.max(score, personalBest).toLocaleString()],
     ];
 
     stats.forEach(([label, value], index) => {
-      const y = 730 + index * 86;
+      const column = index % 2;
+      const row = Math.floor(index / 2);
+      const x = column === 0 ? 116 : 575;
+      const valueX = column === 0 ? 500 : 950;
+      const y = 785 + row * 82;
+
       context.fillStyle = "#756b60";
-      context.font = "600 29px system-ui, sans-serif";
-      context.fillText(label, 116, y);
+      context.font = "600 25px system-ui, sans-serif";
+      context.fillText(label, x, y);
       context.fillStyle = "#2f2a25";
-      context.font = "700 31px system-ui, sans-serif";
+      context.font = "700 28px system-ui, sans-serif";
       context.textAlign = "right";
-      context.fillText(value, 950, y);
+      context.fillText(value, valueX, y);
       context.textAlign = "left";
+
+      context.strokeStyle = "#e3d8c6";
+      context.lineWidth = 2;
+      context.beginPath();
+      context.moveTo(x, y + 20);
+      context.lineTo(valueX, y + 20);
+      context.stroke();
     });
 
-    context.fillStyle = "#eef1e9";
+    context.fillStyle = "#fffaf0";
+    context.strokeStyle = "#d9cdb9";
+    context.lineWidth = 2;
     context.beginPath();
-    context.roundRect(102, 1045, 876, 165, 24);
+    context.roundRect(102, 1035, 876, 150, 22);
     context.fill();
-    context.fillStyle = "#2f2a25";
-    context.font = "600 28px system-ui, sans-serif";
-    const incidentLines = wrapCanvasText(context, notableIncident, 800).slice(0, 3);
-    incidentLines.forEach((line, index) => context.fillText(line, 140, 1100 + index * 38));
+    context.stroke();
 
     context.fillStyle = "#657f74";
-    context.font = "700 29px system-ui, sans-serif";
-    context.fillText("nicelittleclick.com", 84, 1285);
+    context.font = "800 23px system-ui, sans-serif";
+    context.fillText("CLICK'S NOTES", 140, 1082);
+
+    context.fillStyle = "#2f2a25";
+    context.font = "600 27px system-ui, sans-serif";
+    const incidentLines = wrapCanvasText(context, notableIncident, 790).slice(0, 3);
+    incidentLines.forEach((line, index) => context.fillText(line, 140, 1125 + index * 34));
+
+    context.fillStyle = "#657f74";
+    context.font = "700 26px system-ui, sans-serif";
+    context.fillText("nicelittleclick.com", 84, 1302);
     context.textAlign = "right";
-    context.fillText("Run by Click. Supervised loosely.", 996, 1285);
+    context.fillText("Run by Click. Supervised loosely.", 996, 1302);
     context.textAlign = "left";
 
     return new Promise<Blob>((resolve, reject) => {
@@ -294,6 +475,7 @@ export function PleaseAdviseGame() {
   };
 
   const downloadScorecard = async () => {
+    playSoundEffect("button", soundEnabled);
     try {
       const blob = await createScorecardBlob();
       const url = URL.createObjectURL(blob);
@@ -309,6 +491,7 @@ export function PleaseAdviseGame() {
   };
 
   const shareResult = async () => {
+    playSoundEffect("button", soundEnabled);
     const text = `I scored ${score.toLocaleString()} points in Please Advise, survived ${survived} emails, and remain ${employmentStatus.toLowerCase()}. Can you beat me?`;
 
     try {
@@ -341,18 +524,18 @@ export function PleaseAdviseGame() {
   };
 
   const renderClick = (mood: "calm" | "worried" | "proud") => (
-    <div className={`${styles.clickMascot} ${styles[mood]}`} aria-label={`Click looks ${mood}.`}>
-      <span className={styles.clickEarLeft} />
-      <span className={styles.clickEarRight} />
-      <span className={styles.clickFace}>
-        <span className={styles.clickEyeLeft} />
-        <span className={styles.clickEyeRight} />
-        <span className={styles.clickNose} />
-        <span className={styles.clickMouth} />
-      </span>
-      <span className={styles.clickBody} />
-      <span className={styles.clickCollar} />
-      <span className={styles.cursorTag}>↖</span>
+    <div
+      className={`${styles.clickPortrait} ${styles[mood]}`}
+      aria-label={`Click looks ${mood}.`}
+    >
+      <Image
+        src="/images/click/Click-Profile.png"
+        alt="Click, the Nice Little Click Lab mascot, wearing goggles and a cursor tag"
+        width={640}
+        height={640}
+        className={styles.clickPortraitImage}
+        priority={screen === "start"}
+      />
     </div>
   );
 
@@ -377,6 +560,10 @@ export function PleaseAdviseGame() {
 
             <button className={styles.primaryButton} type="button" onClick={startGame}>
               Open the inbox
+            </button>
+            <button className={`${styles.soundToggle} ${styles.startSoundToggle}`} type="button" onClick={toggleSound} aria-pressed={soundEnabled}>
+              <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
+              Sound {soundEnabled ? "on" : "off"}
             </button>
             <p className={styles.smallPrint}>Three mistakes and HR would like a word.</p>
           </div>
@@ -404,11 +591,17 @@ export function PleaseAdviseGame() {
               <p className={styles.eyebrow}>Choose wisely. Protect your job.</p>
               <h1>Please Advise</h1>
             </div>
-            <div className={styles.hud}>
-              <div><span>Time</span><strong className={timeLeft < 2.5 ? styles.dangerText : ""}>{timeLeft.toFixed(1)}</strong></div>
-              <div><span>Survived</span><strong>{survived}</strong></div>
-              <div><span>Mistakes</span><strong>{mistakes}/{MAX_MISTAKES}</strong></div>
-              <div><span>Score</span><strong>{score.toLocaleString()}</strong></div>
+            <div>
+              <div className={styles.hud}>
+                <div><span>Time</span><strong className={timeLeft < 2.5 ? styles.dangerText : ""}>{timeLeft.toFixed(1)}</strong></div>
+                <div><span>Survived</span><strong>{survived}</strong></div>
+                <div><span>Mistakes</span><strong>{mistakes}/{MAX_MISTAKES}</strong></div>
+                <div><span>Score</span><strong>{score.toLocaleString()}</strong></div>
+              </div>
+              <button className={styles.soundToggle} type="button" onClick={toggleSound} aria-pressed={soundEnabled}>
+                <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
+                Sound {soundEnabled ? "on" : "off"}
+              </button>
             </div>
           </header>
 
@@ -464,38 +657,70 @@ export function PleaseAdviseGame() {
           </header>
 
           <div className={styles.resultsCard}>
-            <div className={styles.confetti} aria-hidden="true">✦ · ✧ · ✦ · ✧</div>
-            <p className={styles.statusLabel}>Employment status</p>
-            <h2>{employmentStatus}</h2>
-            <div className={styles.rankBadge}><span>Final rank</span><strong>{rank}</strong></div>
+            <div className={styles.reportStamp} aria-hidden="true">
+              <span>Reviewed</span>
+              <strong>✓ Click</strong>
+            </div>
+
+            <div className={styles.reportHero}>
+              <div>
+                <p className={styles.statusLabel}>Employment status</p>
+                <h2>{employmentStatus}</h2>
+                <div className={styles.rankBadge}>
+                  <span>Final rank</span>
+                  <strong>{rank}</strong>
+                </div>
+              </div>
+
+              <div className={styles.reportClick}>
+                {renderClick(mistakes < 2 ? "proud" : "calm")}
+                <span>Reviewed by Click</span>
+                <small>Office Quality Assurance</small>
+              </div>
+            </div>
 
             <div className={styles.scoreRow}>
-              <div><span>Your score</span><strong>{score.toLocaleString()}</strong><small>points</small></div>
-              <dl>
-                <div><dt>Emails survived</dt><dd>{survived}</dd></div>
-                <div><dt>Mistakes made</dt><dd>{mistakes}</dd></div>
+              <div className={styles.scoreBlock}>
+                <span>Your score</span>
+                <strong>{score.toLocaleString()}</strong>
+                <small>points</small>
+              </div>
+
+              <dl className={styles.reportStats}>
+                <div><dt>Emails reviewed</dt><dd>{emailsReviewed}</dd></div>
+                <div><dt>Correct decisions</dt><dd>{survived}</dd></div>
+                <div><dt>Mistakes made</dt><dd>{mistakes} / {emailsReviewed}</dd></div>
+                <div><dt>Accuracy</dt><dd>{accuracy}%</dd></div>
                 <div><dt>Personal best</dt><dd>{Math.max(score, personalBest).toLocaleString()}</dd></div>
-                <div><dt>Inbox condition</dt><dd>{mistakes === 0 ? "Pristine" : mistakes === 1 ? "Rumpled" : "Concerning"}</dd></div>
               </dl>
             </div>
 
-            <div className={styles.incidentBox}>
-              <strong>Notable incident</strong>
+            <div className={styles.clickNotes}>
+              <strong>Click&apos;s Notes</strong>
               <p>{notableIncident}</p>
             </div>
 
             <div className={styles.resultsActions}>
               <button type="button" onClick={startGame}>↻ Play Again</button>
-              <button className={styles.shareButton} type="button" onClick={shareResult}>↗ Share Result</button>
-              <button className={styles.downloadButton} type="button" onClick={downloadScorecard}>↓ Download Scorecard</button>
+              <button className={styles.shareButton} type="button" onClick={shareResult}>↗ Share Results</button>
+              <button className={styles.downloadButton} type="button" onClick={downloadScorecard}>↓ Download Report</button>
             </div>
 
-            <p className={styles.shareStatus} aria-live="polite">{shareMessage || "Nobody saw the draft message. Probably."}</p>
-          </div>
+            <p className={styles.shareStatus} aria-live="polite">
+              {shareMessage || "Nobody saw the draft message. Probably."}
+            </p>
 
-          <div className={styles.resultsMascot}>
-            {renderClick(mistakes < 2 ? "proud" : "calm")}
-            <span>Click has reviewed your file.</span>
+            <div className={styles.resultsSoundToggle}>
+              <button className={styles.soundToggle} type="button" onClick={toggleSound} aria-pressed={soundEnabled}>
+                <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
+                Sound {soundEnabled ? "on" : "off"}
+              </button>
+            </div>
+
+            <footer className={styles.reportFooter}>
+              <span>nicelittleclick.com</span>
+              <span>Run by Click. Supervised loosely.</span>
+            </footer>
           </div>
         </section>
       )}

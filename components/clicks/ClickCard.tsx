@@ -10,7 +10,11 @@ export function ClickCard({ click, featured = false }: ClickCardProps) {
   const href = `/clicks/${click.slug}`;
   const isLive = click.status === "live";
   const liveButtonLabel =
-    click.slug === "meeting-cost-ticker" ? "Open the ticker" : "Open this Click";
+    click.slug === "meeting-cost-ticker"
+      ? "Open the ticker"
+      : click.slug === "please-advise"
+        ? "Play the game"
+        : "Open this Click";
 
   return (
     <article
