@@ -8,6 +8,7 @@ export type Click = {
   purchaseMode: "free" | "stripe" | "etsy";
   deliveryMode: "onsite" | "download" | "external";
   featured: boolean;
+  badge?: string;
 };
 
 export const clicks: Click[] = [
@@ -49,12 +50,26 @@ export const clicks: Click[] = [
     slug: "custom-word-search",
     number: 4,
     name: "Custom Word Search Gift",
-    shortDescription: "Hide names, memories, and favorite things in a printable personalized puzzle.",
+    shortDescription:
+      "Hide names, memories, and favorite things in a printable personalized puzzle.",
     status: "live",
     priceLabel: "$3",
     purchaseMode: "stripe",
     deliveryMode: "download",
     featured: true,
+    badge: "NEW GIFT",
   },
-
+  {
+    slug: "should-have-been-an-email",
+    number: 5,
+    name: "Should This Have Been an Email?",
+    shortDescription:
+      "Answer seven questions and let Click issue a calendar verdict.",
+    status: "live",
+    priceLabel: "Free",
+    purchaseMode: "free",
+    deliveryMode: "onsite",
+    featured: true,
+    badge: "NEW",
+  },
 ];

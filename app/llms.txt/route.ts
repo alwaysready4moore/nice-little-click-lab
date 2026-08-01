@@ -13,8 +13,10 @@ Nice Little Click Lab is a small web-product studio operated by Moore Family Pri
 - [Home](${siteConfig.url}/): Studio overview and featured Clicks.
 - [All Clicks](${siteConfig.url}/clicks): Current catalog of tools, games, and gifts.
 - [Meeting Cost Ticker](${siteConfig.url}/clicks/meeting-cost-ticker): Free browser-based meeting cost calculator with a live timer and downloadable receipt.
-- [Instant Custom Crossword Gift](${siteConfig.url}/clicks/custom-crossword): A $4 personalized crossword builder that creates a printable two-page PDF from 8 to 15 answers and clues.
+- [Instant Custom Crossword Gift](${siteConfig.url}/clicks/custom-crossword): A $4 personalized crossword builder that creates a printable two-page PDF from answers and clues.
 - [Please Advise](${siteConfig.url}/clicks/please-advise): Free workplace email game with 10- or 20-email sessions.
+- [Custom Word Search Gift](${siteConfig.url}/clicks/custom-word-search): A $3 personalized word-search builder with a printable puzzle and answer key.
+- [Should This Have Been an Email?](${siteConfig.url}/clicks/should-have-been-an-email): A free seven-question meeting test with a downloadable verdict.
 - [About](${siteConfig.url}/about): What the Lab makes and how a Click is designed.
 - [Contact](${siteConfig.url}/contact): Support, feedback, and purchase help.
 - [Privacy](${siteConfig.url}/privacy): How browser data, payments, hosting logs, and personalized entries are handled.
@@ -33,7 +35,7 @@ Nice Little Click Lab is a small web-product studio operated by Moore Family Pri
 ### Instant Custom Crossword Gift
 
 - Price: $4 USD, one-time purchase.
-- Input: 8 to 15 complete answer-and-clue pairs, plus an optional dedication.
+- Input: Complete answer-and-clue pairs, plus an optional dedication.
 - Output: A two-page PDF containing the crossword and a separate answer key.
 - AI use: Entries are arranged by programmed crossword logic, not sent to a generative AI service.
 - Data handling: The Lab does not provide an account or permanent puzzle library. Customers should save the downloaded PDF.
@@ -45,6 +47,23 @@ Nice Little Click Lab is a small web-product studio operated by Moore Family Pri
 - Format: A fictional workplace game about choosing Reply, Reply All, or Spam / Ignore.
 - Sessions: 10 or 20 emails.
 - Important limitation: The game is entertainment, not legal, HR, or workplace-policy advice.
+
+### Custom Word Search Gift
+
+- Price: $3 USD, one-time purchase.
+- Input: A title, optional dedication, 10 to 30 words, difficulty, and paper mood.
+- Output: A printable two-page PDF containing the word search and answer key.
+- AI use: Words are placed using programmed puzzle logic, not sent to a generative AI service.
+- Data handling: Draft details are held temporarily for checkout and download. Customers should save the finished PDF.
+
+### Should This Have Been an Email?
+
+- Price: Free.
+- Account required: No.
+- Format: Seven questions for evaluating a planned or completed meeting.
+- Output: An on-screen verdict with an optional downloadable image.
+- Data handling: Answers stay in the browser and are not saved by the Lab or sent to an AI service.
+- Important limitation: The verdict is a playful meeting-design prompt, not HR, legal, accessibility, or workplace-policy advice.
 
 ## Contact
 

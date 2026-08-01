@@ -29,6 +29,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.9,
     },
+    {
+      path: "/clicks/should-have-been-an-email",
+      changeFrequency: "monthly",
+      priority: 0.95,
+    },
     { path: "/about", changeFrequency: "monthly", priority: 0.7 },
     { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
     { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },

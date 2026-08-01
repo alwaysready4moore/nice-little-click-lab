@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Tiny Web Tools, Games, and Personalized Gifts",
   description:
-    "Try free browser tools and games or make a personalized crossword gift. Nice Little Click Lab builds small web products for oddly specific moments.",
+    "Try free browser tools and games, judge whether a meeting should have been an email, or make a personalized puzzle gift.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Tiny Web Tools, Games, and Personalized Gifts",
@@ -43,10 +43,10 @@ export default function HomePage() {
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
-              href="/clicks/meeting-cost-ticker"
+              href="/clicks/should-have-been-an-email"
               className="lab-button lab-button-primary"
             >
-              Try the Meeting Cost Ticker
+              Judge a meeting
             </Link>
             <Link href="#what-is-a-click" className="lab-button lab-button-secondary">
               What is a Click?
@@ -58,7 +58,7 @@ export default function HomePage() {
           <div className="folder-stack" aria-hidden="true" />
           <article className="paper-grid relative z-10 overflow-hidden rounded-[1.15rem] border border-[var(--border-strong)] bg-[var(--surface)] p-6 shadow-[0_30px_65px_rgba(75,50,20,0.16)] sm:p-8">
             <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
-              <p className="lab-label">READY TO USE</p>
+              <p className="lab-label">FRESH FROM THE LAB</p>
               <span className="stamp-mark">click</span>
             </div>
             <div className="grid gap-6 py-7 sm:grid-cols-[7.5rem_1fr] sm:items-center">
@@ -67,16 +67,15 @@ export default function HomePage() {
                   CLICK NO.
                 </p>
                 <p className="mt-1 text-5xl font-black text-[var(--accent-strong)]">
-                  001
+                  005
                 </p>
               </div>
               <div>
                 <h2 className="text-3xl font-black tracking-[-0.04em] sm:text-4xl">
-                  Meeting Cost Ticker
+                  Should This Have Been an Email?
                 </h2>
                 <p className="mt-3 text-lg leading-7 text-[var(--muted)]">
-                  Add everyone in the room and watch the estimated cost of the
-                  meeting rise in real time.
+                  Answer seven questions and let Click issue a calendar verdict.
                 </p>
               </div>
             </div>
@@ -84,22 +83,22 @@ export default function HomePage() {
               <div>
                 <p className="lab-label">FREE · NO SIGN-UP</p>
                 <p className="mt-3 max-w-md font-mono text-sm leading-6">
-                  Start the timer, watch the little meeting unfold, and download
-                  a printable receipt when you are done.
+                  Check a meeting before it starts or conduct a tiny post-meeting
+                  autopsy. Download the verdict when the evidence is complete.
                 </p>
               </div>
               <Link
-                href="/clicks/meeting-cost-ticker"
+                href="/clicks/should-have-been-an-email"
                 className="lab-button lab-button-primary"
               >
-                Open the ticker
+                Review the evidence
               </Link>
             </div>
           </article>
           <div className="sticky-note absolute -right-2 -top-7 z-20 rotate-3">
-            ready for
+            new click!
             <br />
-            clicking!
+            no agenda!
           </div>
           <div className="click-supervisor">
             <Image
@@ -140,26 +139,26 @@ export default function HomePage() {
         </article>
 
         <article className="next-card relative overflow-hidden rounded-[1.4rem] border border-[#e3c783] p-7 sm:p-9">
-          <p className="lab-label">NOW READY TO GIFT</p>
+          <p className="lab-label">NEW GIFT CLICK</p>
           <h2 className="click-definition-title mt-4 font-black tracking-[-0.045em]">
-            Instant Custom Crossword Gift
+            Custom Word Search Gift
           </h2>
           <p className="mt-4 max-w-lg leading-7 text-[var(--muted)]">
-            Turn shared memories and private jokes into a personalized crossword,
-            ready to print and gift in minutes.
+            Hide names, memories, favorite things, and private jokes in a
+            personalized printable puzzle.
           </p>
           <Link
-            href="/clicks/custom-crossword"
+            href="/clicks/custom-word-search"
             className="lab-button lab-button-primary mt-6"
           >
-            Make a crossword for $4
+            Make a word search for $3
           </Link>
-          <div className="crossword-mini" aria-hidden="true">
-            NICE
+          <div className="wordsearch-mini" aria-hidden="true">
+            C L I C K
             <br />
-            LITTLE
+            M E M O R Y
             <br />
-            CLICK
+            G I F T
           </div>
         </article>
       </section>

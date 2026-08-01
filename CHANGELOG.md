@@ -31,3 +31,13 @@
 - Added a printable two-page PDF with answer key
 - Kept puzzle generation deterministic and free of generative AI
 
+
+## v0.5.0 — Click Reviewed the Calendar
+
+- Added Click No. 005, Should This Have Been an Email?
+- Added before-meeting and after-meeting review modes
+- Added a seven-question browser-only meeting test
+- Added four practical verdict levels and a downloadable result image
+- Added a dismissible Fresh from the Lab announcement strip
+- Added NEW badges to the latest free Click and personalized gift
+- Updated the homepage, catalog, sitemap, and machine-readable product summary

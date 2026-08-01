@@ -11,7 +11,7 @@ export default function TermsPage() {
       <p className="lab-label">A very small rulebook</p>
       <h1 className="mt-4 text-5xl font-semibold tracking-[-0.04em]">Terms</h1>
       <p className="mt-3 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
-        Last updated July 22, 2026
+        Last updated August 1, 2026
       </p>
 
       <div className="mt-8 space-y-8 text-lg leading-8 text-[var(--muted)]">
@@ -31,9 +31,9 @@ export default function TermsPage() {
           <h2 className="text-2xl font-bold text-[var(--ink)]">Digital products</h2>
           <p className="mt-3">
             Paid Clicks are digital products delivered through the website. The
-            Instant Custom Crossword Gift includes a personalized printable PDF
-            and answer key generated from the words, clues, title, and other
-            details you provide.
+            Instant Custom Crossword Gift and Custom Word Search Gift include a
+            personalized printable PDF and answer key generated from the words,
+            clues, title, and other details you provide.
           </p>
         </div>
 
@@ -64,8 +64,9 @@ export default function TermsPage() {
           <p className="mt-3">
             AI tools may assist with the design or development of the website, but
             the Clicks do not send your submitted content to generative AI
-            services. Personalized crossword files are assembled using programmed
-            puzzle logic and the information you provide.
+            services. Personalized puzzle files are assembled using programmed
+            puzzle logic and the information you provide. Free judgment tools
+            calculate their results in the browser.
           </p>
         </div>
 

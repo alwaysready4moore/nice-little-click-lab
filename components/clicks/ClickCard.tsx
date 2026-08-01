@@ -14,7 +14,9 @@ export function ClickCard({ click, featured = false }: ClickCardProps) {
       ? "Open the ticker"
       : click.slug === "please-advise"
         ? "Play the game"
-        : "Open this Click";
+        : click.slug === "should-have-been-an-email"
+          ? "Judge a meeting"
+          : "Open this Click";
 
   return (
     <article
@@ -30,9 +32,16 @@ export function ClickCard({ click, featured = false }: ClickCardProps) {
 
       <div className="relative">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <p className="click-number">
-            CLICK NO. {String(click.number).padStart(3, "0")}
-          </p>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <p className="click-number">
+              CLICK NO. {String(click.number).padStart(3, "0")}
+            </p>
+            {click.badge ? (
+              <span className="rounded-full border border-[#c96f59]/30 bg-[#fff0ea] px-2.5 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.1em] text-[#9c4a39]">
+                {click.badge}
+              </span>
+            ) : null}
+          </div>
 
           <span className="rounded-full border border-[var(--border)] bg-white/65 px-3 py-1 text-xs font-semibold">
             {click.priceLabel}

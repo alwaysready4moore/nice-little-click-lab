@@ -1,0 +1,138 @@
+.banner {
+  position: relative;
+  z-index: 40;
+  border-bottom: 1px solid rgba(139, 72, 28, 0.18);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22), transparent 28% 72%, rgba(255, 255, 255, 0.22)),
+    #f4d98f;
+  color: #4e331d;
+  box-shadow: 0 6px 18px rgba(77, 49, 23, 0.05);
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  min-height: 3.25rem;
+  max-width: 72rem;
+  align-items: center;
+  gap: 0.8rem 1rem;
+  margin: 0 auto;
+  padding: 0.65rem 3.5rem 0.65rem 1.5rem;
+}
+
+.paw {
+  flex: none;
+  font-size: 1rem;
+  transform: rotate(-8deg);
+}
+
+.copy {
+  min-width: 0;
+  flex: 1 1 auto;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.copy strong {
+  font-weight: 850;
+}
+
+.links {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.primaryLink {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  border-radius: 999px;
+  background: #4b2f1a;
+  padding: 0.42rem 0.85rem;
+  color: #fffaf2;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.primaryLink:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 16px rgba(65, 41, 22, 0.16);
+}
+
+.secondaryLink {
+  text-decoration: underline;
+  text-decoration-color: rgba(78, 51, 29, 0.34);
+  text-underline-offset: 0.2rem;
+}
+
+.secondaryLink:hover {
+  text-decoration-color: currentColor;
+}
+
+.dismiss {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+  color: #4e331d;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.dismiss:hover {
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.primaryLink:focus-visible,
+.secondaryLink:focus-visible,
+.dismiss:focus-visible {
+  outline: 3px solid rgba(78, 51, 29, 0.3);
+  outline-offset: 3px;
+}
+
+@media (max-width: 780px) {
+  .inner {
+    flex-wrap: wrap;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .copy {
+    flex: 1 1 calc(100% - 2.25rem);
+  }
+
+  .links {
+    width: 100%;
+    padding-left: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .inner {
+    gap: 0.55rem 0.65rem;
+    padding-right: 3rem;
+    padding-left: 1rem;
+  }
+
+  .copy {
+    font-size: 0.86rem;
+  }
+
+  .links {
+    flex-wrap: wrap;
+    gap: 0.55rem 0.75rem;
+    padding-left: 1.65rem;
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,563 @@
+.shell {
+  --meeting-ink: #302a25;
+  --meeting-muted: #746a61;
+  --meeting-paper: #fffaf0;
+  --meeting-line: #d9cbb9;
+  --meeting-coral: #c96f59;
+  --meeting-blue: #617f93;
+  --meeting-sage: #718875;
+  --meeting-gold: #dfa85d;
+
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 7vw, 5.5rem) 1.5rem 4rem;
+}
+
+.hero {
+  display: grid;
+  gap: 2rem;
+  align-items: end;
+}
+
+.title {
+  max-width: 13ch;
+  margin-top: 1.1rem;
+  font-family: var(--font-handwritten, "Mimosa", "Segoe Print", cursive);
+  font-size: clamp(3.8rem, 9vw, 7.3rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+}
+
+.intro {
+  max-width: 44rem;
+  margin-top: 1.6rem;
+  color: var(--meeting-muted);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.75;
+}
+
+.heroNote {
+  display: none;
+  width: 13.5rem;
+  justify-self: end;
+  border: 1px solid var(--meeting-line);
+  border-radius: 1.2rem;
+  background: rgba(255, 250, 240, 0.88);
+  padding: 1rem 1.1rem;
+  box-shadow: 0 16px 34px rgba(68, 55, 43, 0.09);
+  transform: rotate(2deg);
+}
+
+.heroNote span,
+.eyebrow,
+.resultLabel {
+  display: block;
+  color: var(--meeting-coral);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.heroNote strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1rem;
+}
+
+.heroNote small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--meeting-muted);
+}
+
+.toolGrid {
+  display: grid;
+  gap: 1.4rem;
+  align-items: start;
+  margin-top: 3rem;
+  scroll-margin-top: 8rem;
+}
+
+.questionCard,
+.sideCard,
+.resultCard {
+  border: 1px solid var(--meeting-line);
+  background: var(--meeting-paper);
+  box-shadow: 0 24px 58px rgba(68, 55, 43, 0.09);
+}
+
+.questionCard {
+  overflow: hidden;
+  border-radius: 1.8rem;
+  padding: clamp(1.2rem, 3vw, 2.1rem);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cardHeader h2 {
+  margin-top: 0.4rem;
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+
+.progressPill {
+  flex: none;
+  border: 1px solid var(--meeting-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.68);
+  padding: 0.48rem 0.75rem;
+  color: var(--meeting-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.modeSwitch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 1.4rem;
+  border: 1px solid var(--meeting-line);
+  border-radius: 1rem;
+  background: #efe7dc;
+  padding: 0.38rem;
+}
+
+.modeSwitch button {
+  min-height: 2.8rem;
+  border: 0;
+  border-radius: 0.78rem;
+  background: transparent;
+  color: var(--meeting-muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.modeSwitch button:hover {
+  color: var(--meeting-ink);
+}
+
+.modeSwitch .modeActive {
+  background: var(--meeting-paper);
+  color: var(--meeting-ink);
+  box-shadow: 0 7px 18px rgba(68, 55, 43, 0.09);
+}
+
+.progressTrack {
+  height: 0.48rem;
+  margin-top: 1rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ece3d7;
+}
+
+.progressTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--meeting-coral);
+  transition: width 180ms ease;
+}
+
+.questions {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.question {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid rgba(92, 75, 61, 0.15);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 1rem;
+}
+
+.question legend {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0;
+  color: var(--meeting-ink);
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.question legend span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border-radius: 0.62rem;
+  background: #f4dfbb;
+  color: #7b4b23;
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.answerGrid {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+}
+
+.answerGrid button {
+  min-height: 2.75rem;
+  border: 1px solid var(--meeting-line);
+  border-radius: 0.85rem;
+  background: #fffaf0;
+  color: var(--meeting-ink);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.86rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: transform 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+
+.answerGrid button:hover {
+  transform: translateY(-1px);
+  border-color: #a89178;
+}
+
+.answerGrid .answerSelected {
+  border-color: var(--meeting-blue);
+  background: #e9f0f3;
+  color: #2e5267;
+  box-shadow: inset 0 0 0 1px rgba(97, 127, 147, 0.16);
+}
+
+.modeSwitch button:focus-visible,
+.answerGrid button:focus-visible,
+.resetButton:focus-visible {
+  outline: 3px solid rgba(97, 127, 147, 0.32);
+  outline-offset: 3px;
+}
+
+.revealRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1rem;
+  margin-top: 1.35rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed var(--meeting-line);
+}
+
+.revealRow p {
+  color: var(--meeting-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.sideCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.8rem;
+  padding: 1.4rem;
+}
+
+.sideCard::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(111, 136, 117, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(111, 136, 117, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  content: "";
+  pointer-events: none;
+}
+
+.sideCard > * {
+  position: relative;
+}
+
+.sideStamp {
+  display: inline-flex;
+  border: 2px dashed rgba(201, 111, 89, 0.55);
+  padding: 0.45rem 0.65rem;
+  color: var(--meeting-coral);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  transform: rotate(-3deg);
+}
+
+.clickImage {
+  width: min(100%, 22rem);
+  height: auto;
+  margin: 0.5rem auto -0.2rem;
+  filter: drop-shadow(0 14px 20px rgba(68, 55, 43, 0.12));
+}
+
+.sideCard h2 {
+  font-family: var(--font-handwritten, "Mimosa", "Segoe Print", cursive);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.sideCard > p {
+  margin-top: 0.8rem;
+  color: var(--meeting-muted);
+  line-height: 1.65;
+}
+
+.sideRule {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1.2rem;
+  border: 1px solid rgba(113, 136, 117, 0.26);
+  border-radius: 1rem;
+  background: rgba(226, 235, 226, 0.62);
+  padding: 1rem;
+  line-height: 1.55;
+}
+
+.sideRule strong {
+  color: #46604c;
+  font-size: 0.82rem;
+}
+
+.sideRule span {
+  color: var(--meeting-muted);
+  font-size: 0.88rem;
+}
+
+.resultSection {
+  margin-top: 2rem;
+  scroll-margin-top: 8rem;
+}
+
+.resultCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.8rem;
+  padding: clamp(1.3rem, 4vw, 3rem);
+  background:
+    linear-gradient(rgba(255, 250, 240, 0.9), rgba(255, 250, 240, 0.9)),
+    repeating-linear-gradient(0deg, transparent 0 18px, rgba(72, 61, 51, 0.035) 19px);
+}
+
+.resultCard::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.42rem;
+  background: var(--result-accent, var(--meeting-gold));
+  content: "";
+}
+
+.meeting { --result-accent: var(--meeting-sage); }
+.trim { --result-accent: var(--meeting-gold); }
+.async { --result-accent: var(--meeting-blue); }
+.email { --result-accent: var(--meeting-coral); }
+
+.resultTopline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--meeting-line);
+}
+
+.resultTopline p {
+  color: var(--meeting-muted);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.resultTopline span {
+  border: 2px dashed color-mix(in srgb, var(--result-accent) 65%, transparent);
+  padding: 0.45rem 0.65rem;
+  color: var(--result-accent);
+  font-size: 0.67rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  transform: rotate(-2deg);
+}
+
+.resultBody {
+  display: grid;
+  gap: 1.2rem;
+  align-items: end;
+  padding-top: 1.6rem;
+}
+
+.resultCard h2 {
+  max-width: 13ch;
+  margin-top: 0.45rem;
+  font-family: var(--font-handwritten, "Mimosa", "Segoe Print", cursive);
+  font-size: clamp(3rem, 7vw, 5.7rem);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+
+.resultSummary {
+  max-width: 42rem;
+  margin-top: 1rem;
+  color: var(--meeting-muted);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.65;
+}
+
+.resultClick {
+  width: min(100%, 16rem);
+  height: auto;
+  margin: 0 auto -1rem;
+  filter: drop-shadow(0 15px 20px rgba(68, 55, 43, 0.12));
+}
+
+.scorePanel {
+  margin-top: 1.6rem;
+  border: 1px solid color-mix(in srgb, var(--result-accent) 30%, var(--meeting-line));
+  border-radius: 1.2rem;
+  background: color-mix(in srgb, var(--result-accent) 8%, white);
+  padding: 1.1rem;
+}
+
+.scoreHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.scoreHeading span {
+  color: var(--meeting-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.scoreHeading strong {
+  font-size: 1.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.scoreTrack {
+  height: 0.75rem;
+  margin-top: 0.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(48, 42, 37, 0.1);
+}
+
+.scoreTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--result-accent);
+}
+
+.scorePanel p {
+  margin-top: 0.9rem;
+  color: var(--meeting-muted);
+  line-height: 1.6;
+}
+
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
+}
+
+.resetButton {
+  min-height: 2.8rem;
+  border: 0;
+  background: transparent;
+  padding: 0.6rem 0.8rem;
+  color: var(--meeting-muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.resetButton:hover {
+  color: var(--meeting-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+.statusMessage,
+.errorMessage {
+  margin-top: 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.statusMessage { color: #46604c; }
+.errorMessage { color: #9a4636; }
+
+.disclaimer {
+  max-width: 48rem;
+  margin: 1.4rem auto 0;
+  color: var(--meeting-muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .answerGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .resultBody {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+@media (min-width: 820px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .heroNote {
+    display: block;
+  }
+}
+
+@media (min-width: 980px) {
+  .toolGrid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.55fr);
+  }
+
+  .sideCard {
+    position: sticky;
+    top: 6.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .cardHeader {
+    display: grid;
+  }
+
+  .progressPill {
+    width: fit-content;
+  }
+
+  .modeSwitch {
+    grid-template-columns: 1fr;
+  }
+
+  .resultTopline {
+    align-items: flex-start;
+  }
+}

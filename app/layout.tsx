@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { FreshFromLabBanner } from "@/components/site/FreshFromLabBanner";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/lib/site";
 
@@ -116,6 +117,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <SiteHeader />
+        <FreshFromLabBanner />
         <main id="main-content">{children}</main>
         <SiteFooter />
         <JsonLd data={websiteStructuredData} />

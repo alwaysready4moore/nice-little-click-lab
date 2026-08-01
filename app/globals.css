@@ -339,7 +339,8 @@ svg {
   box-shadow: var(--shadow-soft);
 }
 
-.crossword-mini {
+.crossword-mini,
+.wordsearch-mini {
   position: absolute;
   right: 1.3rem;
   bottom: 1rem;
@@ -363,7 +364,8 @@ svg {
 @media (max-width: 640px) {
   .folder-stack,
   .sticky-note,
-  .crossword-mini {
+  .crossword-mini,
+.wordsearch-mini {
     display: none;
   }
 }
