@@ -45,4 +45,16 @@ export const clicks: Click[] = [
     deliveryMode: "onsite",
     featured: true,
   },
+  {
+    slug: "custom-word-search",
+    number: 4,
+    name: "Custom Word Search Gift",
+    shortDescription: "Hide names, memories, and favorite things in a printable personalized puzzle.",
+    status: "live",
+    priceLabel: "$3",
+    purchaseMode: "stripe",
+    deliveryMode: "download",
+    featured: true,
+  },
+
 ];

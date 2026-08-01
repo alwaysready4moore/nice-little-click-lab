@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto";
 import type { CrosswordPurchasePayload } from "./crossword/purchase";
+import type { WordSearchPurchasePayload } from "./wordsearch/purchase";
 
 const STRIPE_API = "https://api.stripe.com/v1";
 
-export function puzzleHash(payload: CrosswordPurchasePayload) {
+export function puzzleHash(payload: CrosswordPurchasePayload | WordSearchPurchasePayload) {
   return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
@@ -65,6 +66,34 @@ export async function createCrosswordCheckout(payload: CrosswordPurchasePayload)
   if (!response.ok || !data.id || !data.url) {
     throw new Error(data.error?.message || "Stripe could not create the checkout session.");
   }
+  return { id: data.id, url: data.url, puzzleHash: hash };
+}
+
+export async function createWordSearchCheckout(payload: WordSearchPurchasePayload) {
+  const hash = puzzleHash(payload);
+  const origin = siteOrigin();
+  const body = new URLSearchParams();
+  body.set("mode", "payment");
+  body.set("success_url", `${origin}/clicks/custom-word-search/success?session_id={CHECKOUT_SESSION_ID}`);
+  body.set("cancel_url", `${origin}/clicks/custom-word-search?checkout=cancelled`);
+  body.set("line_items[0][price_data][currency]", "usd");
+  body.set("line_items[0][price_data][unit_amount]", "300");
+  body.set("line_items[0][price_data][product_data][name]", "Custom Word Search Gift");
+  body.set("line_items[0][price_data][product_data][description]", "Printable custom word search PDF with answer key");
+  body.set("line_items[0][quantity]", "1");
+  body.set("metadata[puzzle_hash]", hash);
+  body.set("metadata[product]", "custom_word_search");
+  body.set("payment_intent_data[metadata][puzzle_hash]", hash);
+  body.set("payment_intent_data[metadata][product]", "custom_word_search");
+
+  const response = await fetch(`${STRIPE_API}/checkout/sessions`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${stripeKey()}`, "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+    cache: "no-store",
+  });
+  const data = (await response.json()) as { id?: string; url?: string; error?: { message?: string } };
+  if (!response.ok || !data.id || !data.url) throw new Error(data.error?.message || "Stripe could not create the checkout session.");
   return { id: data.id, url: data.url, puzzleHash: hash };
 }
 

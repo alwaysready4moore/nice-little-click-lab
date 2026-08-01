@@ -20,6 +20,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     },
     {
+      path: "/clicks/custom-word-search",
+      changeFrequency: "monthly",
+      priority: 0.95,
+    },
+    {
       path: "/clicks/please-advise",
       changeFrequency: "monthly",
       priority: 0.9,

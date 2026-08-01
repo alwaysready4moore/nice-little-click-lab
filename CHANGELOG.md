@@ -19,3 +19,15 @@
 - Added live cost, elapsed time, pause, resume, and end controls
 - Added a simple end-of-meeting summary
 - Kept all calculations private and client-side
+
+## v0.4.0 — Click Hid the Words
+
+- Added Click No. 004, Custom Word Search Gift
+- Added 10 to 30 word input with duplicate and length validation
+- Added easy, medium, and hard hiding directions
+- Added classic, celebration, and kids paper moods
+- Added a watermarked browser preview
+- Added Stripe checkout and purchase verification
+- Added a printable two-page PDF with answer key
+- Kept puzzle generation deterministic and free of generative AI
+

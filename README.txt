@@ -1,18 +1,13 @@
-NICE LITTLE CLICK LAB: SECOND CLICK LIVE UPDATE
+WORD SEARCH TITLE SPACING — BALANCED FIX
 
-Copy the included app, components, and data folders into the root of your local nice-little-click-lab project. Allow the files to replace the existing versions.
+Copy the included lib folder into:
+E:\Dev\nice-little-click-lab
 
-This update:
-- Adds the Moore Family Print Shop LLC relationship to the footer, About, Contact, Terms, and Privacy pages
-- Makes Instant Custom Crossword Gift live at $4
-- Updates the homepage and About page to present the crossword as available
-- Adds the crossword product page to the sitemap
-- Keeps Please Advise in Coming Soon status
+Choose Replace files in destination.
 
-After copying, run:
-  npm run build
-  git add .
-  git commit -m "Launch custom crossword and add business attribution"
-  git push origin main
+Then run:
+npm run lint
+npx tsc --noEmit
+npm run build
 
-Note: TypeScript validation passed in the prepared snapshot. The full Next.js build could not complete in the isolated build environment because the Next.js SWC package download returned a temporary 503 error.
+This changes only the PDF title renderer. It draws complete words with natural letter spacing and a controlled gap between words.
