@@ -81,10 +81,7 @@ const websiteStructuredData = {
         "@type": "ImageObject",
         url: `${siteConfig.url}/images/click/03-badge-circle-mark.png`,
       },
-      parentOrganization: {
-        "@type": "Organization",
-        name: siteConfig.operator,
-      },
+      legalName: siteConfig.operator,
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer support",

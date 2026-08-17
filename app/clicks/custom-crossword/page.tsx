@@ -75,6 +75,7 @@ const productStructuredData = {
       alternateName: "Personalized Crossword Gift Maker",
       sku: "CLICK-002",
       url: `${siteConfig.url}${pagePath}`,
+      image: `${siteConfig.url}${siteConfig.socialImage}`,
       description:
         "A personalized printable crossword made from 8 to 15 answers and clues supplied by the customer, delivered as a two-page PDF with an answer key.",
       category: "Personalized digital gift",

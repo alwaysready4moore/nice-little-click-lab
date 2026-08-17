@@ -73,6 +73,7 @@ const softwareApplicationStructuredData = {
       operatingSystem: "Web",
       browserRequirements: "Requires JavaScript and a modern web browser",
       url: `${siteConfig.url}${pagePath}`,
+      image: `${siteConfig.url}${siteConfig.socialImage}`,
       description:
         "A free browser-based tool that estimates the running cost of a meeting using attendee counts and editable salary values.",
       inLanguage: siteConfig.locale,
@@ -84,6 +85,7 @@ const softwareApplicationStructuredData = {
         priceCurrency: "USD",
         availability: "https://schema.org/InStock",
         url: `${siteConfig.url}${pagePath}`,
+        seller: { "@id": organizationId },
       },
       featureList: [
         "Live meeting cost estimate",

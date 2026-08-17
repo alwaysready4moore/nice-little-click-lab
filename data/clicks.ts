@@ -9,6 +9,7 @@ export type Click = {
   deliveryMode: "onsite" | "download" | "external";
   featured: boolean;
   badge?: string;
+  updatedAt: string;
 };
 
 export const clicks: Click[] = [
@@ -22,6 +23,7 @@ export const clicks: Click[] = [
     purchaseMode: "free",
     deliveryMode: "onsite",
     featured: true,
+    updatedAt: "2026-08-17",
   },
   {
     slug: "custom-crossword",
@@ -33,6 +35,7 @@ export const clicks: Click[] = [
     purchaseMode: "stripe",
     deliveryMode: "download",
     featured: true,
+    updatedAt: "2026-08-17",
   },
   {
     slug: "please-advise",
@@ -45,6 +48,7 @@ export const clicks: Click[] = [
     purchaseMode: "free",
     deliveryMode: "onsite",
     featured: true,
+    updatedAt: "2026-08-17",
   },
   {
     slug: "custom-word-search",
@@ -58,6 +62,7 @@ export const clicks: Click[] = [
     deliveryMode: "download",
     featured: true,
     badge: "NEW GIFT",
+    updatedAt: "2026-08-17",
   },
   {
     slug: "should-have-been-an-email",
@@ -71,5 +76,6 @@ export const clicks: Click[] = [
     deliveryMode: "onsite",
     featured: true,
     badge: "NEW",
+    updatedAt: "2026-08-17",
   },
 ];

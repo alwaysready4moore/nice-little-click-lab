@@ -67,6 +67,7 @@ const structuredData = {
       operatingSystem: "Web",
       browserRequirements: "Requires JavaScript and a modern web browser",
       url: `${siteConfig.url}${pagePath}`,
+      image: `${siteConfig.url}${siteConfig.socialImage}`,
       description:
         "A free seven-question browser tool that evaluates whether a meeting should be synchronous or handled in writing.",
       inLanguage: siteConfig.locale,
@@ -78,6 +79,7 @@ const structuredData = {
         priceCurrency: "USD",
         availability: "https://schema.org/InStock",
         url: `${siteConfig.url}${pagePath}`,
+        seller: { "@id": organizationId },
       },
     },
     breadcrumbStructuredData([

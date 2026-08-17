@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { ClickCard } from "@/components/clicks/ClickCard";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { clicks } from "@/data/clicks";
-import { absoluteUrl, breadcrumbStructuredData } from "@/lib/seo";
+import {
+  absoluteUrl,
+  breadcrumbStructuredData,
+  organizationId,
+} from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -27,6 +31,56 @@ export const metadata: Metadata = {
   },
 };
 
+function clickStructuredItem(click: (typeof clicks)[number]) {
+  const url = absoluteUrl(`/clicks/${click.slug}`);
+
+  if (click.purchaseMode === "free") {
+    return {
+      "@type": "SoftwareApplication",
+      name: click.name,
+      description: click.shortDescription,
+      url,
+      applicationCategory:
+        click.slug === "please-advise"
+          ? "GameApplication"
+          : "BusinessApplication",
+      operatingSystem: "Web",
+      isAccessibleForFree: true,
+      publisher: { "@id": organizationId },
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url,
+        seller: { "@id": organizationId },
+      },
+    };
+  }
+
+  return {
+    "@type": "Product",
+    name: click.name,
+    description: click.shortDescription,
+    url,
+    sku: `CLICK-${String(click.number).padStart(3, "0")}`,
+    category: "Personalized digital gift",
+    brand: {
+      "@type": "Brand",
+      name: siteConfig.name,
+    },
+    manufacturer: { "@id": organizationId },
+    offers: {
+      "@type": "Offer",
+      price: click.priceLabel.replace("$", ""),
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      url,
+      seller: { "@id": organizationId },
+    },
+  };
+}
+
 const clickListStructuredData = {
   "@context": "https://schema.org",
   "@graph": [
@@ -39,13 +93,7 @@ const clickListStructuredData = {
       itemListElement: clicks.map((click, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        item: {
-          "@type": "WebApplication",
-          name: click.name,
-          description: click.shortDescription,
-          url: absoluteUrl(`/clicks/${click.slug}`),
-          isAccessibleForFree: click.purchaseMode === "free",
-        },
+        item: clickStructuredItem(click),
       })),
     },
     breadcrumbStructuredData([
