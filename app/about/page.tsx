@@ -148,34 +148,34 @@ export default function AboutPage() {
 
         <div className="mt-7 grid gap-6 md:grid-cols-2">
           <article className="lab-card p-7 sm:p-8">
-            <p className="click-number">Current Click</p>
-            <h3 className="lab-heading mt-5 text-4xl">Meeting Cost Ticker</h3>
+            <p className="click-number">Fresh from the Lab</p>
+            <h3 className="lab-heading mt-5 text-4xl">
+              Should This Have Been an Email?
+            </h3>
             <p className="mt-4 leading-7 text-[var(--muted)]">
-              Add the people in the room and watch the estimated cost of a
-              meeting rise in real time.
+              Answer seven questions and let Click issue a calendar verdict.
             </p>
             <Link
               className="mt-6 inline-flex font-bold text-[var(--accent-strong)] underline decoration-1 underline-offset-4"
-              href="/clicks/meeting-cost-ticker"
+              href="/clicks/should-have-been-an-email"
             >
-              Open the ticker
+              Try the newest Click
             </Link>
           </article>
 
           <article className="lab-card p-7 sm:p-8">
-            <p className="click-number">Now available</p>
+            <p className="click-number">Newest gift</p>
             <h3 className="lab-heading mt-5 text-4xl">
-              Instant Custom Crossword Gift
+              Custom Word Search Gift
             </h3>
             <p className="mt-4 leading-7 text-[var(--muted)]">
-              Turn shared memories, private jokes, and favorite answers into a
-              personalized printable crossword gift.
+              Hide names, memories, and favorite things in a printable personalized puzzle.
             </p>
             <Link
               className="mt-6 inline-flex font-bold text-[var(--accent-strong)] underline decoration-1 underline-offset-4"
-              href="/clicks/custom-crossword"
+              href="/clicks/custom-word-search"
             >
-              Make a crossword
+              Make a word search
             </Link>
           </article>
         </div>

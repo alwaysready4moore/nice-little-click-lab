@@ -219,7 +219,7 @@ export function CustomCrosswordBuilder() {
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
-        <p className={styles.eyebrow}>Click No. 002 · paid experiment</p>
+        <p className={styles.eyebrow}>Click No. 002 · $4 gift</p>
         <h1>Make a crossword out of the things only you two know.</h1>
         <p>
           Add names, places, ridiculous quotes, and tiny pieces of shared history. Click will arrange

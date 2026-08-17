@@ -97,7 +97,7 @@ export function CustomWordSearchBuilder() {
 
   return <div className={`${styles.page} ${styles[theme]}`}>
     <section className={styles.hero}>
-      <p className={styles.eyebrow}>Click No. 004 · paid experiment</p>
+      <p className={styles.eyebrow}>Click No. 004 · $3 gift</p>
       <h1>Hide your favorite people, places, and nonsense in a word search.</h1>
       <p>Make a printable puzzle from names, memories, inside jokes, and the oddly specific things your person loves.</p>
     </section>
