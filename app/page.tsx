@@ -88,7 +88,7 @@ export default function HomePage() {
                 </p>
               </div>
               <Link
-                href="/clicks/should-have-been-an-email"
+                href="/clicks/halloween-candy-calculator"
                 className="lab-button lab-button-primary"
               >
                 Fill the candy bowl
