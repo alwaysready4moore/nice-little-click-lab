@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import styles from "./fresh-from-lab-banner.module.css";
 
-const DISMISS_KEY = "nlcl-fresh-from-lab-click-005";
+const DISMISS_KEY = "nlcl-fresh-from-lab-click-006";
 const DISMISS_EVENT = "nlcl:fresh-from-lab-change";
 const VISIBLE_PATHS = new Set(["/", "/clicks"]);
 let dismissedForPageView = false;
@@ -64,18 +64,18 @@ export function FreshFromLabBanner() {
 
         <div className={styles.copy}>
           <strong>Fresh from the Lab:</strong>{" "}
-          <span>Should This Have Been an Email? is live.</span>
+          <span>How Much Halloween Candy Do I Need? is live.</span>
         </div>
 
         <div className={styles.links}>
           <Link
             className={styles.primaryLink}
-            href="/clicks/should-have-been-an-email"
+            href="/clicks/halloween-candy-calculator"
           >
-            Judge a meeting
+            Plan the candy
           </Link>
-          <Link className={styles.secondaryLink} href="/clicks/custom-word-search">
-            New word search gift
+          <Link className={styles.secondaryLink} href="/clicks/should-have-been-an-email">
+            Judge a meeting
           </Link>
         </div>
 

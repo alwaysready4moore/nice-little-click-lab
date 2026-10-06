@@ -43,7 +43,9 @@ function clickStructuredItem(click: (typeof clicks)[number]) {
       applicationCategory:
         click.slug === "please-advise"
           ? "GameApplication"
-          : "BusinessApplication",
+          : click.slug === "halloween-candy-calculator"
+            ? "LifestyleApplication"
+            : "BusinessApplication",
       operatingSystem: "Web",
       isAccessibleForFree: true,
       publisher: { "@id": organizationId },
