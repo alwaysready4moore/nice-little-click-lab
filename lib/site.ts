@@ -5,7 +5,7 @@ export const siteConfig = {
   email: "hello@nicelittleclick.com",
   operator: "Moore Family Print Shop LLC",
   locale: "en-US",
-  lastUpdated: "2026-08-17",
+  lastUpdated: "2026-10-06",
   description: "Tiny tools, games, and gifts for oddly specific moments.",
   longDescription:
     "Nice Little Click Lab makes focused, delightful web tools, games, and gifts that solve one small problem at a time.",

@@ -75,7 +75,20 @@ export const clicks: Click[] = [
     purchaseMode: "free",
     deliveryMode: "onsite",
     featured: true,
-    badge: "NEW",
     updatedAt: "2026-08-17",
+  },
+  {
+    slug: "halloween-candy-calculator",
+    number: 6,
+    name: "How Much Halloween Candy Do I Need?",
+    shortDescription:
+      "Plan your trick-or-treat candy, backup stash, and bag count before the porch gets busy.",
+    status: "live",
+    priceLabel: "Free",
+    purchaseMode: "free",
+    deliveryMode: "onsite",
+    featured: true,
+    badge: "NEW · SEASONAL",
+    updatedAt: "2026-10-06",
   },
 ];

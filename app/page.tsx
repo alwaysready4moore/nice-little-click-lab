@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Tiny Web Tools, Games, and Personalized Gifts",
   description:
-    "Try free browser tools and games, judge whether a meeting should have been an email, or make a personalized puzzle gift.",
+    "Try free browser tools and games, calculate how much Halloween candy you need, or make a personalized puzzle gift.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Tiny Web Tools, Games, and Personalized Gifts",
@@ -43,10 +43,10 @@ export default function HomePage() {
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
-              href="/clicks/should-have-been-an-email"
+              href="/clicks/halloween-candy-calculator"
               className="lab-button lab-button-primary"
             >
-              Judge a meeting
+              Plan Halloween candy
             </Link>
             <Link href="#what-is-a-click" className="lab-button lab-button-secondary">
               What is a Click?
@@ -67,15 +67,15 @@ export default function HomePage() {
                   CLICK NO.
                 </p>
                 <p className="mt-1 text-5xl font-black text-[var(--accent-strong)]">
-                  005
+                  006
                 </p>
               </div>
               <div>
                 <h2 className="text-3xl font-black tracking-[-0.04em] sm:text-4xl">
-                  Should This Have Been an Email?
+                  How Much Halloween Candy Do I Need?
                 </h2>
                 <p className="mt-3 text-lg leading-7 text-[var(--muted)]">
-                  Answer seven questions and let Click issue a calendar verdict.
+                  Estimate your trick-or-treat crowd and build a candy plan before the doorbell starts.
                 </p>
               </div>
             </div>
@@ -83,22 +83,22 @@ export default function HomePage() {
               <div>
                 <p className="lab-label">FREE · NO SIGN-UP</p>
                 <p className="mt-3 max-w-md font-mono text-sm leading-6">
-                  Check a meeting before it starts or conduct a tiny post-meeting
-                  autopsy. Download the verdict when the evidence is complete.
+                  Pick your expected crowd, generosity level, and backup stash.
+                  Add the piece count on your bag to get the shopping total.
                 </p>
               </div>
               <Link
                 href="/clicks/should-have-been-an-email"
                 className="lab-button lab-button-primary"
               >
-                Review the evidence
+                Fill the candy bowl
               </Link>
             </div>
           </article>
           <div className="sticky-note absolute -right-2 -top-7 z-20 rotate-3">
             new click!
             <br />
-            no agenda!
+            bring candy!
           </div>
           <div className="click-supervisor">
             <Image
