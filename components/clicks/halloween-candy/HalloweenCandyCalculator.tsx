@@ -68,7 +68,7 @@ function verdictFor(piecesPerVisitor: number, buffer: number, recommended: numbe
 
   return {
     title: "Prepared Neighbor",
-    copy: "You have accounted for the tiny hordes without buying a candy bunker.",
+    copy: "You have accounted for the adorable hordes without buying a candy bunker.",
   };
 }
 
