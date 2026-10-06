@@ -99,7 +99,7 @@ export default function HalloweenCandyCalculatorPage() {
       <FaqSection
         id="halloween-candy-faq"
         eyebrow="Porch notes"
-        title="Questions before the tiny hordes arrive"
+        title="Questions before the adorable hordes arrive"
         intro="The candy math is simple on purpose. The important part is knowing what assumptions went into your pile."
         items={faqs}
       />
