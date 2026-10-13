@@ -88,7 +88,21 @@ export const clicks: Click[] = [
     purchaseMode: "free",
     deliveryMode: "onsite",
     featured: true,
-    badge: "NEW · SEASONAL",
+    badge: "SEASONAL",
     updatedAt: "2026-10-06",
+  },
+  {
+    slug: "gift-budget-splitter",
+    number: 7,
+    name: "Gift Budget Splitter",
+    shortDescription:
+      "Give every person on your list a fair share of one gift budget, with a cushion for extras.",
+    status: "live",
+    priceLabel: "Free",
+    purchaseMode: "free",
+    deliveryMode: "onsite",
+    featured: true,
+    badge: "NEW",
+    updatedAt: "2026-10-13",
   },
 ];
