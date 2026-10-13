@@ -81,7 +81,7 @@ export function allocateGiftBudget(
     return { ...person, amountCents: floor, remainder: exact - floor, index };
   });
 
-  let pennies = spendableCents -
+  const pennies = spendableCents -
     portions.reduce((sum, person) => sum + person.amountCents, 0);
   const order = portions
     .map((person) => ({ index: person.index, remainder: person.remainder }))

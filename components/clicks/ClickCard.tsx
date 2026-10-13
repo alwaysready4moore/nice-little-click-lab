@@ -18,7 +18,9 @@ export function ClickCard({ click, featured = false }: ClickCardProps) {
           ? "Judge a meeting"
           : click.slug === "halloween-candy-calculator"
             ? "Plan the candy"
-            : "Open this Click";
+            : click.slug === "gift-budget-splitter"
+              ? "Split a budget"
+              : "Open this Click";
 
   return (
     <article
