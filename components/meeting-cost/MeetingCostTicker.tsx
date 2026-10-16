@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { meetingReceiptCanvasHeight } from "@/lib/meeting-receipt-layout";
 import { ROLE_SALARIES } from "@/data/role-salaries";
 
 type MeetingStatus = "ready" | "running" | "paused" | "ended";
@@ -283,7 +284,7 @@ export function MeetingCostTicker() {
       canvas.width = 1200;
       // Each attendee group adds 62 pixels. Grow the receipt so rows can
       // never overlap the footer (including for 12- and 20-group meetings).
-      canvas.height = Math.max(1600, 1060 + participants.length * 62);
+      canvas.height = meetingReceiptCanvasHeight(participants.length);
       const ctx = canvas.getContext("2d");
 
       if (!ctx) throw new Error("This browser could not prepare the receipt.");
