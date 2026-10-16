@@ -35,6 +35,7 @@ const { meetingReceiptCanvasHeight, meetingReceiptFooterTop, meetingReceiptLastR
   loadTypeScript("lib/meeting-receipt-layout.ts");
 const { parseCrosswordPurchasePayload } = loadTypeScript("lib/crossword/purchase.ts");
 const { parseWordSearchPurchasePayload } = loadTypeScript("lib/wordsearch/purchase.ts");
+const { canonicalizePurchaseBackup } = loadTypeScript("lib/purchase-backup.ts");
 
 test("receipts fit one, eight, twelve and twenty attendee groups", () => {
   for (const count of [1, 8, 12, 20]) {
@@ -62,4 +63,36 @@ test("word search rejects duplicate, short and overlong words", () => {
   assert.equal(parseWordSearchPurchasePayload({ ...payload, words: [words[0], words[0], ...words.slice(2)] }), null);
   assert.equal(parseWordSearchPurchasePayload({ ...payload, words: [{ id: "one", word: "A" }, ...words.slice(1)] }), null);
   assert.equal(parseWordSearchPurchasePayload({ ...payload, words: [{ id: "long", word: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" }, ...words.slice(1)] }), null);
+});
+
+test("portable backups use the exact canonical payload recorded in Stripe", () => {
+  const rawCrossword = {
+    title: "  My Crossword  ",
+    dedication: " hello ",
+    includeClickOnAnswerKey: true,
+    entries: ["PEACHES", "BALTIMORE", "BEES", "BOOKSHOP", "JOSIE", "HONEY", "SUNDAY", "MUSEUM"]
+      .map((answer, index) => ({ id: "custom-" + index, answer, clue: "Clue " + index })),
+  };
+  const expectedCrossword = parseCrosswordPurchasePayload(rawCrossword);
+  assert.equal(
+    JSON.stringify(canonicalizePurchaseBackup("crossword", rawCrossword)),
+    JSON.stringify(expectedCrossword),
+  );
+  assert.equal(expectedCrossword.entries[0].id, "memory-1");
+
+  const rawWordSearch = {
+    title: "  My Word Search ",
+    dedication: " hi ",
+    difficulty: "medium",
+    theme: "classic",
+    includeClickOnAnswerKey: false,
+    words: ["PEACHES", "BALTIMORE", "BEES", "BOOKSHOP", "JOSIE", "HONEY", "SUNDAY", "MUSEUM", "GARDEN", "PIZZA"]
+      .map((word, index) => ({ id: "draft-" + index, word })),
+  };
+  const expectedWordSearch = parseWordSearchPurchasePayload(rawWordSearch);
+  assert.equal(
+    JSON.stringify(canonicalizePurchaseBackup("wordsearch", rawWordSearch)),
+    JSON.stringify(expectedWordSearch),
+  );
+  assert.equal(expectedWordSearch.words[0].id, "word-1");
 });
