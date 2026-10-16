@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { generateWordSearch, normalizeWord, type WordSearchDifficulty, type WordSearchInput, type WordSearchResult, type WordSearchTheme } from "../../../lib/wordsearch";
 import type { WordSearchPurchasePayload } from "../../../lib/wordsearch/purchase";
+import { savePurchaseBackup } from "../../../lib/purchase-backup";
 import styles from "./custom-word-search.module.css";
 
 const starters: WordSearchInput[] = Array.from({ length: 10 }, (_, index) => ({ id: `word-${index + 1}`, word: "" }));
@@ -21,6 +22,7 @@ export function CustomWordSearchBuilder() {
   const [notice, setNotice] = useState<string | null>(null);
   const [checkoutState, setCheckoutState] = useState<"idle" | "loading">("idle");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [draftRestored, setDraftRestored] = useState(false);
 
   const completed = useMemo(() => words.filter((item) => normalizeWord(item.word).length >= 2), [words]);
   const errors = useMemo(() => {
@@ -35,32 +37,76 @@ export function CustomWordSearchBuilder() {
       return [item.id, message];
     }));
   }, [words, completed]);
+  const errorCount = [...errors.values()].filter(Boolean).length;
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const stored = sessionStorage.getItem("nlcl-wordsearch:draft");
-      if (!stored) return;
-
+    const frame = window.requestAnimationFrame(() => {
       try {
-        const payload = JSON.parse(stored) as WordSearchPurchasePayload;
-        setTitle(payload.title);
-        setDedication(payload.dedication);
-        setWords(payload.words);
-        setDifficulty(payload.difficulty);
-        setTheme(payload.theme);
-        setIncludeClickOnAnswerKey(payload.includeClickOnAnswerKey);
-        setResult(generateWordSearch(payload.words, payload.difficulty));
-
+        const stored = sessionStorage.getItem("nlcl-wordsearch:draft");
+        if (stored) {
+          const parsed = JSON.parse(stored) as Partial<WordSearchPurchasePayload> & {
+            previewGenerated?: boolean;
+          };
+          if (Array.isArray(parsed.words) && parsed.words.length >= 10 && parsed.words.length <= 30) {
+            setTitle(typeof parsed.title === "string" ? parsed.title : "A Little Word Search About Us");
+            setDedication(typeof parsed.dedication === "string" ? parsed.dedication : "");
+            setWords(parsed.words);
+            setDifficulty(parsed.difficulty ?? "medium");
+            setTheme(parsed.theme ?? "classic");
+            setIncludeClickOnAnswerKey(parsed.includeClickOnAnswerKey ?? true);
+            if (parsed.previewGenerated ?? parsed.words.every((item) => normalizeWord(item.word).length >= 2)) {
+              try { setResult(generateWordSearch(parsed.words, parsed.difficulty ?? "medium")); }
+              catch { setResult(null); }
+            }
+          }
+        }
         if (new URLSearchParams(window.location.search).get("checkout") === "cancelled") {
           setNotice("Checkout cancelled. Your word search is still here.");
         }
       } catch {
         sessionStorage.removeItem("nlcl-wordsearch:draft");
+      } finally {
+        setDraftRestored(true);
       }
-    }, 0);
-
-    return () => window.clearTimeout(timer);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    if (!draftRestored) return;
+    const timer = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem("nlcl-wordsearch:draft", JSON.stringify({
+          title, dedication, words, difficulty, theme, includeClickOnAnswerKey,
+          previewGenerated: Boolean(result),
+        }));
+      } catch {
+        // The editor remains usable if browser storage is blocked.
+      }
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [draftRestored, title, dedication, words, difficulty, theme, includeClickOnAnswerKey, result]);
+
+  function clearDraft() {
+    sessionStorage.removeItem("nlcl-wordsearch:draft");
+    setTitle("A Little Word Search About Us");
+    setDedication("");
+    setWords(starters.map((item) => ({ ...item })));
+    setDifficulty("medium");
+    setTheme("classic");
+    setIncludeClickOnAnswerKey(true);
+    setResult(null);
+    setCheckoutError(null);
+    setNotice("Draft cleared. You can start fresh.");
+  }
+
+  function purchasePayload(): WordSearchPurchasePayload {
+    return {
+      title: title.trim() || "A Little Word Search About Us",
+      dedication: dedication.trim(),
+      words: completed, difficulty, theme, includeClickOnAnswerKey,
+    };
+  }
 
   function updateWord(id: string, value: string) {
     setWords((current) => current.map((item) => item.id === id ? { ...item, word: value } : item));
@@ -83,7 +129,7 @@ export function CustomWordSearchBuilder() {
 
   async function startCheckout() {
     if (!result) return;
-    const payload: WordSearchPurchasePayload = { title: title.trim() || "A Little Word Search About Us", dedication: dedication.trim(), words: completed, difficulty, theme, includeClickOnAnswerKey };
+    const payload = purchasePayload();
     setCheckoutState("loading"); setCheckoutError(null);
     try {
       const response = await fetch("/api/wordsearch/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -109,14 +155,15 @@ export function CustomWordSearchBuilder() {
           <label>Puzzle title<input value={title} maxLength={60} onChange={(event) => { setTitle(event.target.value); setResult(null); }} /></label>
           <label>Short dedication <span>(optional)</span><input value={dedication} maxLength={100} placeholder="For Maya, finder of everything" onChange={(event) => setDedication(event.target.value)} /></label>
         </div>
+        <p role="status" aria-live="polite">{errorCount > 0 ? `${errorCount} word ${errorCount === 1 ? "needs" : "entries need"} attention.` : "All entered words pass the initial checks."}</p>
         <div className={styles.wordList}>
           {words.map((item, index) => <div className={styles.wordRow} key={item.id}>
             <span>{String(index + 1).padStart(2, "0")}</span>
-            <label><span className={styles.visuallyHidden}>Word {index + 1}</span><input value={item.word} maxLength={40} placeholder={index === 0 ? "A name, place, memory, or favorite thing" : ""} aria-invalid={Boolean(errors.get(item.id))} onChange={(event) => updateWord(item.id, event.target.value)} />{errors.get(item.id) && <small>{errors.get(item.id)}</small>}</label>
+            <label><span className={styles.visuallyHidden}>Word {index + 1}</span><input value={item.word} maxLength={40} placeholder={index === 0 ? "A name, place, memory, or favorite thing" : ""} aria-invalid={Boolean(errors.get(item.id))} aria-describedby={errors.get(item.id) ? `word-error-${item.id}` : undefined} onChange={(event) => updateWord(item.id, event.target.value)} />{errors.get(item.id) && <small id={`word-error-${item.id}`}>{errors.get(item.id)}</small>}</label>
             {words.length > 10 && <button type="button" aria-label={`Remove word ${index + 1}`} onClick={() => removeWord(item.id)}>×</button>}
           </div>)}
         </div>
-        <div className={styles.editorFooter}><button className={styles.secondaryButton} type="button" disabled={words.length >= 30} onClick={addWord}>+ Add another word</button><span>{completed.length} ready · 10 minimum · 30 maximum</span></div>
+        <div className={styles.editorFooter}><button className={styles.secondaryButton} type="button" disabled={words.length >= 30} onClick={addWord}>+ Add another word</button><span>{completed.length} ready · 10 minimum · 30 maximum</span><button className={styles.textButton} type="button" onClick={clearDraft}>Clear my draft</button></div>
 
         <fieldset className={styles.options}><legend>Difficulty</legend>{(["easy", "medium", "hard"] as WordSearchDifficulty[]).map((value) => <label key={value}><input type="radio" name="difficulty" checked={difficulty === value} onChange={() => { setDifficulty(value); setResult(null); }} /><strong>{value}</strong><span>{value === "easy" ? "Forward only" : value === "medium" ? "Some words run backward" : "Every direction is fair game"}</span></label>)}</fieldset>
         <fieldset className={styles.options}><legend>Paper mood</legend>{(["classic", "celebration", "kids"] as WordSearchTheme[]).map((value) => <label key={value}><input type="radio" name="theme" checked={theme === value} onChange={() => setTheme(value)} /><strong>{value}</strong><span>{value === "classic" ? "Warm and quietly giftable" : value === "celebration" ? "Confetti without the cleanup" : "Bright, friendly, still printable"}</span></label>)}</fieldset>
@@ -129,11 +176,15 @@ export function CustomWordSearchBuilder() {
         {!result ? <div className={styles.emptyState}><div className={styles.letterCloud} aria-hidden="true">W O R D<br/>S E A R<br/>C H ! !</div><p>Your puzzle will appear once ten words are ready to disappear.</p></div> : <div className={styles.paper}>
           <div className={styles.watermark} aria-hidden="true">PREVIEW · PURCHASE TO PRINT</div>
           <header><p>CUSTOM WORD SEARCH</p><h3>{title || "A Little Word Search About Us"}</h3>{dedication && <span>{dedication}</span>}</header>
-          <div className={styles.grid} style={{ gridTemplateColumns: `repeat(${result.size}, 1fr)` }}>{result.grid.flatMap((row, rowIndex) => row.map((letter, colIndex) => <span key={`${rowIndex}-${colIndex}`}>{letter}</span>))}</div>
-          <div className={styles.wordBank}>{result.words.map((word) => <span key={word}>{word}</span>)}</div>
+          <div className={styles.visuallyHidden} role="img" aria-label={`Word search preview: ${result.size} by ${result.size} letters, ${difficulty} difficulty, ${theme} theme. Hidden words: ${result.words.join(", ")}.`} />
+          <div className={styles.grid} aria-hidden="true" style={{ gridTemplateColumns: `repeat(${result.size}, 1fr)` }}>{result.grid.flatMap((row, rowIndex) => row.map((letter, colIndex) => <span key={`${rowIndex}-${colIndex}`}>{letter}</span>))}</div>
+          <div className={styles.wordBank} aria-hidden="true">{result.words.map((word) => <span key={word}>{word}</span>)}</div>
           <footer>Nice Little Click Lab · Click No. 004</footer>
         </div>}
-        {result && <div className={styles.purchaseBox}><label className={styles.checkLabel}><input type="checkbox" checked={includeClickOnAnswerKey} onChange={(event) => setIncludeClickOnAnswerKey(event.target.checked)} />Let Click sign the answer key</label><p>The $3 download includes the printable puzzle and a separate answer key.</p><button className={styles.buyButton} type="button" disabled={checkoutState === "loading"} onClick={startCheckout}>{checkoutState === "loading" ? "Opening checkout..." : "Get the printable PDF · $3"}</button>{checkoutError && <p className={styles.error}>{checkoutError}</p>}<small>Your words are used only to build this purchase. The Lab does not keep a recoverable copy.</small></div>}
+        {result && <div className={styles.purchaseBox}><label className={styles.checkLabel}><input type="checkbox" checked={includeClickOnAnswerKey} onChange={(event) => setIncludeClickOnAnswerKey(event.target.checked)} />Let Click sign the answer key</label><p>The $3 download includes the printable puzzle and a separate answer key.</p>
+          <p>Your draft is saved in this tab while you edit. Save a private copy before paying: without this browser or a backup, the Lab cannot rebuild your original gift.</p>
+          <button className={styles.secondaryButton} type="button" onClick={() => savePurchaseBackup("wordsearch", purchasePayload())}>Save purchase backup (.json)</button>
+          <button className={styles.buyButton} type="button" disabled={checkoutState === "loading"} onClick={startCheckout}>{checkoutState === "loading" ? "Opening checkout..." : "Get the printable PDF · $3"}</button>{checkoutError && <p className={styles.error}>{checkoutError}</p>}<small>Your words are used only to build this purchase. The Lab does not keep a recoverable copy.</small></div>}
       </section>
     </div>
   </div>;
