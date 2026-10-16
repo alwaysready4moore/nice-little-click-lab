@@ -148,7 +148,7 @@ export default function AboutPage() {
 
         <div className="mt-7 grid gap-6 md:grid-cols-2">
           <article className="lab-card p-7 sm:p-8">
-            <p className="click-number">Fresh from the Lab</p>
+            <p className="click-number">Another free Click</p>
             <h3 className="lab-heading mt-5 text-4xl">
               Should This Have Been an Email?
             </h3>
@@ -159,7 +159,7 @@ export default function AboutPage() {
               className="mt-6 inline-flex font-bold text-[var(--accent-strong)] underline decoration-1 underline-offset-4"
               href="/clicks/should-have-been-an-email"
             >
-              Try the newest Click
+              Try the meeting test
             </Link>
           </article>
 
@@ -219,7 +219,7 @@ export default function AboutPage() {
           <div className="mx-auto w-full max-w-[18rem] rounded-[1.5rem] border border-[var(--border)] bg-white/55 p-5 shadow-[0_20px_45px_rgba(75,50,20,0.12)]">
             <Image
               src="/images/click/Click-Profile.webp"
-              alt="Click, the golden retriever lab assistant"
+              alt="Click, the black Labrador lab assistant"
               width={560}
               height={560}
               className="h-auto w-full"
