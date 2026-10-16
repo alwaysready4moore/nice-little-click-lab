@@ -2,7 +2,17 @@
  * Portable, user-controlled purchase backups. Contains puzzle inputs only,
  * never payment details, and never leaves the browser until a paid PDF request.
  */
+import { parseCrosswordPurchasePayload } from "./crossword/purchase";
+import { parseWordSearchPurchasePayload } from "./wordsearch/purchase";
+
 export type PurchaseBackupKind = "crossword" | "wordsearch";
+
+/** Match the server's canonical IDs and trimming before hashing for Stripe. */
+export function canonicalizePurchaseBackup(kind: PurchaseBackupKind, payload: unknown) {
+  return kind === "crossword"
+    ? parseCrosswordPurchasePayload(payload)
+    : parseWordSearchPurchasePayload(payload);
+}
 
 type BackupEnvelope = {
   format: "nice-little-click-lab-purchase-backup";
@@ -68,7 +78,11 @@ export async function readMatchingPurchaseBackup<T>(
   }
   // The hash is identical to the JSON.stringify hash checked server-side when
   // generating a paid PDF. A different draft cannot reuse a paid receipt.
-  const bytes = new TextEncoder().encode(JSON.stringify(saved.payload));
+  const canonicalPayload = canonicalizePurchaseBackup(kind, saved.payload);
+  if (!canonicalPayload) {
+    throw new Error("This backup contains invalid puzzle details.");
+  }
+  const bytes = new TextEncoder().encode(JSON.stringify(canonicalPayload));
   const digest = await globalThis.crypto.subtle.digest("SHA-256", bytes);
   const hash = [...new Uint8Array(digest)]
     .map((byte) => byte.toString(16).padStart(2, "0"))
