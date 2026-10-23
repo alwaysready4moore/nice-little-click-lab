@@ -102,7 +102,20 @@ export const clicks: Click[] = [
     purchaseMode: "free",
     deliveryMode: "onsite",
     featured: true,
-    badge: "NEW",
     updatedAt: "2026-10-13",
+  },
+  {
+    slug: "take-your-seat",
+    number: 8,
+    name: "Take Your Seat",
+    shortDescription:
+      "Arrange wedding tables or classroom desks, assign everyone a seat, and print the finished chart.",
+    status: "live",
+    priceLabel: "Free",
+    purchaseMode: "free",
+    deliveryMode: "onsite",
+    featured: true,
+    badge: "NEW",
+    updatedAt: "2026-10-23",
   },
 ];
