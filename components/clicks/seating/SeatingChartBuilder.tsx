@@ -9,6 +9,31 @@ function download(blob: Blob, name: string) {
   const url = URL.createObjectURL(blob), link = document.createElement("a");
   link.href = url; link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+const tableColors = ["#f6d3c8", "#d6e8d9", "#e4dcf1", "#f9e4a9", "#d5e7ed", "#f2dbe5"];
+
+function Flower({ x = 0, y = 0 }: { x?: number; y?: number }) {
+  return <g transform={`translate(${x} ${y})`} aria-hidden="true" pointerEvents="none">
+    {[0, 72, 144, 216, 288].map(angle => <ellipse key={angle} cx="0" cy="-7" rx="4.5" ry="6" transform={`rotate(${angle})`} fill="#fffdf5" stroke="#39352f" strokeWidth="1.5" />)}
+    <circle r="4" fill="#f5c76b" stroke="#39352f" strokeWidth="1.5" />
+  </g>;
+}
+
+function LayoutPicture({ kind }: { kind: Template }) {
+  return <svg viewBox="0 0 96 62" aria-hidden="true" fill="none" stroke="#39352f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    {kind === "wedding" ? <>
+      <rect x="19" y="5" width="17" height="11" rx="5" fill="#d6e8d9" /><rect x="60" y="5" width="17" height="11" rx="5" fill="#e4dcf1" />
+      <rect x="19" y="44" width="17" height="11" rx="5" fill="#e4dcf1" /><rect x="60" y="44" width="17" height="11" rx="5" fill="#d6e8d9" />
+      <ellipse cx="48" cy="30" rx="32" ry="18" fill="#f6d3c8" /><Flower x={48} y={30} />
+    </> : kind === "classroom" ? <>
+      <rect x="20" y="4" width="56" height="14" rx="4" fill="#d6e8d9" /><path d="M34 11h28" />
+      {[20, 55].map(x => <g key={x}><rect x={x} y="28" width="23" height="17" rx="5" fill="#f9e4a9" /><rect x={x+3} y="49" width="17" height="7" rx="3" fill="#d5e7ed" /><path d={`M${x+7} 33l7 6`} /></g>)}
+    </> : <>
+      <rect x="21" y="5" width="48" height="50" rx="7" fill="#fffdf5" transform="rotate(-7 45 30)" /><path d="M39 30h18m-9-9v18" stroke="#6b8975" />
+      <path d="m72 9 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#f5c76b" />
+    </>}
+  </svg>;
+}
+
 export function SeatingChartBuilder() {
   const [project, setProject] = useState<SeatingProject>(() => createProject("wedding"));
   const [history, setHistory] = useState<SeatingProject[]>([]);
@@ -114,7 +139,7 @@ export function SeatingChartBuilder() {
     if (!svg.current) return;
     const clone = svg.current.cloneNode(true) as SVGSVGElement;
     clone.querySelectorAll("[data-editor-only]").forEach(node => node.remove());
-    clone.querySelectorAll('[data-person-selected="true"]').forEach(node => { const box=node.querySelector("rect"), text=node.querySelector("text"); box?.setAttribute("fill", "#dcebe5"); box?.setAttribute("stroke", "#6fa7a3"); text?.setAttribute("fill", "#222222"); });
+    clone.querySelectorAll('[data-person-selected="true"]').forEach(node => { const box=node.querySelector("rect:last-of-type"), text=node.querySelector("text"); box?.setAttribute("fill", "#dcebe5"); box?.setAttribute("stroke", "#6fa7a3"); text?.setAttribute("fill", "#222222"); });
     clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     download(new Blob([new XMLSerializer().serializeToString(clone)], { type: "image/svg+xml;charset=utf-8" }), "take-your-seat-room.svg");
     setMessage("Room image saved. Print the chart for the full assignment list.");
@@ -122,8 +147,8 @@ export function SeatingChartBuilder() {
 
   return <div className={styles.builder}>
     <div className={styles.intro}>
-      <div><p className="lab-label">Click 008 · Free · No account</p><h1 className="font-display">Take Your Seat</h1><p>Make room for everyone. Then put their name on it.</p></div>
-      <Image src="/images/click/click-sitting.png" alt="" width={100} height={105} className={styles.click} />
+      <div><p className="lab-label">Click 008 · Free · No account</p><h1 className="font-display">Take Your Seat<span aria-hidden="true" className={styles.titleFlower}>✿</span></h1><p>Make room for everyone. Then put their name on it.</p></div>
+      <div className={styles.mascot}><span className={styles.mascotNote}>A place for your favorite people.</span><Image src="/images/click/click-sitting.png" alt="" width={160} height={168} className={styles.click} /></div>
     </div>
     <div className={styles.toolbar} aria-label="Project actions">
       <button type="button" onClick={undo} disabled={!history.length}>↶ Undo</button>
@@ -139,7 +164,7 @@ export function SeatingChartBuilder() {
         <div className={styles.tabs}><button type="button" aria-pressed={panel === "room"} onClick={() => setPanel("room")}>1. Your room</button><button type="button" aria-pressed={panel === "people"} onClick={() => setPanel("people")}>2. Your people</button></div>
         {panel === "room" ? <>
           <label className={styles.field}>Chart title<input value={project.title} maxLength={80} onChange={e => commit({ ...project, title: e.target.value })} /></label>
-          <fieldset><legend>Start with a layout</legend><div className={styles.wrap}>{([['wedding','Wedding'],['classroom','Classroom'],['blank','Blank room']] as const).map(([key, label]) => <button type="button" key={key} onClick={() => applyTemplate(key)}>{label}</button>)}</div><p className={styles.hint}>Replaces the room and clears seats. Your names stay.</p></fieldset>
+          <fieldset><legend>Start with a layout</legend><div className={styles.layoutCards}>{([['wedding','Wedding'],['classroom','Classroom'],['blank','Blank room']] as const).map(([key, label]) => <button type="button" key={key} onClick={() => applyTemplate(key)}><LayoutPicture kind={key} /><span>{label}</span></button>)}</div><p className={styles.hint}>Replaces the room and clears seats. Your names stay.</p></fieldset>
           <fieldset><legend>Add to the room</legend><div className={styles.addGrid}>{([['round','◯ Round table'],['rectangle','▭ Long table'],['desk','▱ Desk'],['label','＋ Room label']] as const).map(([kind,label]) => <button type="button" key={kind} disabled={project.furniture.length >= LIMITS.furniture} onClick={() => addFurniture(kind)}>{label}</button>)}</div></fieldset>
           {furniture ? <fieldset><legend>Edit selected item</legend>
             <label className={styles.field}>Name<input maxLength={40} value={furniture.label} onChange={e => commit(editFurniture(project, furniture.id, { label: e.target.value }))} /></label>
@@ -164,7 +189,7 @@ export function SeatingChartBuilder() {
         <p className={styles.privacy}>Your names stay in this browser tab. Save a project file before leaving; there’s no automatic save.</p>
       </aside>
       <section className={styles.planSection} aria-label="Room plan">
-        <div className={styles.planHeading}><div><p className="lab-label">Your seating chart</p><h2>{project.title || "Untitled chart"}</h2></div><div className={styles.counts}><span><strong>{assigned}/{project.people.length}</strong> seated</span><span><strong>{capacity-assigned}</strong> empty seats</span><span><strong>{full}</strong> full tables / desks</span></div></div>
+        <div className={styles.planHeading}><div><p className="lab-label">✿ Your happy gathering</p><h2>{project.title || "Untitled chart"}</h2></div><div className={styles.counts}><span><strong>{assigned}/{project.people.length}</strong> seated</span><span><strong>{capacity-assigned}</strong> empty seats</span><span><strong>{full}</strong> full tables / desks</span></div></div>
         {project.people.length > 0 && <div className={styles.placementBar} aria-label="Seat people without leaving the room">
           <label className={styles.field}>Place this person<select value={selectedPerson || ""} onChange={e => { setSelectedPerson(e.target.value || null); setMessage(e.target.value ? `${displayName(e.target.value)} selected. Tap a seat or choose one below.` : "Choose a person to place."); }}><option value="">Choose a person</option>{project.people.map(p => <option key={p.id} value={p.id}>{displayName(p.id)}{p.furnitureId === null ? " · unseated" : " · seated"}</option>)}</select></label>
           <label className={styles.field}>Choose their seat<select disabled={!person} value={seatOptions.find(o=>o.furnitureId===person?.furnitureId && o.seat===person?.seat)?.value || "unassigned"} onChange={e=>changeSeat(e.target.value)}><option value="unassigned">Unassigned</option>{seatOptions.map(option => { const occupant=project.people.find(p=>p.furnitureId===option.furnitureId&&p.seat===option.seat&&p.id!==person?.id); return <option key={option.value} value={option.value}>{option.label}{occupant ? ` · occupied by ${displayName(occupant.id)}` : ""}</option>; })}</select></label>
@@ -176,11 +201,18 @@ export function SeatingChartBuilder() {
         <div className={styles.canvasScroll}>
           <svg ref={svg} viewBox={`0 0 ${ROOM.width} ${ROOM.height}`} className={styles.canvas} aria-label="Interactive seating plan. Furniture and seats can be selected with the keyboard." onPointerMove={moveDrag} onPointerUp={finishDrag} onPointerCancel={finishDrag}>
             <title>{project.title || "Seating chart"}</title><desc>Room layout with named seats. The full names and assignments are also listed below.</desc>
-            <rect width={ROOM.width} height={ROOM.height} fill="#fffdf7" />
+            <rect width={ROOM.width} height={ROOM.height} fill="#fffdf5" />
+            <g aria-hidden="true" pointerEvents="none">
+              <rect x="14" y="14" width={ROOM.width-28} height={ROOM.height-28} rx="28" fill="none" stroke="#d8cdbb" strokeWidth="2" strokeDasharray="3 9" />
+              {!project.furniture.some(f => f.kind === "desk") && <><path d="M32 30 Q600 110 1168 30" fill="none" stroke="#39352f" strokeWidth="2" />
+              {[110, 230, 350, 470, 590, 710, 830, 950, 1070].map((x, i) => <path key={x} d={`M${x-15} ${39+Math.sin(i/8*Math.PI)*28} l30 0 -15 24Z`} fill={tableColors[i%tableColors.length]} stroke="#39352f" strokeWidth="2" strokeLinejoin="round" />)}</>}
+              <Flower x={42} y={ROOM.height-38} /><Flower x={ROOM.width-42} y={ROOM.height-38} />
+            </g>
             <defs><pattern id="seat-grid" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#e8e1d4" /></pattern></defs><rect width={ROOM.width} height={ROOM.height} fill="url(#seat-grid)" data-editor-only="true" />
             {!project.furniture.length && <text x="600" y="400" textAnchor="middle" fontSize="25" fill="#6e665d">Your room, your arrangement. Add an item to begin.</text>}
-            {project.furniture.map(f => {
+            {project.furniture.map((f, furnitureIndex) => {
               const seated = project.people.filter(p=>p.furnitureId===f.id).length, active = selectedFurniture===f.id;
+              const color = tableColors[furnitureIndex % tableColors.length];
               return <g key={f.id} transform={`translate(${f.x} ${f.y})`}>
                 {(active || overlaps.has(f.id)) && <rect data-editor-only="true" x={-dimensions(f.kind).width/2+2} y={-dimensions(f.kind).height/2+2} width={dimensions(f.kind).width-4} height={dimensions(f.kind).height-4} rx="20" fill="none" stroke={overlaps.has(f.id) ? "#a34624" : "#315f5b"} strokeWidth="3" strokeDasharray="7 5" />}
                 <g role="button" tabIndex={0} aria-label={`Move or edit ${f.label || "Untitled item"}`} onPointerDown={e=>startDrag(e,f.id)} onClick={()=>setSelectedFurniture(f.id)} onKeyDown={e=>{
@@ -188,14 +220,26 @@ export function SeatingChartBuilder() {
                   const offset=({ArrowLeft:[-10,0],ArrowRight:[10,0],ArrowUp:[0,-10],ArrowDown:[0,10]} as Record<string,number[]>)[e.key];
                   if(offset){e.preventDefault();commit(editFurniture(project,f.id,clampPosition(f.kind,f.x+offset[0],f.y+offset[1])));}
                 }} className={styles.furniture}>
-                  {f.kind==="round" ? <ellipse cx="0" cy="0" rx="59" ry="48" fill="#fff3d8" stroke="#6d5540" strokeWidth="3" /> : <rect x={f.kind==="label" ? -88 : f.kind==="rectangle" ? -135 : -83} y={f.kind==="desk" ? -44 : -27} width={f.kind==="label" ? 176 : f.kind==="rectangle" ? 270 : 166} height={f.kind==="desk" ? 59 : 54} rx={f.kind==="label" ? 9 : 15} fill={f.kind==="label" ? "#ece7dd" : "#fff3d8"} stroke="#6d5540" strokeWidth="3" />}
-                  <text x="0" y={f.kind==="desk" ? -16 : -2} textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="15" fontWeight="700" fill="#222222">{short(f.label || "Untitled",18)}</text>
-                  {f.capacity>0 && <text x="0" y={f.kind==="desk" ? 1 : 18} textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="12" fill="#6e665d">{seated}/{f.capacity} seated</text>}
+                  {f.kind==="round" ? <>
+                    <ellipse cx="0" cy="5" rx="61" ry="49" fill="#39352f" opacity=".14" />
+                    <ellipse cx="0" cy="0" rx="59" ry="48" fill={color} stroke="#39352f" strokeWidth="4" />
+                    <ellipse cx="0" cy="0" rx="50" ry="39" fill="none" stroke="#fffdf5" strokeWidth="2" strokeDasharray="2 5" />
+                    <Flower y={-25} />
+                  </> : <>
+                    <rect x={f.kind==="label" ? -88 : f.kind==="rectangle" ? -135 : -83} y={f.kind==="desk" ? -40 : -23} width={f.kind==="label" ? 176 : f.kind==="rectangle" ? 270 : 166} height={f.kind==="desk" ? 59 : 54} rx="16" fill="#39352f" opacity=".14" />
+                    <rect x={f.kind==="label" ? -88 : f.kind==="rectangle" ? -135 : -83} y={f.kind==="desk" ? -44 : -27} width={f.kind==="label" ? 176 : f.kind==="rectangle" ? 270 : 166} height={f.kind==="desk" ? 59 : 54} rx="16" fill={f.kind==="label" ? "#d6e8d9" : color} stroke="#39352f" strokeWidth="4" />
+                    {f.kind==="rectangle" && <><Flower x={-108} /><Flower x={108} /></>}
+                    {f.kind==="desk" && <path d="m57-29 8 3-2 5-8-3Z" fill="#fffdf5" stroke="#39352f" strokeWidth="1.5" />}
+                  </>}
+                  <text x="0" y={f.kind==="desk" ? -16 : -2} textAnchor="middle" fontFamily="Trebuchet MS,system-ui,sans-serif" fontSize="15" fontWeight="700" fill="#222222">{short(f.label || "Untitled",18)}</text>
+                  {f.capacity>0 && <text x="0" y={f.kind==="desk" ? 1 : 18} textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="12" fill="#554d45">{seated}/{f.capacity} seated</text>}
                 </g>
                 {seatPositions(f).map((position,seat)=>{
                   const occupant=project.people.find(p=>p.furnitureId===f.id&&p.seat===seat), chosen=occupant?.id===selectedPerson;
                   return <g key={seat} role="button" tabIndex={0} data-person-selected={chosen} aria-label={`${f.label}, seat ${seat+1}: ${occupant ? displayName(occupant.id) : "empty"}`} className={styles.seat} transform={`translate(${position.x} ${position.y})`} onClick={()=>assign(f.id,seat)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();assign(f.id,seat);}}}>
-                    <title>{occupant ? displayName(occupant.id) : `Empty seat ${seat+1}`}</title><rect x={-position.width/2} y={-position.height/2} width={position.width} height={position.height} rx="9" fill={chosen ? "#315f5b" : occupant ? "#dcebe5" : "#ffffff"} stroke={chosen ? "#222222" : occupant ? "#6fa7a3" : "#bfb6a8"} strokeWidth="2" />
+                    <title>{occupant ? displayName(occupant.id) : `Empty seat ${seat+1}`}</title>
+                    <rect x={-position.width/2} y={-position.height/2+4} width={position.width} height={position.height} rx="11" fill="#39352f" opacity=".13" pointerEvents="none" />
+                    <rect x={-position.width/2} y={-position.height/2} width={position.width} height={position.height} rx="11" fill={chosen ? "#315f5b" : occupant ? "#c4ddce" : "#fffaf0"} stroke="#39352f" strokeWidth="2.5" />
                     <text x="0" y="4" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize={f.kind==="desk" ? 13 : 10} fill={chosen ? "#ffffff" : "#222222"}>{occupant ? short(displayName(occupant.id),f.kind==="desk" ? 20 : position.width<50 ? 6 : 8) : seat+1}</text>
                   </g>;
                 })}
@@ -203,7 +247,7 @@ export function SeatingChartBuilder() {
             })}
           </svg>
         </div>
-        <div className={styles.legend}><span>○ Empty seat</span><span>● Assigned</span><span>Dark teal = selected person</span></div>
+        <div className={styles.legend}><span><i className={styles.emptyDot} /> Empty seat</span><span><i className={styles.assignedDot} /> Assigned</span><span>Dark teal = selected person</span></div>
         <section className={styles.assignments} aria-label="Full assignment list"><h2>Who’s sitting where</h2><p className={styles.hint}>Full names are listed here when the room preview shortens them.</p><div className={styles.assignmentGrid}>{project.furniture.filter(f=>f.capacity>0).map(f=><div key={f.id} className={styles.assignmentCard}><h3>{f.label || "Untitled"} <small>{project.people.filter(p=>p.furnitureId===f.id).length}/{f.capacity}</small></h3><ol>{Array.from({length:f.capacity},(_,seat)=>{const p=project.people.find(p=>p.furnitureId===f.id&&p.seat===seat);return <li key={seat}>{p ? displayName(p.id) : <span className={styles.empty}>Empty</span>}</li>;})}</ol></div>)}</div><div className={styles.unassigned}><h3>Still needs a seat ({project.people.length-assigned})</h3><p>{project.people.filter(p=>p.furnitureId===null).map(p=>displayName(p.id)).join(" · ") || "Everyone on the list has a seat."}</p></div></section>
         <p className={styles.printFooter}>Made with Take Your Seat · Nice Little Click Lab · Layout illustration, not a measured floor plan.</p>
       </section>

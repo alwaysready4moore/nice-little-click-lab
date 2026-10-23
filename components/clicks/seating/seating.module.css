@@ -18,3 +18,107 @@
 @media(max-width:1000px){.placementBar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.placementBar button{grid-column:1/-1}}
 @media(max-width:720px){.placementBar{padding:1rem;grid-template-columns:minmax(0,1fr)}.placementBar button{grid-column:auto;min-height:48px}}
 @media print{.placementBar{display:none!important}.assignmentCard ol{list-style-type:decimal}.assignmentCard li{overflow-wrap:anywhere}}
+
+/* A cozy paper-and-ink workspace, with the same readable controls. */
+.mascot{display:flex;align-items:center;gap:.8rem;max-width:280px}
+.mascotNote{font-family:var(--font-handwritten);font-size:1.5rem;line-height:1.1;transform:rotate(-7deg);color:#315f5b}
+.titleFlower{display:inline-block;font-family:serif;font-size:.6em;color:#a05749;margin-left:.25em;vertical-align:middle;transform:rotate(12deg)}
+.layoutCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}
+.layoutCards svg{width:100%;height:54px;margin-bottom:.3rem}
+.builder .layoutCards button{padding:.6rem .25rem .55rem;font-size:.73rem;border-radius:1rem}
+.layoutCards button:nth-child(1){background:#fce9e0}
+.layoutCards button:nth-child(2){background:#e5eee2}
+.layoutCards button:nth-child(3){background:#eee7f5}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.emptyDot,.assignedDot{display:inline-block;width:14px;height:14px;border:2px solid #39352f;border-radius:5px;background:#fffaf0}
+.assignedDot{background:#c4ddce}
+@media screen{
+  .builder{--ink:#39352f;max-width:1440px;padding-top:2rem}
+  .intro{position:relative;padding:.5rem 1rem 1.5rem;gap:2rem}
+  .intro h1{font-size:clamp(3.4rem,6vw,5.4rem);letter-spacing:-.025em;margin:.55rem 0 .6rem}
+  .intro p:last-child{font-size:1.05rem;color:#655a50;max-width:34rem}
+  .click{width:145px;max-height:165px;object-fit:contain}
+  .intro :global(.lab-label){display:inline-block;padding:.45rem .7rem;border:1.5px solid var(--ink);border-radius:8px;background:#f9e4a9;transform:rotate(-2deg);font-size:.7rem;color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+  .toolbar{padding:.8rem 1rem;background:#e8eee3;border:2px solid var(--ink);border-radius:1.2rem;box-shadow:3px 4px 0 #d8d3bf;align-items:center}
+  .toolbar button:nth-of-type(2){margin-left:auto}
+  .builder button{border:1.7px solid var(--ink);border-radius:.85rem;background:#fffdf5;box-shadow:0 3px 0 var(--ink);font-weight:700;transition:transform .12s ease,box-shadow .12s ease,background .12s ease}
+  .builder button:hover:enabled{background:#f9e4a9;border-color:var(--ink);transform:translateY(-1px);box-shadow:0 4px 0 var(--ink)}
+  .builder button:active:enabled{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+  .builder button:disabled{opacity:.48;box-shadow:none}
+  .builder .primary{background:#315f5b;border-color:var(--ink);color:#fffdf5}
+  .builder .primary:hover:enabled{background:#264b47}
+  .status{display:flex;align-items:center;gap:.6rem;min-height:3.8rem;font-size:.88rem;margin:0 .25rem;color:#494a3c}
+  .status::before{content:'✦';font-size:1.1rem;color:#8d6740}
+  .workspace{grid-template-columns:310px minmax(0,1fr);gap:1.35rem}
+  .sidebar{background:#fffdf5;border:2px solid var(--ink);border-radius:1.4rem;box-shadow:4px 5px 0 #dfd6c4;padding:1.1rem;gap:1.3rem}
+  .tabs{gap:.6rem;padding-bottom:.6rem;border-bottom:1px dashed #cbbfae}
+  .tabs button{border-radius:.85rem .85rem .5rem .5rem;padding:.7rem .4rem;box-shadow:0 2px 0 var(--ink)}
+  .tabs button[aria-pressed=true]{background:#f9e4a9;border-color:var(--ink)}
+  .field{color:#494036;gap:.45rem;font-size:.85rem}
+  .field input:not([type=range]),.field select,.field textarea{background:#fffefb;border:1.5px solid #a49784;border-radius:.7rem;padding:.65rem;color:#39352f}
+  .field input[type=range]{accent-color:#315f5b}
+  .sidebar legend{font-family:var(--font-handwritten);font-weight:400;font-size:1.45rem;color:#39352f}
+  .hint,.privacy{color:#6b6054;font-size:.78rem}
+  .addGrid button{font-size:.8rem;min-height:46px}
+  .addGrid button:nth-child(1){background:#fce9e0}
+  .addGrid button:nth-child(2){background:#eee7f5}
+  .addGrid button:nth-child(3){background:#f9e4a9}
+  .addGrid button:nth-child(4){background:#e5eee2}
+  .privacy{border-top:1px dashed #cbbfae}
+  .planSection{border:2px solid var(--ink);border-radius:1.5rem;background:#fffdf5;box-shadow:5px 6px 0 #dfd6c4}
+  .planHeading{background:#f5ded2;padding:1.1rem 1.35rem 1rem;border-bottom:2px solid var(--ink);gap:1.25rem}
+  .planHeading h2{font-family:var(--font-handwritten);font-weight:400;font-size:clamp(1.8rem,2.7vw,2.4rem);line-height:1.1;color:#39352f}
+  .planHeading :global(.lab-label){font-size:.62rem;letter-spacing:.12em;color:#6b5044}
+  .counts{gap:.6rem;flex-wrap:nowrap;color:#625549}
+  .counts span{padding:.5rem .6rem;background:#fffaf0;border:1.5px solid var(--ink);border-radius:.8rem;min-width:68px;text-align:center;font-size:.65rem;line-height:1.35}
+  .counts strong{font-size:1.15rem;color:#39352f;margin-bottom:.15rem}
+  .planHelp{padding:.8rem 1.25rem;font-size:.8rem;line-height:1.6;margin:0;background:#fffaf0;color:#5d584c}
+  .canvasScroll{border-top:1px dashed #d8cdbb;border-bottom:1px dashed #d8cdbb;background:#fffdf5}
+  .canvas{min-width:620px}
+  .legend{padding:.8rem 1.25rem;background:#fffaf0;color:#655a50;gap:1.2rem}
+  .placementBar{padding:1rem 1.25rem;background:#e8eee3;border-block:0;border-bottom:1px dashed #b9c4af}
+  .assignments{padding:1.3rem;background:#f5f0e7;border-top:2px solid var(--ink)}
+  .assignments h2{font-family:var(--font-handwritten);font-weight:400;font-size:1.9rem;color:#39352f}
+  .assignmentGrid{gap:1rem;margin-top:1.15rem}
+  .assignmentCard{position:relative;background:#fffdf5;border:1.5px solid var(--ink);border-radius:1rem;box-shadow:2px 3px 0 #d6cbbb;padding:1rem .85rem .8rem;border-top:7px solid #e6b8a7}
+  .assignmentCard:nth-child(6n+2){border-top-color:#b2ceba}
+  .assignmentCard:nth-child(6n+3){border-top-color:#c9bbdf}
+  .assignmentCard:nth-child(6n+4){border-top-color:#e4c77f}
+  .assignmentCard:nth-child(6n+5){border-top-color:#aacbd5}
+  .assignmentCard:nth-child(6n+6){border-top-color:#deb8cb}
+  .assignmentCard h3{font-family:var(--font-handwritten);font-size:1.4rem;font-weight:400;line-height:1.1;align-items:center}
+  .assignmentCard h3 small{font-family:var(--font-body);font-size:.7rem}
+  .assignmentCard ol{margin-top:.8rem}
+  .assignmentCard li{border-bottom:1px dotted #e6ddd0;padding:.1rem 0 .1rem .2rem}
+  .assignmentCard li:last-child{border-bottom:0}
+  .empty{color:#807263;font-style:italic}
+  .unassigned{padding:.8rem 1rem;border:1px dashed #b4a48f;border-radius:1rem;background:#fffaf0;font-size:.83rem}
+  .unassigned h3{font-size:.9rem;margin:0 0 .25rem}
+  .printFooter{background:#f5f0e7;padding:0 1.3rem 1.2rem;color:#756857}
+  .builder .danger{background:#fce5df;color:#823f30}
+  .roster button[aria-pressed=true]{background:#d6e8d9;border-color:var(--ink)}
+}
+@media screen and (max-width:1100px){
+  .workspace{grid-template-columns:280px minmax(0,1fr)}
+  .planHeading{align-items:start;flex-direction:column}
+  .counts{width:100%}.counts span{flex:1}
+  .mascotNote{font-size:1.3rem}
+}
+@media screen and (max-width:720px){
+  .builder{padding:1.3rem .8rem 3rem}.intro{gap:.4rem;padding:.3rem .25rem 1.25rem}
+  .intro h1{font-size:clamp(2.9rem,10vw,4rem)}.intro p:last-child{font-size:.9rem;max-width:18rem}
+  .titleFlower{margin-left:.1em;font-size:.5em}
+  .mascot{max-width:90px}.mascotNote{display:none}.click{width:85px}
+  .intro :global(.lab-label){font-size:.55rem;padding:.4rem}
+  .toolbar{gap:.65rem;padding:.8rem}.toolbar button{font-size:.8rem;flex:1 1 40%;padding:.65rem .4rem}
+  .toolbar button:nth-of-type(2){margin-left:0}.toolbar .primary{flex-basis:100%}
+  .status{min-height:3.5rem;font-size:.8rem;line-height:1.4;padding:.6rem .15rem}
+  .workspace{grid-template-columns:1fr;gap:1.3rem}
+  .sidebar{padding:1rem}.layoutCards svg{height:48px}.builder .layoutCards button{font-size:.8rem}
+  .planHeading{padding:1rem}.planHelp{padding:.7rem 1rem}.placementBar{padding:1rem}
+  .canvasScroll{max-height:500px}.counts{gap:.5rem}.counts span{min-width:0}
+  .assignments{padding:1rem}.assignmentCard{padding:.85rem .7rem .65rem}.assignmentCard h3{font-size:1.25rem}
+  .legend{gap:.8rem;padding:.75rem 1rem;font-size:.68rem}
+}
+@media(prefers-reduced-motion:reduce){.builder button{transition:none}}
+@media print{.mascot{display:none!important}.assignmentCard{box-shadow:none}.canvas [data-person-selected=true] rect:first-of-type{fill:#39352f;stroke:none}.canvas [data-person-selected=true] rect:last-of-type{fill:#c4ddce;stroke:#39352f}}
