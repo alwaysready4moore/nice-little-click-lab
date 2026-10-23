@@ -1,0 +1,185 @@
+Click Style Guide
+
+
+Version 2.0 • Approved October 22, 2026
+Nice Little Click Lab
+
+
+Character Overview
+
+
+Name: Click
+Species: Golden retriever puppy
+Role: Official Lab Assistant
+
+
+Click is the quiet little resident of Nice Little Click Lab. He should feel like a real puppy who wandered into a tiny workshop and decided to stay. He is not a loud mascot or a spokesperson. He appears naturally in the Lab’s world, usually sleeping, observing, carrying something, or attempting to help.
+
+
+Personality
+
+
+• Incredibly earnest
+• Slightly sleepy
+• Accidentally helpful
+• Curious but low-key
+• Gentle and observant
+• Never speaks
+
+
+Visual Direction
+
+
+Click should have a relaxed, cozy, lo-fi feel. His expressions are subtle, his poses are grounded, and his charm comes from small details rather than exaggerated cartoon behavior.
+
+
+Core appearance:
+
+
+• Warm golden fur
+• Soft cream highlights
+• Teal collar and teal goggles resting on his forehead
+• White mouse-cursor-shaped collar tag
+• Bold charcoal outer contours with expressive tapering and lighter interior lines
+• Clean matte color with restrained hand-drawn texture
+• Minimal, warm shading
+• Transparent background whenever practical
+
+
+Style Rules
+
+
+Do:
+
+
+• Keep him recognizable across every pose
+• Use relaxed body language
+• Keep his proportions soft and puppy-like
+• Let him exist naturally inside scenes
+• Make each pose readable at small web sizes
+• Create transparent PNG assets that can be dropped directly into layouts
+
+
+Avoid:
+
+
+• Hyper-cartoon styling
+• Giant anime eyes
+• Overly expressive faces
+• A tongue constantly hanging out
+• Thin washed-out outlines, dense fur rendering, or shiny 3D rendering
+• Dressing him in full outfits
+• Using him like a corporate mascot who points at buttons
+• Plastering him onto every page
+
+
+Signature Details
+
+
+Cursor tag
+
+
+Click’s collar tag is shaped like a computer mouse cursor. It replaces any round sparkle or paw-print tag and is his most important identifying detail.
+
+
+The lab coat
+
+
+Click does not normally wear clothing. A white lab coat may occasionally be draped over him like a blanket when he falls asleep in the Lab. This is a recurring visual joke, not his standard outfit.
+
+
+Voice and Behavior
+
+
+Click never speaks in dialogue or speech bubbles. His personality is communicated through posture, placement, and tiny actions.
+
+
+Good examples:
+
+
+• Sleeping under a lab coat
+• Carrying an envelope in his mouth
+• Peeking around a card
+• Looking at a blueprint without understanding it
+• Sitting beside a finished Click
+• Napping through a meeting
+• Bringing a completed digital gift as a delivery
+
+
+Use Across the Website
+
+
+Click should feel like a resident, not decoration. He can appear in:
+
+
+• Homepage hero scenes
+• Loading and generating states
+• Empty states
+• Coming-soon cards
+• Purchase success screens
+• Delivery moments
+• Footer details
+• Product illustrations
+
+
+He should not compete with the product’s main action or appear so often that the joke becomes noisy.
+
+
+Pose Library
+
+
+Approved or planned asset names:
+
+
+• click-sleeping-labcoat.png
+• click-standing.png
+• click-walking-envelope.png
+• click-carrying-package.png
+• click-thinking.png
+• click-peeking.png
+• click-celebrating.png
+• click-with-blueprint.png
+• click-under-desk.png
+• click-looking-up.png
+• click-sitting.png
+
+
+Approved Model and Core Poses
+
+
+click-sleeping-labcoat.png
+
+
+The approved October 22, 2026 House Art Style reference sheet establishes Click’s seated everyday, standing side, back, sleepy, and off-duty views. His default appearance has no clothing: golden fur, cream highlights, teal goggles and collar, and a white cursor tag on a gold ring. In the off-duty pose, a white lab coat is draped over his back as a blanket. No coat lettering is required. Preserve natural puppy anatomy, small oval eyes, gentle expressions, and bold charcoal contours. Production assets have transparent backgrounds; the model sheet uses a cream ground.
+
+
+Official Palette
+Gold #F5C76B
+Cream #FFF3D8
+Teal #6FA7A3
+Charcoal #222222
+Neutral #ECE7DD
+White is reserved for the cursor tag, coat, and highlights. Use darker functional text and controls when needed for accessible contrast.
+
+
+Superseded Artwork
+The 2026 model supersedes earlier round sparkle tags, brown collars, routinely worn lab coats, and conflicting palette sheets. Historical artwork remains archival and must not be used as the source for new poses. Keep existing brand typography and use Click sparingly.
+
+
+Asset Requirements
+
+
+• PNG format
+• Transparent background
+• No surrounding scene or website mockup
+• Clean silhouette
+• Adequate transparent padding around ears, coat, tail, and sleep marks
+• Large master file retained for future resizing
+• Web version optimized without visible quality loss
+• File names use lowercase kebab case
+
+
+Character Principle
+
+
+Click is not the genius inventor. He is the exhausted little Lab Assistant who fell asleep on the job.

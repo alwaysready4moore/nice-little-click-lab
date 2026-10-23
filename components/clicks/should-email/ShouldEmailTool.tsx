@@ -535,7 +535,7 @@ export function ShouldEmailTool() {
           <div className={styles.sideStamp}>NO PRE-READ REQUIRED</div>
           <Image
             src="/images/click/click-writing.webp"
-            alt="Click writing down the meeting evidence"
+            alt="Click checking the meeting evidence beside a clipboard"
             width={420}
             height={320}
             className={styles.clickImage}

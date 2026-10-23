@@ -17,15 +17,20 @@
 }
 
 :root {
-  --background: #f7f1e7;
-  --foreground: #27231f;
+  --brand-gold: #F5C76B;
+  --brand-cream: #FFF3D8;
+  --brand-teal: #6FA7A3;
+  --brand-charcoal: #222222;
+  --brand-neutral: #ECE7DD;
+  --background: var(--brand-cream);
+  --foreground: var(--brand-charcoal);
   --surface: #fffaf2;
   --surface-bright: #ffffff;
   --border: #ded4c5;
 
-  --accent: #dfa85d;
-  --accent-soft: #f4dfbb;
-  --accent-strong: #8b481c;
+  --accent: var(--brand-gold);
+  --accent-soft: var(--brand-neutral);
+  --accent-strong: #315f5b;
 
   --muted: #6e665d;
   --muted-light: #756c63;
