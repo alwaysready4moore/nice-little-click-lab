@@ -1,0 +1,191 @@
+"use client";
+
+import Image from "next/image";
+import { useRef, useState, type PointerEvent } from "react";
+import { ROOM, LIMITS, assignPerson, clampPosition, createProject, dimensions, editFurniture, overlappingFurniture, parseProject, removeFurniture, seatPositions, type FurnitureKind, type SeatingProject, type Template } from "@/lib/seating";
+import styles from "./seating.module.css";
+
+function download(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob), link = document.createElement("a");
+  link.href = url; link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+export function SeatingChartBuilder() {
+  const [project, setProject] = useState<SeatingProject>(() => createProject("wedding"));
+  const [history, setHistory] = useState<SeatingProject[]>([]);
+  const [panel, setPanel] = useState<"room" | "people">("room");
+  const [selectedFurniture, setSelectedFurniture] = useState<string | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<string | null>(null);
+  const [names, setNames] = useState("");
+  const [search, setSearch] = useState("");
+  const [message, setMessage] = useState("Start with a room, then add your people.");
+  const svg = useRef<SVGSVGElement>(null), fileInput = useRef<HTMLInputElement>(null);
+  const drag = useRef<{ id: string; dx: number; dy: number; base: SeatingProject; moved: boolean } | null>(null);
+  const furniture = project.furniture.find(f => f.id === selectedFurniture);
+  const person = project.people.find(p => p.id === selectedPerson);
+  const assigned = project.people.filter(p => p.furnitureId !== null).length;
+  const capacity = project.furniture.reduce((n, f) => n + f.capacity, 0);
+  const overlaps = overlappingFurniture(project);
+  const full = project.furniture.filter(f => f.capacity > 0 && project.people.filter(p => p.furnitureId === f.id).length === f.capacity).length;
+  const displayName = (id: string) => {
+    const p = project.people.find(p => p.id === id);
+    if (!p) return "";
+    const same = project.people.filter(other => other.name === p.name);
+    return same.length > 1 ? `${p.name} (${same.findIndex(other => other.id === id) + 1})` : p.name;
+  };
+  const short = (value: string, length: number) => Array.from(value).length > length ? Array.from(value).slice(0, length - 1).join("") + "…" : value;
+  const seatOptions = project.furniture.flatMap((f, index) => Array.from({ length: f.capacity }, (_, seat) => ({ furnitureId: f.id, seat, value: `${index}-${seat}`, label: `${f.label || "Untitled"} · seat ${seat + 1}` })));
+
+  function commit(next: SeatingProject) {
+    if (next === project) return;
+    setHistory(h => [...h.slice(-49), project]); setProject(next);
+  }
+  function undo() {
+    const previous = history[history.length - 1]; if (!previous) return;
+    setProject(previous); setHistory(h => h.slice(0, -1)); setMessage("Last change undone.");
+  }
+  function applyTemplate(template: Template) {
+    commit({ ...createProject(template), people: project.people.map(p => ({ ...p, furnitureId: null, seat: null })) });
+    setSelectedFurniture(null); setMessage("Room replaced. Names kept and seats cleared. Undo restores the previous room.");
+  }
+  function addFurniture(kind: FurnitureKind) {
+    if (project.furniture.length >= LIMITS.furniture) { setMessage("This room supports up to 48 items."); return; }
+    const id = crypto.randomUUID(), count = project.furniture.filter(f => f.kind === kind).length + 1;
+    const label = kind === "desk" ? `Desk ${count}` : kind === "label" ? "Door / front" : `Table ${project.furniture.filter(f => f.kind === "round" || f.kind === "rectangle").length + 1}`;
+    const next = { id, kind, label, x: 600 + (count % 3) * 30, y: 400 + (count % 3) * 30, capacity: kind === "desk" ? 1 : kind === "label" ? 0 : kind === "round" ? 8 : 6 };
+    commit({ ...project, furniture: [...project.furniture, next] }); setSelectedFurniture(id); setMessage(`${label} added. Drag it into place, or use the position controls.`);
+  }
+  function addPeople() {
+    const entries = names.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    if (!entries.length) { setMessage("Add at least one name, one per line."); return; }
+    if (entries.some(name => name.length > LIMITS.name)) { setMessage("Keep each name to 80 characters or fewer. No names have been added."); return; }
+    if (project.people.length + entries.length > LIMITS.people) { setMessage("This chart supports up to 240 people. No names have been added."); return; }
+    const people = entries.map(name => ({ id: crypto.randomUUID(), name, furnitureId: null, seat: null }));
+    commit({ ...project, people: [...project.people, ...people] }); setNames(""); setSelectedPerson(people[0].id); setMessage(`${entries.length} names added. Choose a name and tap a seat.`);
+  }
+  function assign(furnitureId: string, seat: number) {
+    if (!person) { const occupant = project.people.find(p => p.furnitureId === furnitureId && p.seat === seat); if (occupant) { setSelectedPerson(occupant.id); setPanel("people"); } else { setMessage("Choose a person in the People panel, then tap this seat."); setPanel("people"); } return; }
+    const occupant = project.people.find(p => p.furnitureId === furnitureId && p.seat === seat && p.id !== person.id);
+    commit(assignPerson(project, person.id, furnitureId, seat));
+    setMessage(occupant ? `${displayName(person.id)} moved. ${displayName(occupant.id)} ${person.furnitureId ? "swapped into the previous seat" : "is now unassigned"}.` : `${displayName(person.id)} assigned to seat ${seat + 1}.`);
+  }
+  function point(event: PointerEvent<SVGElement>) {
+    const matrix = svg.current?.getScreenCTM();
+    return matrix ? new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()) : null;
+  }
+  function startDrag(event: PointerEvent<SVGGElement>, id: string) {
+    if (event.button !== 0) return;
+    const f = project.furniture.find(f => f.id === id), p = point(event); if (!f || !p) return;
+    event.currentTarget.setPointerCapture(event.pointerId); setSelectedFurniture(id);
+    drag.current = { id, dx: p.x-f.x, dy: p.y-f.y, base: project, moved: false };
+  }
+  function moveDrag(event: PointerEvent<SVGSVGElement>) {
+    const d = drag.current, p = point(event); if (!d || !p) return;
+    const f = d.base.furniture.find(f => f.id === d.id); if (!f) return;
+    const position = clampPosition(f.kind, Math.round(p.x-d.dx), Math.round(p.y-d.dy));
+    d.moved = d.moved || Math.abs(position.x-f.x) + Math.abs(position.y-f.y) > 2;
+    setProject({ ...d.base, furniture: d.base.furniture.map(item => item.id === d.id ? { ...item, ...position } : item) });
+  }
+  function finishDrag() {
+    const d = drag.current; if (d?.moved) setHistory(h => [...h.slice(-49), d.base]); drag.current = null;
+  }
+  async function openProject(file?: File) {
+    if (!file) return;
+    try { if (file.size > 1_000_000) throw new Error("Choose a project file smaller than 1 MB."); const next = parseProject(JSON.parse(await file.text())); commit(next); setSelectedFurniture(null); setSelectedPerson(null); setMessage("Project opened. Your previous plan is available with Undo."); }
+    catch (error) { setMessage(error instanceof Error ? error.message : "This file could not be opened."); }
+    if (fileInput.current) fileInput.current.value = "";
+  }
+  function exportSvg() {
+    if (!svg.current) return;
+    const clone = svg.current.cloneNode(true) as SVGSVGElement;
+    clone.querySelectorAll("[data-editor-only]").forEach(node => node.remove());
+    clone.querySelectorAll('[data-person-selected="true"]').forEach(node => { const box=node.querySelector("rect"), text=node.querySelector("text"); box?.setAttribute("fill", "#dcebe5"); box?.setAttribute("stroke", "#6fa7a3"); text?.setAttribute("fill", "#222222"); });
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    download(new Blob([new XMLSerializer().serializeToString(clone)], { type: "image/svg+xml;charset=utf-8" }), "take-your-seat-room.svg");
+    setMessage("Room image saved. Print the chart for the full assignment list.");
+  }
+
+  return <div className={styles.builder}>
+    <div className={styles.intro}>
+      <div><p className="lab-label">Click 008 · Free · No account</p><h1 className="font-display">Take Your Seat</h1><p>Make room for everyone. Then put their name on it.</p></div>
+      <Image src="/images/click/click-sitting.png" alt="" width={100} height={105} className={styles.click} />
+    </div>
+    <div className={styles.toolbar} aria-label="Project actions">
+      <button type="button" onClick={undo} disabled={!history.length}>↶ Undo</button>
+      <button type="button" onClick={() => { download(new Blob([JSON.stringify(project, null, 2)], { type: "application/json" }), "take-your-seat.json"); setMessage("Project saved. Reopen this file here to keep editing."); }}>Save project</button>
+      <button type="button" onClick={() => fileInput.current?.click()}>Open project</button>
+      <input ref={fileInput} type="file" accept=".json,application/json" className={styles.file} aria-label="Open seating project file" onChange={event => void openProject(event.target.files?.[0])} />
+      <button type="button" onClick={exportSvg}>Save room image</button>
+      <button type="button" className={styles.primary} onClick={() => window.print()}>Print / Save PDF</button>
+    </div>
+    <p className={styles.status} role="status">{message}</p>
+    <div className={styles.workspace}>
+      <aside className={styles.sidebar} aria-label="Chart controls">
+        <div className={styles.tabs}><button type="button" aria-pressed={panel === "room"} onClick={() => setPanel("room")}>1. Your room</button><button type="button" aria-pressed={panel === "people"} onClick={() => setPanel("people")}>2. Your people</button></div>
+        {panel === "room" ? <>
+          <label className={styles.field}>Chart title<input value={project.title} maxLength={80} onChange={e => commit({ ...project, title: e.target.value })} /></label>
+          <fieldset><legend>Start with a layout</legend><div className={styles.wrap}>{([['wedding','Wedding'],['classroom','Classroom'],['blank','Blank room']] as const).map(([key, label]) => <button type="button" key={key} onClick={() => applyTemplate(key)}>{label}</button>)}</div><p className={styles.hint}>Replaces the room and clears seats. Your names stay.</p></fieldset>
+          <fieldset><legend>Add to the room</legend><div className={styles.addGrid}>{([['round','◯ Round table'],['rectangle','▭ Long table'],['desk','▱ Desk'],['label','＋ Room label']] as const).map(([kind,label]) => <button type="button" key={kind} disabled={project.furniture.length >= LIMITS.furniture} onClick={() => addFurniture(kind)}>{label}</button>)}</div></fieldset>
+          {furniture ? <fieldset><legend>Edit selected item</legend>
+            <label className={styles.field}>Name<input maxLength={40} value={furniture.label} onChange={e => commit(editFurniture(project, furniture.id, { label: e.target.value }))} /></label>
+            {(furniture.kind === "round" || furniture.kind === "rectangle") && <label className={styles.field}>Seats<select value={furniture.capacity} onChange={e => { commit(editFurniture(project, furniture.id, { capacity: Number(e.target.value) })); setMessage("Seat count updated. Anyone whose seat was removed is now unassigned."); }}>{Array.from({ length:11 },(_,i)=><option key={i+2}>{i+2}</option>)}</select></label>}
+            <p className={styles.hint}>Drag the item, use its arrow keys, or adjust its position here.</p>
+            <label className={styles.field}>Left / right<input type="range" min={dimensions(furniture.kind).width / 2} max={ROOM.width-dimensions(furniture.kind).width/2} step="10" value={furniture.x} onChange={e => commit(editFurniture(project, furniture.id, { x: Number(e.target.value) }))} /></label>
+            <label className={styles.field}>Up / down<input type="range" min={dimensions(furniture.kind).height / 2} max={ROOM.height-dimensions(furniture.kind).height/2} step="10" value={furniture.y} onChange={e => commit(editFurniture(project, furniture.id, { y: Number(e.target.value) }))} /></label>
+            <button type="button" className={styles.danger} onClick={() => { commit(removeFurniture(project, furniture.id)); setSelectedFurniture(null); setMessage("Item removed. Its people are now unassigned."); }}>Remove item</button>
+          </fieldset> : <p className={styles.hint}>Select a table, desk, or label to edit it.</p>}
+        </> : <>
+          <label className={styles.field}>Names, one per line<textarea rows={4} value={names} onChange={e => setNames(e.target.value)} placeholder={"Alex Rivera\nJordan Lee\nMorgan Bell"} /></label>
+          <button type="button" className={styles.primary} onClick={addPeople}>Add names</button>
+          <p className={styles.hint}>Choose a name below, then tap a seat. Selecting an occupied seat swaps assigned people; an unassigned person sends its occupant back to the list.</p>
+          <label className={styles.field}>Find a person<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search names" /></label>
+          <div className={styles.roster} aria-label="People">{project.people.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(p => <button type="button" key={p.id} aria-pressed={p.id === selectedPerson} onClick={() => { setSelectedPerson(p.id); setMessage(`${displayName(p.id)} selected. Tap a seat or use the assignment menu.`); }}><span>{displayName(p.id)}</span><small>{p.furnitureId ? `${project.furniture.find(f=>f.id===p.furnitureId)?.label || "Untitled"} · ${Number(p.seat)+1}` : "Needs a seat"}</small></button>)}{!project.people.length && <p className={styles.hint}>The room is ready for its people.</p>}</div>
+          {person && <fieldset><legend>Selected person</legend>
+            <label className={styles.field}>Name<input maxLength={80} value={person.name} onChange={e => { const name = e.target.value; if (name.trim()) commit({ ...project, people: project.people.map(p=>p.id===person.id ? {...p,name} : p) }); }} /></label>
+            <label className={styles.field}>Seat assignment<select value={seatOptions.find(o=>o.furnitureId===person.furnitureId && o.seat===person.seat)?.value || "unassigned"} onChange={e=>{const option=seatOptions.find(o=>o.value===e.target.value);if(option)assign(option.furnitureId,option.seat);else commit({...project,people:project.people.map(p=>p.id===person.id ? {...p,furnitureId:null,seat:null} : p)});}}><option value="unassigned">Unassigned</option>{seatOptions.map(option=><option key={option.value} value={option.value}>{option.label}{project.people.some(p=>p.furnitureId===option.furnitureId&&p.seat===option.seat&&p.id!==person.id) ? " (occupied)" : ""}</option>)}</select></label>
+            <button type="button" className={styles.danger} onClick={()=>{commit({...project,people:project.people.filter(p=>p.id!==person.id)});setSelectedPerson(null);setMessage("Person removed. Undo can bring them back.");}}>Remove person</button>
+          </fieldset>}
+        </>}
+        <p className={styles.privacy}>Your names stay in this browser tab. Save a project file before leaving; there’s no automatic save.</p>
+      </aside>
+      <section className={styles.planSection} aria-label="Room plan">
+        <div className={styles.planHeading}><div><p className="lab-label">Your seating chart</p><h2>{project.title || "Untitled chart"}</h2></div><div className={styles.counts}><span><strong>{assigned}/{project.people.length}</strong> seated</span><span><strong>{capacity-assigned}</strong> empty seats</span><span><strong>{full}</strong> full tables / desks</span></div></div>
+        <p className={styles.planHelp}>{person ? `Placing ${displayName(person.id)}. Tap any seat.` : "Drag furniture to arrange your room. Tap an item to edit it."} Swipe the room sideways on smaller screens.</p>
+        {project.people.length > capacity && <p className={styles.warning}>You need {project.people.length-capacity} more seats for everyone.</p>}
+        {overlaps.size > 0 && <p className={styles.warning}>Some furniture overlaps. Move the highlighted items apart before printing.</p>}
+        <div className={styles.canvasScroll}>
+          <svg ref={svg} viewBox={`0 0 ${ROOM.width} ${ROOM.height}`} className={styles.canvas} aria-label="Interactive seating plan. Furniture and seats can be selected with the keyboard." onPointerMove={moveDrag} onPointerUp={finishDrag} onPointerCancel={finishDrag}>
+            <title>{project.title || "Seating chart"}</title><desc>Room layout with named seats. The full names and assignments are also listed below.</desc>
+            <rect width={ROOM.width} height={ROOM.height} fill="#fffdf7" />
+            <defs><pattern id="seat-grid" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#e8e1d4" /></pattern></defs><rect width={ROOM.width} height={ROOM.height} fill="url(#seat-grid)" data-editor-only="true" />
+            {!project.furniture.length && <text x="600" y="400" textAnchor="middle" fontSize="25" fill="#6e665d">Your room, your arrangement. Add an item to begin.</text>}
+            {project.furniture.map(f => {
+              const seated = project.people.filter(p=>p.furnitureId===f.id).length, active = selectedFurniture===f.id;
+              return <g key={f.id} transform={`translate(${f.x} ${f.y})`}>
+                {(active || overlaps.has(f.id)) && <rect data-editor-only="true" x={-dimensions(f.kind).width/2+2} y={-dimensions(f.kind).height/2+2} width={dimensions(f.kind).width-4} height={dimensions(f.kind).height-4} rx="20" fill="none" stroke={overlaps.has(f.id) ? "#a34624" : "#315f5b"} strokeWidth="3" strokeDasharray="7 5" />}
+                <g role="button" tabIndex={0} aria-label={`Move or edit ${f.label || "Untitled item"}`} onPointerDown={e=>startDrag(e,f.id)} onClick={()=>setSelectedFurniture(f.id)} onKeyDown={e=>{
+                  if(e.key==="Enter" || e.key===" "){e.preventDefault();setSelectedFurniture(f.id);setPanel("room");}
+                  const offset=({ArrowLeft:[-10,0],ArrowRight:[10,0],ArrowUp:[0,-10],ArrowDown:[0,10]} as Record<string,number[]>)[e.key];
+                  if(offset){e.preventDefault();commit(editFurniture(project,f.id,clampPosition(f.kind,f.x+offset[0],f.y+offset[1])));}
+                }} className={styles.furniture}>
+                  {f.kind==="round" ? <ellipse cx="0" cy="0" rx="59" ry="48" fill="#fff3d8" stroke="#6d5540" strokeWidth="3" /> : <rect x={f.kind==="label" ? -88 : f.kind==="rectangle" ? -135 : -83} y={f.kind==="desk" ? -44 : -27} width={f.kind==="label" ? 176 : f.kind==="rectangle" ? 270 : 166} height={f.kind==="desk" ? 59 : 54} rx={f.kind==="label" ? 9 : 15} fill={f.kind==="label" ? "#ece7dd" : "#fff3d8"} stroke="#6d5540" strokeWidth="3" />}
+                  <text x="0" y={f.kind==="desk" ? -16 : -2} textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="15" fontWeight="700" fill="#222222">{short(f.label || "Untitled",18)}</text>
+                  {f.capacity>0 && <text x="0" y={f.kind==="desk" ? 1 : 18} textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="12" fill="#6e665d">{seated}/{f.capacity} seated</text>}
+                </g>
+                {seatPositions(f).map((position,seat)=>{
+                  const occupant=project.people.find(p=>p.furnitureId===f.id&&p.seat===seat), chosen=occupant?.id===selectedPerson;
+                  return <g key={seat} role="button" tabIndex={0} data-person-selected={chosen} aria-label={`${f.label}, seat ${seat+1}: ${occupant ? displayName(occupant.id) : "empty"}`} className={styles.seat} transform={`translate(${position.x} ${position.y})`} onClick={()=>assign(f.id,seat)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();assign(f.id,seat);}}}>
+                    <title>{occupant ? displayName(occupant.id) : `Empty seat ${seat+1}`}</title><rect x={-position.width/2} y={-position.height/2} width={position.width} height={position.height} rx="9" fill={chosen ? "#315f5b" : occupant ? "#dcebe5" : "#ffffff"} stroke={chosen ? "#222222" : occupant ? "#6fa7a3" : "#bfb6a8"} strokeWidth="2" />
+                    <text x="0" y="4" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize={f.kind==="desk" ? 13 : 10} fill={chosen ? "#ffffff" : "#222222"}>{occupant ? short(displayName(occupant.id),f.kind==="desk" ? 20 : position.width<50 ? 6 : 8) : seat+1}</text>
+                  </g>;
+                })}
+              </g>;
+            })}
+          </svg>
+        </div>
+        <div className={styles.legend}><span>○ Empty seat</span><span>● Assigned</span><span>Dark teal = selected person</span></div>
+        <section className={styles.assignments} aria-label="Full assignment list"><h2>Who’s sitting where</h2><p className={styles.hint}>Full names are listed here when the room preview shortens them.</p><div className={styles.assignmentGrid}>{project.furniture.filter(f=>f.capacity>0).map(f=><div key={f.id} className={styles.assignmentCard}><h3>{f.label || "Untitled"} <small>{project.people.filter(p=>p.furnitureId===f.id).length}/{f.capacity}</small></h3><ol>{Array.from({length:f.capacity},(_,seat)=>{const p=project.people.find(p=>p.furnitureId===f.id&&p.seat===seat);return <li key={seat}>{p ? displayName(p.id) : <span className={styles.empty}>Empty</span>}</li>;})}</ol></div>)}</div><div className={styles.unassigned}><h3>Still needs a seat ({project.people.length-assigned})</h3><p>{project.people.filter(p=>p.furnitureId===null).map(p=>displayName(p.id)).join(" · ") || "Everyone on the list has a seat."}</p></div></section>
+        <p className={styles.printFooter}>Made with Take Your Seat · Nice Little Click Lab · Layout illustration, not a measured floor plan.</p>
+      </section>
+    </div>
+  </div>;
+}
