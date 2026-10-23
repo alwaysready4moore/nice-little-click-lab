@@ -12,12 +12,16 @@ Free browser-only seating chart builder for weddings and classrooms. Preview rou
 - Undo up to 50 changes. Save/reopen versioned JSON projects with validation and size limits. No accounts, API calls, localStorage, or automatic retention of names.
 - SVG room image export, full assignment list, landscape print / browser Save PDF layout. Export and print remove editing selection highlights.
 - Mobile controls stack above the room, which can scroll horizontally. No new packages or paid services.
+- Person and seat selectors beside the canvas let users continue assigning without returning to the roster. Next unseated cycles through people who still need a seat. Controls have at least 44px hit areas; the nearby selectors provide an alternative to the smaller diagram seats.
+- Full assignment lists explicitly show seat numbering, including in print; long names can wrap instead of being clipped.
 
 ## Validation
 
 `node --experimental-strip-types --test scripts/test-seating.mjs` passes eight tests covering swaps, replacement behavior, invalid seats, removal/capacity changes, template bounds, overlap reporting, Unicode/duplicate-name round trips, and malformed imports. The command uses Node 22+; production runtime remains the repository's configured Node version because Next compiles the TypeScript.
 
-`npm run build` passes with the new route. `npm run lint` passes. Browser interaction and print-layout visual QA still need a reachable preview: the cloud browser cannot reach the local development server. Do not claim these checks are complete.
+`npm run build` and `npm run lint` pass. On the deployed preview, browser checks confirmed opening the People panel, adding four names including Alexandra Montgomery-Santiago and Unicode text, assigning people to seats, and swapping occupied seats. The room shortens long names while the full list retains them.
+
+The canvas-adjacent placement controls and explicit list numbering were added after those checks. Recheck those controls on the rebuilt preview. Native phone touch behavior and printed-PDF visual QA remain pending: the available browser controls do not provide viewport/touch emulation or a working print preview. The Print / Save PDF button did not expose a print dialog in the test browser. Do not claim these checks are complete.
 
 ## Release scope
 

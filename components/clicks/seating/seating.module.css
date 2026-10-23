@@ -13,3 +13,8 @@
 }
 
 @media print{.canvas [data-person-selected=true] rect{fill:#dcebe5;stroke:#6fa7a3}.canvas [data-person-selected=true] text{fill:#222222}}
+
+.placementBar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:end;gap:.7rem;padding:.7rem 1.4rem 1rem;background:#f1f5ee;border-block:1px solid #d9e2d6}.placementBar .field{min-width:0}.placementBar select{min-height:46px}.assignmentCard ol{list-style-type:decimal}.assignmentCard li{padding-left:.15rem}.assignmentCard li::marker{color:#5b5147;font-weight:650}
+@media(max-width:1000px){.placementBar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.placementBar button{grid-column:1/-1}}
+@media(max-width:720px){.placementBar{padding:1rem;grid-template-columns:minmax(0,1fr)}.placementBar button{grid-column:auto;min-height:48px}}
+@media print{.placementBar{display:none!important}.assignmentCard ol{list-style-type:decimal}.assignmentCard li{overflow-wrap:anywhere}}

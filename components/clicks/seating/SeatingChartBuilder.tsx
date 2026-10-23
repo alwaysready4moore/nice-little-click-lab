@@ -68,6 +68,22 @@ export function SeatingChartBuilder() {
     commit(assignPerson(project, person.id, furnitureId, seat));
     setMessage(occupant ? `${displayName(person.id)} moved. ${displayName(occupant.id)} ${person.furnitureId ? "swapped into the previous seat" : "is now unassigned"}.` : `${displayName(person.id)} assigned to seat ${seat + 1}.`);
   }
+  function changeSeat(value: string) {
+    if (!person) return;
+    const option = seatOptions.find(option => option.value === value);
+    if (option) assign(option.furnitureId, option.seat);
+    else {
+      commit({ ...project, people: project.people.map(p => p.id === person.id ? { ...p, furnitureId: null, seat: null } : p) });
+      setMessage(`${displayName(person.id)} is now unassigned.`);
+    }
+  }
+  function nextUnseated() {
+    const index = project.people.findIndex(p => p.id === selectedPerson);
+    const ordered = [...project.people.slice(index + 1), ...project.people.slice(0, index + 1)];
+    const next = ordered.find(p => p.furnitureId === null);
+    if (next) { setSelectedPerson(next.id); setMessage(`${displayName(next.id)} selected. Choose an empty seat.`); }
+    else setMessage("Everyone on the list has a seat.");
+  }
   function point(event: PointerEvent<SVGElement>) {
     const matrix = svg.current?.getScreenCTM();
     return matrix ? new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()) : null;
@@ -141,7 +157,7 @@ export function SeatingChartBuilder() {
           <div className={styles.roster} aria-label="People">{project.people.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).map(p => <button type="button" key={p.id} aria-pressed={p.id === selectedPerson} onClick={() => { setSelectedPerson(p.id); setMessage(`${displayName(p.id)} selected. Tap a seat or use the assignment menu.`); }}><span>{displayName(p.id)}</span><small>{p.furnitureId ? `${project.furniture.find(f=>f.id===p.furnitureId)?.label || "Untitled"} · ${Number(p.seat)+1}` : "Needs a seat"}</small></button>)}{!project.people.length && <p className={styles.hint}>The room is ready for its people.</p>}</div>
           {person && <fieldset><legend>Selected person</legend>
             <label className={styles.field}>Name<input maxLength={80} value={person.name} onChange={e => { const name = e.target.value; if (name.trim()) commit({ ...project, people: project.people.map(p=>p.id===person.id ? {...p,name} : p) }); }} /></label>
-            <label className={styles.field}>Seat assignment<select value={seatOptions.find(o=>o.furnitureId===person.furnitureId && o.seat===person.seat)?.value || "unassigned"} onChange={e=>{const option=seatOptions.find(o=>o.value===e.target.value);if(option)assign(option.furnitureId,option.seat);else commit({...project,people:project.people.map(p=>p.id===person.id ? {...p,furnitureId:null,seat:null} : p)});}}><option value="unassigned">Unassigned</option>{seatOptions.map(option=><option key={option.value} value={option.value}>{option.label}{project.people.some(p=>p.furnitureId===option.furnitureId&&p.seat===option.seat&&p.id!==person.id) ? " (occupied)" : ""}</option>)}</select></label>
+            <label className={styles.field}>Seat assignment<select value={seatOptions.find(o=>o.furnitureId===person.furnitureId && o.seat===person.seat)?.value || "unassigned"} onChange={e=>changeSeat(e.target.value)}><option value="unassigned">Unassigned</option>{seatOptions.map(option=><option key={option.value} value={option.value}>{option.label}{project.people.some(p=>p.furnitureId===option.furnitureId&&p.seat===option.seat&&p.id!==person.id) ? " (occupied)" : ""}</option>)}</select></label>
             <button type="button" className={styles.danger} onClick={()=>{commit({...project,people:project.people.filter(p=>p.id!==person.id)});setSelectedPerson(null);setMessage("Person removed. Undo can bring them back.");}}>Remove person</button>
           </fieldset>}
         </>}
@@ -149,6 +165,11 @@ export function SeatingChartBuilder() {
       </aside>
       <section className={styles.planSection} aria-label="Room plan">
         <div className={styles.planHeading}><div><p className="lab-label">Your seating chart</p><h2>{project.title || "Untitled chart"}</h2></div><div className={styles.counts}><span><strong>{assigned}/{project.people.length}</strong> seated</span><span><strong>{capacity-assigned}</strong> empty seats</span><span><strong>{full}</strong> full tables / desks</span></div></div>
+        {project.people.length > 0 && <div className={styles.placementBar} aria-label="Seat people without leaving the room">
+          <label className={styles.field}>Place this person<select value={selectedPerson || ""} onChange={e => { setSelectedPerson(e.target.value || null); setMessage(e.target.value ? `${displayName(e.target.value)} selected. Tap a seat or choose one below.` : "Choose a person to place."); }}><option value="">Choose a person</option>{project.people.map(p => <option key={p.id} value={p.id}>{displayName(p.id)}{p.furnitureId === null ? " · unseated" : " · seated"}</option>)}</select></label>
+          <label className={styles.field}>Choose their seat<select disabled={!person} value={seatOptions.find(o=>o.furnitureId===person?.furnitureId && o.seat===person?.seat)?.value || "unassigned"} onChange={e=>changeSeat(e.target.value)}><option value="unassigned">Unassigned</option>{seatOptions.map(option => { const occupant=project.people.find(p=>p.furnitureId===option.furnitureId&&p.seat===option.seat&&p.id!==person?.id); return <option key={option.value} value={option.value}>{option.label}{occupant ? ` · occupied by ${displayName(occupant.id)}` : ""}</option>; })}</select></label>
+          <button type="button" disabled={assigned===project.people.length} onClick={nextUnseated}>Next unseated →</button>
+        </div>}
         <p className={styles.planHelp}>{person ? `Placing ${displayName(person.id)}. Tap any seat.` : "Drag furniture to arrange your room. Tap an item to edit it."} Swipe the room sideways on smaller screens.</p>
         {project.people.length > capacity && <p className={styles.warning}>You need {project.people.length-capacity} more seats for everyone.</p>}
         {overlaps.size > 0 && <p className={styles.warning}>Some furniture overlaps. Move the highlighted items apart before printing.</p>}
