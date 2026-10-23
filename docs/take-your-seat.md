@@ -1,6 +1,6 @@
-# Take Your Seat: first working editor
+# Take Your Seat: Click 008
 
-Free browser-only seating chart builder for weddings and classrooms. Preview route: `/clicks/take-your-seat`. The route is not indexed or listed in the product catalog pending review.
+Free browser-only seating chart builder for weddings and classrooms. Route: `/clicks/take-your-seat`. Listed in the product catalog and sitemap, with homepage promotion and indexing enabled for launch.
 
 ## Delivered
 
@@ -21,8 +21,10 @@ Free browser-only seating chart builder for weddings and classrooms. Preview rou
 
 `npm run build` and `npm run lint` pass. On the deployed preview, browser checks confirmed opening the People panel, adding four names including Alexandra Montgomery-Santiago and Unicode text, assigning people to seats, and swapping occupied seats. The room shortens long names while the full list retains them.
 
-The canvas-adjacent placement controls and explicit list numbering were added after those checks. Recheck those controls on the rebuilt preview. Native phone touch behavior and printed-PDF visual QA remain pending: the available browser controls do not provide viewport/touch emulation or a working print preview. The Print / Save PDF button did not expose a print dialog in the test browser. Do not claim these checks are complete.
+Deployed browser checks also confirmed undo, the canvas-adjacent seat selector, Next unseated moving to the remaining guest, and the completed state disabling Next unseated. Explicit list numbers and full long names were present.
+
+The owner reported the remaining phone-touch and printed-PDF tests complete and passing on October 23, 2026: “Tests complete, all good.” These are owner-reported passes, not agent-observed device/PDF checks. The available test browser did not support those final checks directly.
 
 ## Release scope
 
-Keep it free for the first trial. Paid themes, automatic seating rules, persistent links, and collaborative editing are outside this version. Before listing it as live, verify touch dragging/panning, keyboard navigation, project downloads/reopening, long-name print output, and the wedding/classroom layouts in a deployed preview.
+Keep it free for the first trial. Paid themes, automatic seating rules, persistent links, and collaborative editing are outside this version. The owner-reported final tests complete the remaining phone/print release checks. Follow up on real-user feedback before expanding scope.

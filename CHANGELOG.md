@@ -1,5 +1,13 @@
 # Nice Little Click Lab Changelog
 
+## 2026-10-23 — Click No. 008: Take Your Seat
+
+- Released the free seating chart builder for weddings and classrooms.
+- Added room layouts, manual seat assignment and swaps, undo, project files, room-image export, and printable full-name lists.
+- Added person and seat controls beside the room with Next unseated.
+- Listed the product in the catalog and sitemap, enabled indexing, and updated the homepage and launch banner.
+- Completed automated and deployed interaction checks; the owner confirmed the remaining phone and print checks passed.
+
 ## v0.1.0 — The Lights Are On
 
 - Launched the Nice Little Click Lab studio website
