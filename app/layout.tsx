@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   category: "technology",
   referrer: "origin-when-cross-origin",
   verification,
+  other: {
+    "p:domain_verify": "c90b8826f657add25d2e594c0725b04d",
+  },
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
