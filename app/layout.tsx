@@ -7,9 +7,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/lib/site";
 
 const verification: Metadata["verification"] = {
-  ...(process.env.GOOGLE_SITE_VERIFICATION
-    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
-    : {}),
+  google: "dZ4RUbTya7GmHhhftb2Om4X1Bb4rOodDwB_D7uJOHG8",
   ...(process.env.BING_SITE_VERIFICATION
     ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
     : {}),
