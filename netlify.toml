@@ -2,5 +2,18 @@
   command = "npm run build"
   publish = ".next"
 
+# Canonical host: send the apex domain to www and keep the path.
+[[redirects]]
+  from = "https://nicelittleclick.com/*"
+  to = "https://www.nicelittleclick.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://nicelittleclick.com/*"
+  to = "https://www.nicelittleclick.com/:splat"
+  status = 301
+  force = true
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
