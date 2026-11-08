@@ -22,6 +22,7 @@ export function SiteFooter() {
           className="site-footer-nav flex flex-wrap gap-x-5 gap-y-3 text-sm font-medium text-[var(--muted)]"
         >
           <Link href="/clicks">Clicks</Link>
+          <Link href="/guides">Guides</Link>
           <Link href="/about">About</Link>
           <Link href="/about#meet-click">Meet Click</Link>
           <Link href="/contact">Contact</Link>
