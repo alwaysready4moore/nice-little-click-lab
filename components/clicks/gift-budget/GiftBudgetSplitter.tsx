@@ -363,7 +363,7 @@ export function GiftBudgetSplitter() {
           <div className={styles.clickNote}>
             <Image
               src="/images/click/Click-Profile.webp"
-              alt="Click, the black Lab mascot"
+              alt="Click, the black Labrador lab assistant"
               width={108}
               height={108}
               className={styles.clickImage}

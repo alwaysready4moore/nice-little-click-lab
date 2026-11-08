@@ -186,6 +186,7 @@ export function PleaseAdviseGame() {
   const [shareMessage, setShareMessage] = useState("");
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [sessionLength, setSessionLength] = useState<SessionLength>(10);
+  const [practiceMode, setPracticeMode] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const announcedThresholdsRef = useRef(new Set<number>());
   const announcementRef = useRef<HTMLParagraphElement | null>(null);
@@ -228,12 +229,12 @@ export function PleaseAdviseGame() {
       stopTimer();
       playSoundEffect("game-over", soundEnabled);
       setScreen("results");
-      if (finalScore > personalBest) {
+      if (!practiceMode && finalScore > personalBest) {
         setPersonalBest(finalScore);
         window.localStorage.setItem(PERSONAL_BEST_KEY, String(finalScore));
       }
     },
-    [personalBest, soundEnabled, stopTimer],
+    [personalBest, practiceMode, soundEnabled, stopTimer],
   );
 
   const recordChoice = useCallback(
@@ -251,7 +252,7 @@ export function PleaseAdviseGame() {
 
       const record: AnswerRecord = { email: currentEmail, choice, correct, feedback };
       const updatedMistakes = mistakes + (correct ? 0 : 1);
-      const speedBonus = Math.max(0, Math.round(timeLeft * 18));
+      const speedBonus = practiceMode ? 0 : Math.max(0, Math.round(timeLeft * 18));
       const updatedScore = correct ? score + 100 + speedBonus + round * 4 : Math.max(0, score - 40);
 
       playSoundEffect(correct ? "correct" : "wrong", soundEnabled);
@@ -272,11 +273,11 @@ export function PleaseAdviseGame() {
         setScreen("playing");
       }, 1350);
     },
-    [currentEmail, deck.length, endGame, mistakes, round, score, screen, soundEnabled, stopTimer, timeLeft],
+    [currentEmail, deck.length, endGame, mistakes, practiceMode, round, score, screen, soundEnabled, stopTimer, timeLeft],
   );
 
   useEffect(() => {
-    if (screen !== "playing") return;
+    if (screen !== "playing" || practiceMode) return;
 
     stopTimer();
     timerRef.current = setInterval(() => {
@@ -291,18 +292,20 @@ export function PleaseAdviseGame() {
     }, 100);
 
     return stopTimer;
-  }, [recordChoice, screen, stopTimer]);
+  }, [practiceMode, recordChoice, screen, stopTimer]);
 
   useEffect(() => {
     if (screen !== "playing" || !currentEmail) return;
     announcedThresholdsRef.current.clear();
     if (announcementRef.current) {
-      announcementRef.current.textContent = `Email ${currentEmailNumber} of ${sessionLength}. ${Math.ceil(roundSeconds)} seconds remaining.`;
+      announcementRef.current.textContent = practiceMode
+        ? `Email ${currentEmailNumber} of ${sessionLength}. Untimed practice.`
+        : `Email ${currentEmailNumber} of ${sessionLength}. ${Math.ceil(roundSeconds)} seconds remaining.`;
     }
-  }, [currentEmail, currentEmailNumber, roundSeconds, screen, sessionLength]);
+  }, [currentEmail, currentEmailNumber, practiceMode, roundSeconds, screen, sessionLength]);
 
   useEffect(() => {
-    if (screen !== "playing") return;
+    if (screen !== "playing" || practiceMode) return;
     for (const threshold of [5, 2]) {
       if (timeLeft <= threshold && !announcedThresholdsRef.current.has(threshold)) {
         announcedThresholdsRef.current.add(threshold);
@@ -312,7 +315,7 @@ export function PleaseAdviseGame() {
         break;
       }
     }
-  }, [screen, timeLeft]);
+  }, [practiceMode, screen, timeLeft]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -641,6 +644,10 @@ export function PleaseAdviseGame() {
               </div>
             </fieldset>
 
+            <button className={styles.soundToggle} type="button" aria-pressed={practiceMode} onClick={() => setPracticeMode((value) => !value)}>
+              Untimed practice {practiceMode ? "on" : "off"}
+            </button>
+            <p className={styles.smallPrint}>Practice removes the countdown and does not update your personal best.</p>
             <button className={styles.primaryButton} type="button" onClick={startGame}>
               Open the inbox
             </button>
@@ -648,7 +655,7 @@ export function PleaseAdviseGame() {
               <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
               Sound {soundEnabled ? "on" : "off"}
             </button>
-            <p className={styles.smallPrint}>{sessionLength} emails. Three mistakes and HR would like a word.</p>
+            <p className={styles.smallPrint}>{sessionLength} emails. {practiceMode ? "Take your time." : "Three mistakes and HR would like a word."}</p>
           </div>
 
           <aside className={styles.startVisual}>
@@ -677,7 +684,7 @@ export function PleaseAdviseGame() {
             </div>
             <div>
               <div className={styles.hud}>
-                <div><span>Time</span><strong aria-hidden="true" className={timeLeft < 2.5 ? styles.dangerText : ""}>{timeLeft.toFixed(1)}</strong></div>
+                <div><span>Time</span><strong aria-hidden="true" className={!practiceMode && timeLeft < 2.5 ? styles.dangerText : ""}>{practiceMode ? "Practice" : timeLeft.toFixed(1)}</strong></div>
                 <div><span>Email</span><strong>{currentEmailNumber}/{sessionLength}</strong></div>
                 <div><span>Mistakes</span><strong>{mistakes}/{MAX_MISTAKES}</strong></div>
                 <div><span>Score</span><strong>{score.toLocaleString()}</strong></div>
@@ -689,9 +696,9 @@ export function PleaseAdviseGame() {
             </div>
           </header>
 
-          <div className={styles.timerTrack} aria-hidden="true">
+          {!practiceMode && <div className={styles.timerTrack} aria-hidden="true">
             <span style={{ width: `${Math.max(0, (timeLeft / roundSeconds) * 100)}%` }} />
-          </div>
+          </div>}
 
           <article className={styles.emailCard}>
             <div className={styles.avatar}>{currentEmail.from.charAt(0).toUpperCase()}</div>
@@ -728,7 +735,7 @@ export function PleaseAdviseGame() {
           </div>
 
           <div className={styles.gameMascot}>
-            {renderClick(timeLeft < 2.5 || screen === "feedback" && !lastAnswer?.correct ? "worried" : "calm")}
+            {renderClick((!practiceMode && timeLeft < 2.5) || screen === "feedback" && !lastAnswer?.correct ? "worried" : "calm")}
           </div>
         </section>
       )}
@@ -736,7 +743,7 @@ export function PleaseAdviseGame() {
       {screen === "results" && (
         <section className={styles.resultsScreen}>
           <header className={styles.resultsHeader}>
-            <p className={styles.eyebrow}>Your performance review has arrived.</p>
+            <p className={styles.eyebrow}>{practiceMode ? "Untimed practice results. Personal best unchanged." : "Your performance review has arrived."}</p>
             <h1>Please Advise</h1>
           </header>
 

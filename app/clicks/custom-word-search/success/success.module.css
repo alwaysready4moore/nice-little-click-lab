@@ -67,3 +67,32 @@
   font-size: 0.95rem;
   line-height: 1.55;
 }
+
+.saveNotice label {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+  text-align: left;
+  font-weight: 700;
+}
+.saveNotice input[type=file] {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font: inherit;
+  font-size: 0.9rem;
+}
+.saveNotice input[type=file]::file-selector-button {
+  margin-right: 0.7rem;
+  border: 1px solid rgba(139, 72, 28, 0.35);
+  border-radius: 0.7rem;
+  padding: 0.5rem 0.75rem;
+  background: #fffaf2;
+  color: #322c27;
+  font: inherit;
+  cursor: pointer;
+}
+.saveNotice input[type=file]:focus-visible {
+  outline: 3px solid #a45e24;
+  outline-offset: 3px;
+}

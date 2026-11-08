@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { meetingReceiptCanvasHeight } from "@/lib/meeting-receipt-layout";
 import { ROLE_SALARIES } from "@/data/role-salaries";
 
 type MeetingStatus = "ready" | "running" | "paused" | "ended";
@@ -105,6 +106,7 @@ export function MeetingCostTicker() {
   const [currentCost, setCurrentCost] = useState(0);
   const [meetingStartedAt, setMeetingStartedAt] = useState<number | null>(null);
   const [isDownloadingReceipt, setIsDownloadingReceipt] = useState(false);
+  const [receiptError, setReceiptError] = useState<string | null>(null);
 
   const startedAtRef = useRef<number | null>(null);
   const accumulatedMsRef = useRef(0);
@@ -271,6 +273,7 @@ export function MeetingCostTicker() {
     if (typeof window === "undefined") return;
 
     setIsDownloadingReceipt(true);
+    setReceiptError(null);
 
     try {
       if ("fonts" in document) {
@@ -279,10 +282,12 @@ export function MeetingCostTicker() {
 
       const canvas = document.createElement("canvas");
       canvas.width = 1200;
-      canvas.height = 1600;
+      // Each attendee group adds 62 pixels. Grow the receipt so rows can
+      // never overlap the footer (including for 12- and 20-group meetings).
+      canvas.height = meetingReceiptCanvasHeight(participants.length);
       const ctx = canvas.getContext("2d");
 
-      if (!ctx) return;
+      if (!ctx) throw new Error("This browser could not prepare the receipt.");
 
       const receiptClick = await loadImage("/images/click/click-awake-receipt.png").catch(
         () => null,
@@ -481,6 +486,8 @@ export function MeetingCostTicker() {
       link.href = canvas.toDataURL("image/png");
       link.download = `${sanitizeFileName(meetingName || "meeting") || "meeting"}-receipt.png`;
       link.click();
+    } catch {
+      setReceiptError("The receipt could not be downloaded this time. Your meeting summary is still here. Try again.");
     } finally {
       setIsDownloadingReceipt(false);
     }
@@ -732,8 +739,9 @@ export function MeetingCostTicker() {
                 onClick={downloadReceipt}
                 disabled={isDownloadingReceipt}
               >
-                {isDownloadingReceipt ? "Preparing receipt…" : "Download receipt"}
+                {isDownloadingReceipt ? "Preparing receipt…" : receiptError ? "Retry receipt download" : "Download receipt"}
               </button>
+              {receiptError && <p role="alert">{receiptError}</p>}
               <button className="lab-button lab-button-secondary" type="button" onClick={resetMeeting}>
                 Start another meeting
               </button>

@@ -11,6 +11,7 @@ import {
   crosswordSeed,
   type CrosswordPurchasePayload,
 } from "../../../lib/crossword/purchase";
+import { savePurchaseBackup } from "../../../lib/purchase-backup";
 import styles from "./custom-crossword.module.css";
 
 type DraftEntry = CrosswordInput;
@@ -66,6 +67,7 @@ export function CustomCrosswordBuilder() {
   const [checkoutState, setCheckoutState] = useState<"idle" | "loading">("idle");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [includeClickOnAnswerKey, setIncludeClickOnAnswerKey] = useState(true);
+  const [draftRestored, setDraftRestored] = useState(false);
 
   const completedCount = useMemo(() => completeEntries(entries).length, [entries]);
 
@@ -82,45 +84,72 @@ export function CustomCrosswordBuilder() {
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      const stored = sessionStorage.getItem("nlcl-crossword:draft");
-      if (!stored) return;
-
       try {
-        const parsed = JSON.parse(stored) as Partial<CrosswordPurchasePayload> & {
-          result?: CrosswordResult;
-        };
-        const restoredEntries = Array.isArray(parsed.entries)
-          ? parsed.entries
-          : parsed.result?.placements.map((placement) => ({
-              id: placement.id,
-              answer: placement.answer,
-              clue: placement.clue,
-            }));
-
-        if (!restoredEntries || restoredEntries.length < 8) return;
-
-        setTitle(typeof parsed.title === "string" ? parsed.title : "A Little Puzzle About Us");
-        setDedication(typeof parsed.dedication === "string" ? parsed.dedication : "");
-        setIncludeClickOnAnswerKey(parsed.includeClickOnAnswerKey ?? true);
-        setEntries(restoredEntries);
-        setResult(
-          generateCrossword(restoredEntries, {
-            maxAttempts: 360,
-            requireAll: false,
-            seed: crosswordSeed(restoredEntries),
-          }),
-        );
-
+        const stored = sessionStorage.getItem("nlcl-crossword:draft");
+        if (stored) {
+          const parsed = JSON.parse(stored) as Partial<CrosswordPurchasePayload> & {
+            previewGenerated?: boolean;
+          };
+          if (Array.isArray(parsed.entries) && parsed.entries.length >= 8 && parsed.entries.length <= 15) {
+            setTitle(typeof parsed.title === "string" ? parsed.title : "A Little Puzzle About Us");
+            setDedication(typeof parsed.dedication === "string" ? parsed.dedication : "");
+            setIncludeClickOnAnswerKey(parsed.includeClickOnAnswerKey ?? true);
+            setEntries(parsed.entries);
+            if (parsed.previewGenerated ?? completeEntries(parsed.entries).length >= 8) {
+              setResult(generateCrossword(completeEntries(parsed.entries), {
+                maxAttempts: 360,
+                requireAll: false,
+                seed: crosswordSeed(completeEntries(parsed.entries)),
+              }));
+            }
+          }
+        }
         if (new URLSearchParams(window.location.search).get("checkout") === "cancelled") {
           setNotice("Checkout cancelled. Your crossword is still here.");
         }
       } catch {
         sessionStorage.removeItem("nlcl-crossword:draft");
+      } finally {
+        setDraftRestored(true);
       }
     });
-
     return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    if (!draftRestored) return;
+    const timer = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem("nlcl-crossword:draft", JSON.stringify({
+          title, dedication, entries, includeClickOnAnswerKey,
+          previewGenerated: Boolean(result),
+        }));
+      } catch {
+        // Browsers blocking session storage can still use the editor.
+      }
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [draftRestored, title, dedication, entries, includeClickOnAnswerKey, result]);
+
+  function clearDraft() {
+    sessionStorage.removeItem("nlcl-crossword:draft");
+    setTitle("A Little Puzzle About Us");
+    setDedication("");
+    setEntries(starterEntries.map((entry) => ({ ...entry })));
+    setIncludeClickOnAnswerKey(true);
+    setResult(null);
+    setCheckoutError(null);
+    setNotice("Draft cleared. You can start fresh.");
+  }
+
+  function purchasePayload(): CrosswordPurchasePayload {
+    return {
+      title: title.trim() || "A Little Puzzle About Us",
+      dedication: dedication.trim(),
+      entries: completeEntries(entries),
+      includeClickOnAnswerKey,
+    };
+  }
 
   function updateEntry(id: string, field: "answer" | "clue", value: string) {
     setEntries((current) =>
@@ -182,12 +211,7 @@ export function CustomCrosswordBuilder() {
   async function startCheckout() {
     if (!result || result.unplaced.length > 0) return;
 
-    const payload: CrosswordPurchasePayload = {
-      title: title.trim() || "A Little Puzzle About Us",
-      dedication: dedication.trim(),
-      entries: completeEntries(entries),
-      includeClickOnAnswerKey,
-    };
+    const payload = purchasePayload();
 
     setCheckoutState("loading");
     setCheckoutError(null);
@@ -317,6 +341,7 @@ export function CustomCrosswordBuilder() {
               + Add another memory
             </button>
             <span>{completedCount} complete · 8 minimum · 15 maximum</span>
+            <button className={styles.textButton} type="button" onClick={clearDraft}>Clear my draft</button>
           </div>
 
           <button className={styles.primaryButton} type="button" onClick={buildPuzzle}>
@@ -421,6 +446,16 @@ export function CustomCrosswordBuilder() {
                 />
                 <span>Include Click on the answer-key page</span>
               </label>
+              <p className={styles.checkoutHint}>Your work is saved in this tab while you edit. Before paying, download a backup in case this browser loses your draft. The backup contains your puzzle details, so keep it private.</p>
+              {result.unplaced.length === 0 && (
+                <button
+                  className={styles.secondaryButton}
+                  type="button"
+                  onClick={() => savePurchaseBackup("crossword", purchasePayload())}
+                >
+                  Save purchase backup (.json)
+                </button>
+              )}
               <div className={styles.purchaseAction}>
                 <strong>$4</strong>
                 <button
@@ -433,7 +468,7 @@ export function CustomCrosswordBuilder() {
                 </button>
               </div>
               <p className={styles.checkoutHint}>
-                No AI reads your entries. At checkout, the Lab securely sends them to its server only
+                No AI reads your entries. The paid download needs this browser or your saved backup. At checkout, the Lab securely sends them to its server only
                 to validate the puzzle and assemble your PDF. They are not saved to a customer account,
                 so please keep the finished file somewhere safe.
               </p>

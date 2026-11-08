@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { WordSearchPurchasePayload } from "../../../../lib/wordsearch/purchase";
 import styles from "./success.module.css";
+import { readMatchingPurchaseBackup } from "../../../../lib/purchase-backup";
 
 const TITLE_FONT_FAMILY = "NLCL Word Search Mailman";
 const TITLE_RASTER_SCALE = 4;
@@ -95,18 +96,17 @@ export function WordSearchSuccess() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [payload, setPayload] = useState<WordSearchPurchasePayload | null>(null);
-  const [status, setStatus] = useState<
-    "checking" | "ready" | "downloading" | "error"
-  >("checking");
+  const [paidPuzzleHash, setPaidPuzzleHash] = useState<string | null>(null);
+  const [status, setStatus] = useState<"checking" | "ready" | "downloading" | "needs-backup" | "error">("checking");
+  const [verifyAttempt, setVerifyAttempt] = useState(0);
   const [message, setMessage] = useState("Click is checking the receipt...");
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-
     async function verify() {
       try {
         if (!sessionId) throw new Error("The checkout receipt is missing.");
-
         const response = await fetch(
           `/api/wordsearch/verify?session_id=${encodeURIComponent(sessionId)}`,
           { cache: "no-store" },
@@ -116,53 +116,70 @@ export function WordSearchSuccess() {
           puzzleHash?: string | null;
           error?: string;
         };
-
         if (!response.ok || !data.paid || !data.puzzleHash) {
           throw new Error(data.error || "Payment could not be verified.");
         }
 
         const stored = sessionStorage.getItem(`nlcl-wordsearch:${data.puzzleHash}`);
-        if (!stored) {
-          throw new Error("This browser no longer has the word search details.");
-        }
-
         if (!cancelled) {
-          setPayload(JSON.parse(stored) as WordSearchPurchasePayload);
-          setStatus("ready");
-          setMessage("Your printable word search is ready.");
+          setPaidPuzzleHash(data.puzzleHash);
+          setDownloadError(null);
+          if (!stored) {
+            setStatus("needs-backup");
+            setMessage("Payment confirmed. This browser no longer has the word search details. Restore your purchase backup to download it.");
+          } else {
+            setPayload(JSON.parse(stored) as WordSearchPurchasePayload);
+            setStatus("ready");
+            setMessage("Your printable word search is ready.");
+          }
         }
       } catch (error) {
         if (!cancelled) {
           setStatus("error");
-          setMessage(
-            error instanceof Error
-              ? error.message
-              : "The purchase could not be verified.",
-          );
+          setMessage(error instanceof Error ? error.message : "The purchase could not be verified.");
         }
       }
     }
-
     void verify();
-    return () => {
-      cancelled = true;
-    };
-  }, [sessionId]);
+    return () => { cancelled = true; };
+  }, [sessionId, verifyAttempt]);
+
+  async function restoreBackup(file: File | undefined) {
+    if (!file || !paidPuzzleHash) return;
+    try {
+      setDownloadError(null);
+      const restored = await readMatchingPurchaseBackup<WordSearchPurchasePayload>(
+        file, "wordsearch", paidPuzzleHash,
+      );
+      sessionStorage.setItem(`nlcl-wordsearch:${paidPuzzleHash}`, JSON.stringify(restored));
+      setPayload(restored);
+      setStatus("ready");
+      setMessage("Your matching backup is restored. You can download the word search.");
+    } catch (error) {
+      setDownloadError(error instanceof Error ? error.message : "Could not open that backup.");
+    }
+  }
 
   async function downloadPdf() {
     if (!sessionId || !payload) return;
-
     setStatus("downloading");
+    setDownloadError(null);
     setMessage("Click is lettering the title and checking every hiding place...");
 
     try {
-      const titleImageDataUrl = await renderTitleImageDataUrl(payload.title);
+      // If the custom font is unavailable, the server can use its native PDF title.
+      let titleImageDataUrl: string | undefined;
+      try {
+        titleImageDataUrl = await renderTitleImageDataUrl(payload.title);
+      } catch {
+        titleImageDataUrl = undefined;
+      }
+
       const response = await fetch("/api/wordsearch/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, payload, titleImageDataUrl }),
       });
-
       if (!response.ok) {
         const data = (await response.json()) as { error?: string };
         throw new Error(data.error || "The PDF could not be assembled.");
@@ -176,24 +193,21 @@ export function WordSearchSuccess() {
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
-      URL.revokeObjectURL(url);
-
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       setStatus("ready");
-      setMessage("Downloaded. The answer key is on page two.");
+      setMessage("Download started. The answer key is on page two. Keep your PDF somewhere safe.");
     } catch (error) {
-      setStatus("error");
-      setMessage(
-        error instanceof Error ? error.message : "The PDF could not be downloaded.",
-      );
+      setStatus("ready");
+      setMessage("Your payment is still confirmed. You can try the download again.");
+      setDownloadError(error instanceof Error ? error.message : "The PDF could not be downloaded.");
     }
   }
 
   return (
     <section className={styles.card}>
       <p className={styles.eyebrow}>Click No. 004 · purchase complete</p>
-      <h1>{status === "error" ? "Something wandered off." : "Your word search is ready."}</h1>
-      <p className={styles.message}>{message}</p>
-
+      <h1>{status === "error" ? "We couldn't check that receipt." : status === "needs-backup" ? "Your purchase is confirmed." : "Your word search is ready."}</h1>
+      <p className={styles.message} role="status">{message}</p>
       {payload && status !== "error" && (
         <>
           <div className={styles.summary}>
@@ -202,24 +216,30 @@ export function WordSearchSuccess() {
             <span>Puzzle + answer key</span>
           </div>
           <p className={styles.saveNotice}>
-            Save this PDF somewhere safe. The Lab does not keep a recoverable copy of your
-            personalized puzzle.
+            Save this PDF somewhere safe. The Lab does not keep a recoverable copy of your personalized puzzle.
           </p>
         </>
       )}
-
+      {status === "needs-backup" && (
+        <div className={styles.saveNotice}>
+          <p>Your purchase backup stays on your device until you choose a file here.</p>
+          <label>
+            Restore from purchase backup (.json)
+            <input type="file" accept=".json,application/json" onChange={(event) => { void restoreBackup(event.target.files?.[0]); }} />
+          </label>
+        </div>
+      )}
+      {downloadError && <p className={styles.help} role="alert">{downloadError}</p>}
       <div className={styles.actions}>
         {payload && status !== "error" && (
-          <button
-            type="button"
-            disabled={status === "downloading"}
-            onClick={downloadPdf}
-          >
-            {status === "downloading" ? "Assembling PDF..." : "Download my PDF"}
+          <button type="button" disabled={status === "downloading"} onClick={downloadPdf}>
+            {status === "downloading" ? "Assembling PDF..." : downloadError ? "Retry download" : "Download my PDF"}
           </button>
         )}
+        {status === "error" && <button type="button" onClick={() => { setStatus("checking"); setVerifyAttempt((value) => value + 1); }}>Retry receipt check</button>}
         <Link href="/clicks/custom-word-search">Back to the word search maker</Link>
       </div>
+      {status === "error" && <p className={styles.help}>Keep your Stripe receipt. Contact the Lab with the receipt reference if payment went through.</p>}
     </section>
   );
 }
