@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Nice Little Click Lab",
   shortName: "Nice Little Click",
-  url: "https://www.nicelittleclick.com",
+  url: "https://nicelittleclick.com",
   email: "hello@nicelittleclick.com",
   operator: "Moore Family Print Shop LLC",
   locale: "en-US",
