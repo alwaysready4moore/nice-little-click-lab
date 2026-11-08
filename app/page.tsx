@@ -3,7 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Tiny Web Tools, Games, and Personalized Gifts",
+  title: {
+    absolute:
+      "Tiny Web Tools, Games, and Personalized Gifts | Nice Little Click Lab",
+  },
   description:
     "Make a custom seating chart, try free browser tools and games, or create a personalized puzzle gift.",
   alternates: { canonical: "/" },
