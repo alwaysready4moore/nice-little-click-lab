@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -120,6 +121,9 @@ export default function RootLayout({
         <SiteFooter />
         <JsonLd data={websiteStructuredData} />
       </body>
+      {process.env.NODE_ENV === "production" ? (
+        <GoogleAnalytics gaId="G-VPP8HQ08RC" />
+      ) : null}
     </html>
   );
 }
