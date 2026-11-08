@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/guides", lastModified: guidesUpdatedAt },
     { path: "/about", lastModified: "2026-08-17" },
     { path: "/contact", lastModified: "2026-08-17" },
-    { path: "/privacy", lastModified: "2026-08-01" },
+    { path: "/privacy", lastModified: "2026-11-08" },
     { path: "/terms", lastModified: "2026-08-01" },
   ];
 

@@ -1,4 +1,4 @@
-const siteUrl = "https://www.nicelittleclick.com";
+const siteUrl = "https://nicelittleclick.com";
 const key = "79301f499f1545fa5986f52faaa49e0b";
 const paths = [
   "/",

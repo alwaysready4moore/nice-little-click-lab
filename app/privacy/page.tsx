@@ -11,7 +11,7 @@ export default function PrivacyPage() {
       <p className="lab-label">The tiny-print version</p>
       <h1 className="mt-4 text-5xl font-semibold tracking-[-0.04em]">Privacy</h1>
       <p className="mt-3 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
-        Last updated August 1, 2026
+        Last updated November 8, 2026
       </p>
 
       <div className="mt-8 space-y-8 text-lg leading-8 text-[var(--muted)]">
@@ -72,6 +72,35 @@ export default function PrivacyPage() {
             The site is hosted by Netlify, which may process basic technical
             information such as IP addresses, browser details, device information,
             and request logs to deliver, secure, and maintain the site.
+          </p>
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--ink)]">Analytics and cookies</h2>
+          <p className="mt-3">
+            The Lab uses Google Analytics 4 to understand aggregate traffic:
+            pages visited, referring sites, approximate location, and device or
+            browser. Google Analytics uses cookies and similar technology to
+            collect that. Google processes the data according to its{" "}
+            <a
+              href="https://policies.google.com/technologies/partner-sites"
+              className="font-semibold text-[var(--ink)] underline decoration-[var(--accent)] decoration-2 underline-offset-4 hover:text-[var(--accent-strong)]"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              policy for sites that use Google services
+            </a>
+            . You can opt out with the{" "}
+            <a
+              href="https://tools.google.com/dlpage/gaoptout"
+              className="font-semibold text-[var(--ink)] underline decoration-[var(--accent)] decoration-2 underline-offset-4 hover:text-[var(--accent-strong)]"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Google Analytics Opt-out Browser Add-on
+            </a>{" "}
+            or by blocking cookies. The Lab does not use ads features or
+            personalized advertising, and this data is not sold.
           </p>
         </div>
 
