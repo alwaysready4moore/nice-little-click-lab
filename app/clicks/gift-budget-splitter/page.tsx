@@ -6,10 +6,13 @@ import {
   breadcrumbStructuredData,
   faqStructuredData,
   organizationId,
+  shareImagesForCard,
 } from "@/lib/seo";
+import { clickShareCard } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 
 const pagePath = "/clicks/gift-budget-splitter";
+const share = shareImagesForCard(clickShareCard("gift-budget-splitter"), pagePath);
 
 export const metadata: Metadata = {
   title: "Gift Budget Splitter | Split a Gift Budget Between People",
@@ -22,14 +25,14 @@ export const metadata: Metadata = {
       "Tell us your total gift budget and who's on your list. Watch the gift amounts rebalance instantly.",
     url: pagePath,
     type: "website",
-    images: [siteConfig.socialImage],
+    images: share.openGraphImages,
   },
   twitter: {
     card: "summary_large_image",
     title: "Gift Budget Splitter",
     description:
       "One budget. A whole list of people. Let the little gift boxes do the math.",
-    images: [siteConfig.socialImage],
+    images: share.twitterImages,
   },
 };
 
@@ -66,7 +69,7 @@ const structuredData = {
       operatingSystem: "Web",
       browserRequirements: "Requires JavaScript and a modern web browser",
       url: siteConfig.url + pagePath,
-      image: siteConfig.url + siteConfig.socialImage,
+      image: share.url,
       description:
         "A free interactive browser tool that divides a gift budget across recipients by weighted gift size, with a reserve and printable allocations.",
       inLanguage: siteConfig.locale,

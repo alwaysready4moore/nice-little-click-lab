@@ -6,10 +6,13 @@ import {
   breadcrumbStructuredData,
   faqStructuredData,
   organizationId,
+  shareImagesForCard,
 } from "@/lib/seo";
+import { clickShareCard } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 
 const pagePath = "/clicks/halloween-candy-calculator";
+const share = shareImagesForCard(clickShareCard("halloween-candy-calculator"), pagePath);
 
 export const metadata: Metadata = {
   title: "Halloween Candy Calculator | How Much Candy Do I Need?",
@@ -22,14 +25,14 @@ export const metadata: Metadata = {
       "A free Halloween candy calculator for planning pieces, backup candy, and bags before trick-or-treat night.",
     url: pagePath,
     type: "website",
-    images: [siteConfig.socialImage],
+    images: share.openGraphImages,
   },
   twitter: {
     card: "summary_large_image",
     title: "How Much Halloween Candy Do I Need?",
     description:
       "Plan your trick-or-treat candy without panic-rationing the good stuff at 7:43 PM.",
-    images: [siteConfig.socialImage],
+    images: share.twitterImages,
   },
 };
 
@@ -67,7 +70,7 @@ const structuredData = {
       operatingSystem: "Web",
       browserRequirements: "Requires JavaScript and a modern web browser",
       url: siteConfig.url + pagePath,
-      image: siteConfig.url + siteConfig.socialImage,
+      image: share.url,
       description:
         "A free browser calculator for estimating Halloween candy pieces, backup candy, and package counts for trick-or-treaters.",
       inLanguage: siteConfig.locale,

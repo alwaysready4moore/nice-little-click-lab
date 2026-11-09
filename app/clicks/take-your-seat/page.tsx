@@ -1,16 +1,34 @@
 import type { Metadata } from "next";
 import { SeatingChartBuilder } from "@/components/clicks/seating/SeatingChartBuilder";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbStructuredData, organizationId } from "@/lib/seo";
+import { breadcrumbStructuredData, organizationId, shareImagesForCard } from "@/lib/seo";
+import { clickShareCard } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 
 const pagePath = "/clicks/take-your-seat";
+const title = "Take Your Seat | Custom Seating Chart Builder";
+const description =
+  "Arrange wedding tables or classroom desks, assign seats, and print your seating chart. Free, private, and no account required.";
+const share = shareImagesForCard(clickShareCard("take-your-seat"), pagePath);
 
 export const metadata: Metadata = {
-  title: "Take Your Seat | Custom Seating Chart Builder",
-  description: "Arrange wedding tables or classroom desks, assign seats, and print your seating chart. Free, private, and no account required.",
+  title,
+  description,
   alternates: { canonical: pagePath },
   robots: { index: true, follow: true },
+  openGraph: {
+    title,
+    description,
+    url: pagePath,
+    type: "website",
+    images: share.openGraphImages,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: share.twitterImages,
+  },
 };
 
 const structuredData = {
@@ -24,7 +42,7 @@ const structuredData = {
       operatingSystem: "Web",
       browserRequirements: "Requires JavaScript and a modern web browser",
       url: `${siteConfig.url}${pagePath}`,
-      image: `${siteConfig.url}${siteConfig.socialImage}`,
+      image: share.url,
       description:
         "A free browser tool for arranging wedding tables or classroom desks, assigning seats, and printing a seating chart.",
       inLanguage: siteConfig.locale,
