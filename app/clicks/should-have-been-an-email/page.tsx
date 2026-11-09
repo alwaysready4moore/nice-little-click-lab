@@ -6,10 +6,13 @@ import {
   breadcrumbStructuredData,
   faqStructuredData,
   organizationId,
+  shareImagesForCard,
 } from "@/lib/seo";
+import { clickShareCard } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 
 const pagePath = "/clicks/should-have-been-an-email";
+const share = shareImagesForCard(clickShareCard("should-have-been-an-email"), pagePath);
 
 export const metadata: Metadata = {
   title: "Should This Have Been an Email? Free Meeting Test",
@@ -22,14 +25,14 @@ export const metadata: Metadata = {
       "A free, seven-question meeting test with a downloadable calendar verdict.",
     url: pagePath,
     type: "website",
-    images: [siteConfig.socialImage],
+    images: share.openGraphImages,
   },
   twitter: {
     card: "summary_large_image",
     title: "Should This Have Been an Email?",
     description:
       "Let Click review the evidence and issue a free meeting verdict.",
-    images: [siteConfig.socialImage],
+    images: share.twitterImages,
   },
 };
 
@@ -67,7 +70,7 @@ const structuredData = {
       operatingSystem: "Web",
       browserRequirements: "Requires JavaScript and a modern web browser",
       url: `${siteConfig.url}${pagePath}`,
-      image: `${siteConfig.url}${siteConfig.socialImage}`,
+      image: share.url,
       description:
         "A free seven-question browser tool that evaluates whether a meeting should be synchronous or handled in writing.",
       inLanguage: siteConfig.locale,

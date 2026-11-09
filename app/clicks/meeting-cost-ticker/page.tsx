@@ -7,10 +7,13 @@ import {
   breadcrumbStructuredData,
   faqStructuredData,
   organizationId,
+  shareImagesForCard,
 } from "@/lib/seo";
+import { clickShareCard } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 
 const pagePath = "/clicks/meeting-cost-ticker";
+const share = shareImagesForCard(clickShareCard("meeting-cost-ticker"), pagePath);
 
 export const metadata: Metadata = {
   title: "Free Meeting Cost Calculator",
@@ -23,14 +26,14 @@ export const metadata: Metadata = {
       "Add attendees and watch the estimated cost of a meeting rise in real time. Free, private, and no sign-up required.",
     url: pagePath,
     type: "website",
-    images: [siteConfig.socialImage],
+    images: share.openGraphImages,
   },
   twitter: {
     card: "summary_large_image",
     title: "Free Meeting Cost Calculator",
     description:
       "Estimate a meeting's running cost and download a receipt. No account required.",
-    images: [siteConfig.socialImage],
+    images: share.twitterImages,
   },
 };
 
@@ -73,7 +76,7 @@ const softwareApplicationStructuredData = {
       operatingSystem: "Web",
       browserRequirements: "Requires JavaScript and a modern web browser",
       url: `${siteConfig.url}${pagePath}`,
-      image: `${siteConfig.url}${siteConfig.socialImage}`,
+      image: share.url,
       description:
         "A free browser-based tool that estimates the running cost of a meeting using attendee counts and editable salary values.",
       inLanguage: siteConfig.locale,
