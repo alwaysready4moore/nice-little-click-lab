@@ -97,7 +97,7 @@
 .primaryLink:focus-visible,
 .secondaryLink:focus-visible,
 .dismiss:focus-visible {
-  outline: 3px solid rgba(78, 51, 29, 0.3);
+  outline: 3px solid rgb(78, 51, 29);
   outline-offset: 3px;
 }
 

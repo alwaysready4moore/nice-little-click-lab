@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { ProductPreview } from "@/components/clicks/ProductPreview";
 
 export const metadata: Metadata = {
   title: {
@@ -30,29 +31,29 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-16 pt-14 lg:grid-cols-[0.88fr_1.12fr] lg:items-center lg:pb-20 lg:pt-20">
+      <section className="mx-auto grid max-w-6xl gap-9 px-6 pb-12 pt-9 lg:grid-cols-[0.88fr_1.12fr] lg:items-center lg:pb-14 lg:pt-12">
         <div>
           <p className="lab-label">GOOD LITTLE THINGS FOR THE INTERNET</p>
-          <h1 className="mt-6 max-w-2xl text-[clamp(3.45rem,7vw,6.6rem)] font-black leading-[0.88] tracking-[-0.065em]">
+          <h1 className="mt-6 max-w-2xl text-[clamp(2.65rem,4.5vw,4.4rem)] font-black leading-[0.88] tracking-[-0.065em]">
             Tiny web tools for{" "}
             <span className="hero-script lab-script block pt-3 font-normal">
               oddly specific moments.
             </span>
           </h1>
-          <p className="mt-7 max-w-xl text-lg leading-8 text-[var(--muted)]">
+          <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--muted)]">
             Nice Little Click Lab makes small, useful tools, games, and gifts
             that do one thing well. No account. No clutter. Just something
             delightful that works.
           </p>
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/clicks/take-your-seat"
               className="lab-button lab-button-primary"
             >
               Make a seating chart
             </Link>
-            <Link href="#what-is-a-click" className="lab-button lab-button-secondary">
-              What is a Click?
+            <Link href="/clicks" className="lab-button lab-button-secondary">
+              Browse all tools
             </Link>
           </div>
         </div>
@@ -82,6 +83,7 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
+            <ProductPreview slug="take-your-seat" />
             <div className="grid gap-5 border-t border-[var(--border)] pt-5 sm:grid-cols-[1fr_auto] sm:items-end">
               <div>
                 <p className="lab-label">FREE · NO SIGN-UP</p>
@@ -156,13 +158,7 @@ export default function HomePage() {
           >
             Make a word search for $3
           </Link>
-          <div className="wordsearch-mini" aria-hidden="true">
-            C L I C K
-            <br />
-            M E M O R Y
-            <br />
-            G I F T
-          </div>
+          <ProductPreview slug="custom-word-search" />
         </article>
       </section>
 
