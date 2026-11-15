@@ -25,7 +25,7 @@ export function ProductPreview({ slug }: { slug: string }) {
         <svg viewBox="0 0 1200 800" className={styles.room} role="img" aria-label="Example wedding room with six round tables and eight seats at each table">
           {room.furniture.map((table, index) => (
             <g key={table.id}>
-              {seatPositions(table).map((seat, i) => <rect key={i} x={seat.x - seat.width / 2} y={seat.y - seat.height / 2} width={seat.width} height={seat.height} rx="10" fill="#fffaf2" stroke="#315f5b" strokeWidth="3" />)}
+              {seatPositions(table).map((seat, i) => <rect key={i} x={table.x + seat.x - seat.width / 2} y={table.y + seat.y - seat.height / 2} width={seat.width} height={seat.height} rx="10" fill="#fffaf2" stroke="#315f5b" strokeWidth="3" />)}
               <ellipse cx={table.x} cy={table.y} rx="59" ry="48" fill={index % 2 ? "#d6e8d9" : "#f6d3c8"} stroke="#39352f" strokeWidth="4" />
               <text x={table.x} y={table.y + 5} textAnchor="middle" fontSize="22" fill="#222">{index + 1}</text>
             </g>
