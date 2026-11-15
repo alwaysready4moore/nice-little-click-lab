@@ -133,10 +133,10 @@ svg {
 }
 
 .lab-label {
-  font-family: var(--font-display);
-  font-size: 1.12rem;
-  font-weight: 400;
-  line-height: 1.1;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
   letter-spacing: 0.085em;
   text-transform: uppercase;
   color: var(--accent-strong);
@@ -192,7 +192,7 @@ svg {
 }
 
 .lab-button:focus-visible {
-  outline: 3px solid rgba(164, 94, 36, 0.28);
+  outline: 3px solid #315f5b;
   outline-offset: 3px;
 }
 
@@ -404,7 +404,7 @@ svg {
 
 .skip-link { position: fixed; left: 1rem; top: 1rem; z-index: 100; transform: translateY(-200%); border-radius: 999px; background: var(--foreground); color: white; padding: .75rem 1rem; font-weight: 700; }
 .skip-link:focus { transform: translateY(0); }
-a:focus-visible { outline: 3px solid rgba(139,72,28,.35); outline-offset: 4px; border-radius: .25rem; }
+
 
 /* Click No. 001: Meeting Cost Ticker */
 .meeting-back-link {
@@ -1076,45 +1076,15 @@ a:focus-visible { outline: 3px solid rgba(139,72,28,.35); outline-offset: 4px; b
 }
 
 
-/* First-time visitor clarity pass */
-.lab-label {
-  font-size: 1.3rem;
-  line-height: 1.05;
-}
+/* Shared home and catalog typography */
+.hero-script { font-size: clamp(2.6rem, 4.4vw, 4rem); line-height: 1.06; }
+.click-definition-title { font-size: clamp(2rem, 3.2vw, 2.65rem); line-height: 1.1; }
+.site-primary-nav { font-family: var(--font-body); }
+.site-primary-nav a, .site-footer-nav a { display: inline-flex; align-items: center; min-height: 44px; }
 
-@media (min-width: 640px) {
-  .lab-label {
-    font-size: 1.42rem;
-  }
-}
-
-
-/* Type hierarchy polish */
-.hero-script {
-  font-size: clamp(2.75rem, 5.8vw, 5.35rem);
-  line-height: 0.98;
-}
-
-.click-definition-label {
-  font-size: 1.48rem;
-  line-height: 1;
-}
-
-.click-definition-title {
-  font-size: clamp(2rem, 3.2vw, 2.65rem);
-  line-height: 1;
-}
-
-@media (max-width: 639px) {
-  .hero-script {
-    font-size: clamp(2.65rem, 12vw, 4rem);
-  }
-
-  .click-definition-label {
-    font-size: 1.28rem;
-  }
-
-  .click-definition-title {
-    font-size: 2rem;
-  }
+/* A white inner ring stays visible on dark tools; teal defines the outer edge. */
+body :is(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid #315f5b;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px #fff;
 }

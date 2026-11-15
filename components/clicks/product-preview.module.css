@@ -1,0 +1,27 @@
+.preview {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  border: 1px solid #d3c7b6;
+  border-radius: 0.75rem;
+  background: #fffdf8;
+  color: #315f5b;
+}
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.sample { font-size: 0.75rem; font-weight: 400; color: #6e665d; }
+.puzzle, .room { display: block; width: 100%; height: 160px; margin: auto; }
+.room { height: 150px; background: #f5f0e7; border-radius: 0.4rem; }
+.words { margin: 0.75rem 0 0; text-align: center; font-family: var(--font-body); font-size: 0.75rem; line-height: 1.5; }
+@media (max-width: 480px) {
+  .preview { padding: 0.75rem; }
+  .room { height: 130px; }
+}

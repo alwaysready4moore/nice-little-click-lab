@@ -96,7 +96,7 @@ export function GiftBudgetSplitter() {
   }
 
   return (
-    <main className={styles.page} aria-labelledby="gift-budget-title">
+    <div className={styles.page} aria-labelledby="gift-budget-title">
       <section className={styles.hero}>
         <p className={styles.eyebrow}>CLICK NO. 007 · FREE · MADE FOR GIFT GIVERS</p>
         <h1 className={styles.title} id="gift-budget-title">
@@ -380,6 +380,6 @@ export function GiftBudgetSplitter() {
         This Click runs entirely in your browser. We don&apos;t store your names, gift list, or budget.
         Copying or printing is up to you.
       </p>
-    </main>
+    </div>
   );
 }

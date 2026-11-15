@@ -134,7 +134,7 @@
 
 .primaryButton:focus-visible,
 .choiceGrid button:focus-visible,
-.resultsActions button:focus-visible { outline: 3px solid rgba(102, 128, 151, 0.45); outline-offset: 3px; }
+.resultsActions button:focus-visible { outline: 3px solid rgb(102, 128, 151); outline-offset: 3px; }
 
 .smallPrint {
   margin: 0.8rem 0 0;
@@ -605,7 +605,7 @@
 }
 
 .soundToggle:hover { color: var(--ink); background: var(--paper); }
-.soundToggle:focus-visible { outline: 3px solid rgba(102, 128, 151, 0.45); outline-offset: 3px; }
+.soundToggle:focus-visible { outline: 3px solid rgb(102, 128, 151); outline-offset: 3px; }
 .startSoundToggle { margin-left: 0.7rem; vertical-align: middle; }
 .resultsSoundToggle { display: flex; justify-content: center; margin-top: 0.9rem; }
 

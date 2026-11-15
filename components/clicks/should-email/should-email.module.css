@@ -241,7 +241,7 @@
 .modeSwitch button:focus-visible,
 .answerGrid button:focus-visible,
 .resetButton:focus-visible {
-  outline: 3px solid rgba(97, 127, 147, 0.32);
+  outline: 3px solid rgb(97, 127, 147);
   outline-offset: 3px;
 }
 

@@ -74,8 +74,8 @@ export function FreshFromLabBanner() {
           >
             Make a seating chart
           </Link>
-          <Link className={styles.secondaryLink} href="/clicks/halloween-candy-calculator">
-            Plan Halloween candy
+          <Link className={styles.secondaryLink} href="/clicks/gift-budget-splitter">
+            Split a gift budget
           </Link>
         </div>
 

@@ -144,7 +144,7 @@ export function HalloweenCandyCalculator() {
   }
 
   return (
-    <main className={styles.page} aria-labelledby="halloween-candy-title">
+    <div className={styles.page} aria-labelledby="halloween-candy-title">
       <div className={styles.stars} aria-hidden="true" />
 
       <section className={styles.hero}>
@@ -400,6 +400,6 @@ export function HalloweenCandyCalculator() {
           assumption, not a prediction.
         </span>
       </section>
-    </main>
+    </div>
   );
 }

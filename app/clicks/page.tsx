@@ -111,15 +111,14 @@ export default function ClicksPage() {
   return (
     <>
       <JsonLd data={clickListStructuredData} />
-      <section className="mx-auto max-w-6xl px-6 py-20">
+      <section className="mx-auto max-w-6xl px-6 py-12">
         <p className="lab-label">From the Lab</p>
 
-        <h1 className="lab-heading mt-3 text-7xl sm:text-8xl">All the Clicks.</h1>
+        <h1 className="lab-heading mt-3 text-5xl sm:text-7xl">All the Clicks.</h1>
 
         <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">
           Browse free browser tools, tiny games, and personalized digital gifts.
-          Every Click has one clear job, works without unnecessary setup, and
-          comes with at least one detail that made Click wag his tail.
+          Pick something useful, make something personal, or play for a minute.
         </p>
 
         <p className="font-handwritten mt-4 text-xl text-[var(--accent-strong)]">

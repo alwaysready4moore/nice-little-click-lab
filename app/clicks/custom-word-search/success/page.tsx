@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 
 export default function WordSearchSuccessPage() {
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <Suspense fallback={<p>Click is checking the receipt...</p>}>
         <WordSearchSuccess />
       </Suspense>
-    </main>
+    </div>
   );
 }

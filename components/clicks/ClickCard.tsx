@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProductPreview } from "./ProductPreview";
 import type { Click } from "@/data/clicks";
 
 type ClickCardProps = {
@@ -9,18 +10,6 @@ type ClickCardProps = {
 export function ClickCard({ click, featured = false }: ClickCardProps) {
   const href = `/clicks/${click.slug}`;
   const isLive = click.status === "live";
-  const liveButtonLabel =
-    click.slug === "meeting-cost-ticker"
-      ? "Open the ticker"
-      : click.slug === "please-advise"
-        ? "Play the game"
-        : click.slug === "should-have-been-an-email"
-          ? "Judge a meeting"
-          : click.slug === "halloween-candy-calculator"
-            ? "Plan the candy"
-            : click.slug === "gift-budget-splitter"
-              ? "Split a budget"
-              : "Open this Click";
 
   return (
     <article
@@ -51,6 +40,8 @@ export function ClickCard({ click, featured = false }: ClickCardProps) {
             {click.priceLabel}
           </span>
         </div>
+
+        <ProductPreview slug={click.slug} />
 
         <div
           className={
@@ -83,7 +74,7 @@ export function ClickCard({ click, featured = false }: ClickCardProps) {
             {isLive ? (
               <div>
                 <Link href={href} className="lab-button lab-button-primary">
-                  {liveButtonLabel}
+                  {click.actionLabel}
                 </Link>
                 <p className="font-handwritten mt-3 rotate-1 text-lg text-[var(--accent-strong)]">
                   ready for clicking
