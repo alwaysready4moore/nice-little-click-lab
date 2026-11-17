@@ -150,19 +150,36 @@ export default function MeetingCostTickerPage() {
         </p>
       </section>
 
+      <section className="mx-auto max-w-6xl px-6 pb-12">
+        <MeetingCostTicker />
+        <p className="lab-note mt-5">
+          Nothing is submitted or saved. The whole meeting stays in your browser.
+        </p>
+      </section>
+
       <section
         aria-labelledby="how-it-works-heading"
         className="mx-auto max-w-6xl px-6 pb-10"
       >
-        <div className="lab-card p-6 sm:p-8">
-          <p className="lab-label">NEW HERE?</p>
-          <h2
-            id="how-it-works-heading"
-            className="mt-3 text-3xl font-black tracking-[-0.04em] sm:text-4xl"
-          >
-            Here’s how it works.
-          </h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <details className="lab-card group p-6 sm:p-8">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-strong)] [&::-webkit-details-marker]:hidden">
+            <span>
+              <span className="lab-label block">NEED A HAND?</span>
+              <span
+                id="how-it-works-heading"
+                className="mt-2 block text-2xl font-black tracking-[-0.04em] sm:text-3xl"
+              >
+                Here’s how it works.
+              </span>
+            </span>
+            <span
+              aria-hidden="true"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--border)] text-xl font-semibold transition-transform group-open:rotate-45"
+            >
+              +
+            </span>
+          </summary>
+          <div className="mt-6 grid gap-4 border-t border-[var(--border)] pt-6 md:grid-cols-3">
             {steps.map((step) => (
               <article
                 key={step.number}
@@ -180,14 +197,7 @@ export default function MeetingCostTickerPage() {
               </article>
             ))}
           </div>
-          <p className="lab-note mt-6">
-            Nothing is submitted or saved. The whole meeting stays in your browser.
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 pb-16">
-        <MeetingCostTicker />
+        </details>
       </section>
 
       <FaqSection
