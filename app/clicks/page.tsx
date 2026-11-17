@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ClickCard } from "@/components/clicks/ClickCard";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { clicks } from "@/data/clicks";
+import { clicks, type Click } from "@/data/clicks";
 import {
   absoluteUrl,
   breadcrumbStructuredData,
@@ -107,6 +107,32 @@ const clickListStructuredData = {
   ],
 };
 
+const catalogSections: {
+  id: string;
+  category: Click["category"];
+  heading: string;
+  description: string;
+}[] = [
+  {
+    id: "personal",
+    category: "gift",
+    heading: "Make something personal.",
+    description: "For favorite people, meaningful memories, and getting everyone seated.",
+  },
+  {
+    id: "workday",
+    category: "workday",
+    heading: "Survive the workday.",
+    description: "Office nonsense, gently handled.",
+  },
+  {
+    id: "planning",
+    category: "planning",
+    heading: "Plan a little something.",
+    description: "Small calculations for oddly specific occasions.",
+  },
+];
+
 export default function ClicksPage() {
   return (
     <>
@@ -125,9 +151,28 @@ export default function ClicksPage() {
           The shelf is small on purpose. Good things are being made.
         </p>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {clicks.map((click) => (
-            <ClickCard key={click.slug} click={click} />
+        <div className="mt-12 space-y-14">
+          {catalogSections.map((section) => (
+            <section key={section.id} aria-labelledby={`section-${section.id}`}>
+              <div className="mb-6">
+                <h2
+                  id={`section-${section.id}`}
+                  className="lab-heading text-3xl sm:text-4xl"
+                >
+                  {section.heading}
+                </h2>
+                <p className="mt-2 max-w-xl leading-7 text-[var(--muted)]">
+                  {section.description}
+                </p>
+              </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                {clicks
+                  .filter((click) => click.category === section.category)
+                  .map((click) => (
+                    <ClickCard key={click.slug} click={click} />
+                  ))}
+              </div>
+            </section>
           ))}
         </div>
       </section>
