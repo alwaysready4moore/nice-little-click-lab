@@ -76,9 +76,11 @@ export function ClickCard({ click, featured = false }: ClickCardProps) {
                 <Link href={href} className="lab-button lab-button-primary">
                   {click.actionLabel}
                 </Link>
-                <p className="font-handwritten mt-3 rotate-1 text-lg text-[var(--accent-strong)]">
-                  ready for clicking
-                </p>
+                {featured ? (
+                  <p className="font-handwritten mt-3 rotate-1 text-lg text-[var(--accent-strong)]">
+                    ready for clicking
+                  </p>
+                ) : null}
               </div>
             ) : (
               <div>
