@@ -2,6 +2,7 @@ export type Click = {
   slug: string;
   number: number;
   name: string;
+  category: "gift" | "workday" | "planning";
   actionLabel: string;
   shortDescription: string;
   status: "coming-soon" | "live" | "retired";
@@ -16,6 +17,7 @@ export type Click = {
 export const clicks: Click[] = [
   {
     slug: "meeting-cost-ticker",
+    category: "workday",
     number: 1,
     name: "Meeting Cost Ticker",
     actionLabel: "Open the ticker",
@@ -29,6 +31,7 @@ export const clicks: Click[] = [
   },
   {
     slug: "custom-crossword",
+    category: "gift",
     number: 2,
     name: "Instant Custom Crossword Gift",
     actionLabel: "Make a crossword",
@@ -42,6 +45,7 @@ export const clicks: Click[] = [
   },
   {
     slug: "please-advise",
+    category: "workday",
     number: 3,
     name: "Please Advise",
     actionLabel: "Play the game",
@@ -56,6 +60,7 @@ export const clicks: Click[] = [
   },
   {
     slug: "custom-word-search",
+    category: "gift",
     number: 4,
     name: "Custom Word Search Gift",
     actionLabel: "Make a word search",
@@ -71,6 +76,7 @@ export const clicks: Click[] = [
   },
   {
     slug: "should-have-been-an-email",
+    category: "workday",
     number: 5,
     name: "Should This Have Been an Email?",
     actionLabel: "Judge a meeting",
@@ -85,6 +91,7 @@ export const clicks: Click[] = [
   },
   {
     slug: "halloween-candy-calculator",
+    category: "planning",
     number: 6,
     name: "How Much Halloween Candy Do I Need?",
     actionLabel: "Plan the candy",
@@ -100,6 +107,7 @@ export const clicks: Click[] = [
   },
   {
     slug: "gift-budget-splitter",
+    category: "planning",
     number: 7,
     name: "Gift Budget Splitter",
     actionLabel: "Split a budget",
@@ -114,6 +122,7 @@ export const clicks: Click[] = [
   },
   {
     slug: "take-your-seat",
+    category: "gift",
     number: 8,
     name: "Take Your Seat",
     actionLabel: "Arrange your seats",
