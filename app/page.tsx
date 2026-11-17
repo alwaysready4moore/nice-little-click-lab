@@ -45,15 +45,12 @@ export default function HomePage() {
             that do one thing well. No account. No clutter. Just something
             delightful that works.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6">
             <Link
-              href="/clicks/take-your-seat"
-              className="lab-button lab-button-primary"
+              href="/clicks"
+              className="inline-flex min-h-11 items-center font-bold text-[var(--accent-strong)] underline decoration-1 underline-offset-4 hover:decoration-2 focus-visible:rounded"
             >
-              Make a seating chart
-            </Link>
-            <Link href="/clicks" className="lab-button lab-button-secondary">
-              Browse all tools
+              Explore all the Clicks →
             </Link>
           </div>
         </div>
