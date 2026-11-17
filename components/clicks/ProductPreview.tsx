@@ -10,6 +10,14 @@ const crossword = generateCrossword(words.slice(0, 8).map((answer, index) => ({
 })), { seed: 42, maxAttempts: 20 });
 const wordSearch = generateWordSearch(words.map((word, index) => ({ id: String(index), word })), "easy", 42);
 const room = createProject("wedding");
+const sampleGuestSeats: Record<string, string> = {
+  "0-0": "JOSIE",
+  "0-2": "ELI",
+  "0-4": "SAM",
+  "0-6": "RUE",
+  "1-1": "MAYA",
+  "1-5": "BEN",
+};
 
 export function ProductPreview({ slug }: { slug: string }) {
   if (!["custom-crossword", "custom-word-search", "take-your-seat"].includes(slug)) return null;
@@ -22,10 +30,20 @@ export function ProductPreview({ slug }: { slug: string }) {
         <span className={styles.sample}>Sample {seating ? "layout" : "puzzle"}</span>
       </figcaption>
       {seating ? (
-        <svg viewBox="0 0 1200 800" className={styles.room} role="img" aria-label="Example wedding room with six round tables and eight seats at each table">
+        <svg viewBox="0 0 1200 800" className={styles.room} role="img" aria-label="Sample wedding seating chart with six round tables, eight seats per table, and six guests assigned by name">
           {room.furniture.map((table, index) => (
             <g key={table.id}>
-              {seatPositions(table).map((seat, i) => <rect key={i} x={table.x + seat.x - seat.width / 2} y={table.y + seat.y - seat.height / 2} width={seat.width} height={seat.height} rx="10" fill="#fffaf2" stroke="#315f5b" strokeWidth="3" />)}
+              {seatPositions(table).map((seat, i) => {
+                const guest = sampleGuestSeats[`${index}-${i}`];
+                const x = table.x + seat.x;
+                const y = table.y + seat.y;
+                return (
+                  <g key={i}>
+                    <rect x={x - seat.width / 2} y={y - seat.height / 2} width={seat.width} height={seat.height} rx="10" fill={guest ? "#d6e8d9" : "#fffaf2"} stroke="#315f5b" strokeWidth="3" />
+                    {guest && <text x={x} y={y + 4} textAnchor="middle" fontSize="13" fontWeight="700" fill="#315f5b">{guest}</text>}
+                  </g>
+                );
+              })}
               <ellipse cx={table.x} cy={table.y} rx="59" ry="48" fill={index % 2 ? "#d6e8d9" : "#f6d3c8"} stroke="#39352f" strokeWidth="4" />
               <text x={table.x} y={table.y + 5} textAnchor="middle" fontSize="22" fill="#222">{index + 1}</text>
             </g>
@@ -43,6 +61,7 @@ export function ProductPreview({ slug }: { slug: string }) {
           </g>)}
         </svg>
       )}
+      {seating && <p className={styles.seatingGuests}>✿ 6 guests seated · 42 seats ready to fill</p>}
       {!seating && <p className={styles.words}>{search ? "PEACHES · BOOKSHOP · SUNDAY" : "Names, places, and the stories behind them."}</p>}
     </figure>
   );
