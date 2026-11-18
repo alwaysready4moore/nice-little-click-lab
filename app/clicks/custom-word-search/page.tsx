@@ -57,7 +57,7 @@ const faqs = [
   {
     question: "Does the Lab save my puzzle?",
     answer:
-      "No account or permanent puzzle library is created. Your browser keeps the draft during checkout, so save the downloaded PDF somewhere safe.",
+      "No account or permanent puzzle library is created. Your draft stays in the current tab through checkout and should survive a refresh. Closing the tab, clearing browser data, or switching devices may lose it. Save a purchase backup before paying, then keep your finished PDF somewhere safe.",
   },
 ] as const satisfies readonly FaqItem[];
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ProductPreview } from "@/components/clicks/ProductPreview";
+import { clicks } from "@/data/clicks";
 
 export const metadata: Metadata = {
   title: {
@@ -27,6 +28,17 @@ export const metadata: Metadata = {
     images: ["/images/social/nice-little-click-lab-og.png"],
   },
 };
+
+const shelfChoices = [
+  { slug: "meeting-cost-ticker", kind: "Useful", motif: "$00.00" },
+  { slug: "please-advise", kind: "Playful", motif: "RE: ALL" },
+  { slug: "should-have-been-an-email", kind: "Quick verdict", motif: "YES / NO" },
+] as const;
+
+const shelfClicks = shelfChoices.flatMap((choice) => {
+  const click = clicks.find((item) => item.slug === choice.slug && item.status === "live");
+  return click ? [{ ...choice, click }] : [];
+});
 
 export default function HomePage() {
   return (
@@ -117,6 +129,44 @@ export default function HomePage() {
           <p className="font-handwritten ml-auto -mt-3 max-w-xs rotate-1 text-xl text-[var(--accent-strong)]">
             supervised by one sleepy lab assistant.
           </p>
+        </div>
+      </section>
+
+      <section aria-labelledby="more-from-lab" className="mx-auto max-w-6xl px-6 pb-14">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="lab-label">A FEW MORE FROM THE LAB</p>
+            <h2 id="more-from-lab" className="mt-2 text-3xl font-black tracking-[-0.045em] sm:text-4xl">
+              Pick your particular problem.
+            </h2>
+          </div>
+          <Link href="/clicks" className="font-bold text-[var(--accent-strong)] hover:underline">
+            Browse every Click →
+          </Link>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {shelfClicks.map(({ click, kind, motif }) => (
+            <Link
+              key={click.slug}
+              href={`/clicks/${click.slug}`}
+              className="lab-card group flex h-full flex-col gap-3 p-5 transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-strong)]"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span aria-hidden="true" className="flex min-h-12 items-center rounded-lg border border-[var(--border-strong)] bg-[var(--accent-soft)] px-3 font-mono text-sm font-black text-[var(--accent-strong)]">
+                  {motif}
+                </span>
+                <span className="rounded-full border border-[var(--border)] bg-white/65 px-3 py-1 text-xs font-semibold">
+                  {click.priceLabel}
+                </span>
+              </div>
+              <p className="lab-label">{kind} · CLICK NO. {String(click.number).padStart(3, "0")}</p>
+              <h3 className="text-xl font-black tracking-[-0.03em]">{click.name}</h3>
+              <p className="leading-6 text-[var(--muted)]">{click.shortDescription}</p>
+              <p className="mt-auto pt-1 font-bold text-[var(--accent-strong)] group-hover:underline">
+                {click.actionLabel} →
+              </p>
+            </Link>
+          ))}
         </div>
       </section>
 
