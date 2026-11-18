@@ -38,6 +38,11 @@ export function CustomWordSearchBuilder() {
     }));
   }, [words, completed]);
   const errorCount = [...errors.values()].filter(Boolean).length;
+  const validWordCount = words.filter((item) => {
+    const normalized = normalizeWord(item.word);
+    return normalized.length >= 2 && normalized.length <= 20 && !errors.get(item.id);
+  }).length;
+  const wordsRemaining = Math.max(0, 10 - validWordCount);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -114,7 +119,21 @@ export function CustomWordSearchBuilder() {
   }
   function addWord() { if (words.length < 30) setWords((current) => [...current, { id: makeId(), word: "" }]); }
   function removeWord(id: string) { if (words.length > 10) setWords((current) => current.filter((item) => item.id !== id)); setResult(null); }
-  function loadExample() { setWords(exampleWords); setTitle("Our Favorite Things"); setDedication("A small puzzle made from very good memories."); setResult(null); setNotice("Example words loaded. Replace anything you like."); }
+  function loadExample() {
+    setWords(exampleWords.map((item) => ({ ...item })));
+    setTitle("Our Favorite Things");
+    setDedication("A small puzzle made from very good memories.");
+    try {
+      setResult(generateWordSearch(exampleWords, difficulty));
+      setNotice("Here's a sample puzzle. Change any word to make it yours.");
+      window.requestAnimationFrame(() => {
+        document.getElementById("preview-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    } catch {
+      setResult(null);
+      setNotice("Example words loaded. Select Make my word search to see the puzzle.");
+    }
+  }
 
   function buildPuzzle() {
     const ready = words.filter((item) => normalizeWord(item.word).length >= 2);
@@ -150,12 +169,20 @@ export function CustomWordSearchBuilder() {
 
     <div className={styles.workspace}>
       <section className={styles.editor} aria-labelledby="words-heading">
-        <div className={styles.sectionHeading}><div><p className={styles.step}>Step 1</p><h2 id="words-heading">Your words</h2></div><button className={styles.textButton} type="button" onClick={loadExample}>Try an example</button></div>
+        <div className={styles.sectionHeading}><div><p className={styles.step}>Step 1</p><h2 id="words-heading">Your words</h2></div><button className={styles.secondaryButton} type="button" onClick={loadExample}>See a sample puzzle</button></div>
         <div className={styles.giftDetails}>
           <label>Puzzle title<input value={title} maxLength={60} onChange={(event) => { setTitle(event.target.value); setResult(null); }} /></label>
           <label>Short dedication <span>(optional)</span><input value={dedication} maxLength={100} placeholder="For Maya, finder of everything" onChange={(event) => setDedication(event.target.value)} /></label>
         </div>
         <p role="status" aria-live="polite">{errorCount > 0 ? `${errorCount} word ${errorCount === 1 ? "needs" : "entries need"} attention.` : "All entered words pass the initial checks."}</p>
+        <div className={styles.wordProgress}>
+          <div className={styles.progressText}>
+            <strong>{validWordCount < 10 ? `${validWordCount} of 10 words ready` : `${validWordCount} valid words ready`}</strong>
+            <span>{wordsRemaining > 0 ? `${wordsRemaining} more to go` : "Ready for a preview!"}</span>
+          </div>
+          <progress className={styles.progressTrack} value={Math.min(validWordCount, 10)} max={10} aria-label="Progress toward ten valid words" />
+          <p>Add at least 10 different words or short phrases to make your puzzle. You can use up to 30.</p>
+        </div>
         <div className={styles.wordList}>
           {words.map((item, index) => <div className={styles.wordRow} key={item.id}>
             <span>{String(index + 1).padStart(2, "0")}</span>
@@ -163,7 +190,7 @@ export function CustomWordSearchBuilder() {
             {words.length > 10 && <button type="button" aria-label={`Remove word ${index + 1}`} onClick={() => removeWord(item.id)}>×</button>}
           </div>)}
         </div>
-        <div className={styles.editorFooter}><button className={styles.secondaryButton} type="button" disabled={words.length >= 30} onClick={addWord}>+ Add another word</button><span>{completed.length} ready · 10 minimum · 30 maximum</span><button className={styles.textButton} type="button" onClick={clearDraft}>Clear my draft</button></div>
+        <div className={styles.editorFooter}><button className={styles.secondaryButton} type="button" disabled={words.length >= 30} onClick={addWord}>+ Add another word</button><button className={styles.textButton} type="button" onClick={clearDraft}>Clear my draft</button></div>
 
         <fieldset className={styles.options}><legend>Difficulty</legend>{(["easy", "medium", "hard"] as WordSearchDifficulty[]).map((value) => <label key={value}><input type="radio" name="difficulty" checked={difficulty === value} onChange={() => { setDifficulty(value); setResult(null); }} /><strong>{value}</strong><span>{value === "easy" ? "Forward only" : value === "medium" ? "Some words run backward" : "Every direction is fair game"}</span></label>)}</fieldset>
         <fieldset className={styles.options}><legend>Paper mood</legend>{(["classic", "celebration", "kids"] as WordSearchTheme[]).map((value) => <label key={value}><input type="radio" name="theme" checked={theme === value} onChange={() => setTheme(value)} /><strong>{value}</strong><span>{value === "classic" ? "Warm and quietly giftable" : value === "celebration" ? "Confetti without the cleanup" : "Bright, friendly, still printable"}</span></label>)}</fieldset>
@@ -181,8 +208,8 @@ export function CustomWordSearchBuilder() {
           <div className={styles.wordBank} aria-hidden="true">{result.words.map((word) => <span key={word}>{word}</span>)}</div>
           <footer>Nice Little Click Lab · Click No. 004</footer>
         </div>}
-        {result && <div className={styles.purchaseBox}><label className={styles.checkLabel}><input type="checkbox" checked={includeClickOnAnswerKey} onChange={(event) => setIncludeClickOnAnswerKey(event.target.checked)} />Let Click sign the answer key</label><p>The $3 download includes the printable puzzle and a separate answer key.</p>
-          <p>Your draft is saved in this tab while you edit. Save a private copy before paying: without this browser or a backup, the Lab cannot rebuild your original gift.</p>
+        {result && <div className={styles.purchaseBox}><label className={styles.checkLabel}><input type="checkbox" checked={includeClickOnAnswerKey} onChange={(event) => setIncludeClickOnAnswerKey(event.target.checked)} />Let Click sign the answer key</label><p><strong>$3, one time.</strong> Your two-page PDF includes the printable puzzle on page one and its answer key on page two. Preview first, with no account needed.</p>
+          <p><strong>Keep your words safe.</strong> Your draft stays in this browser tab and should survive a refresh. Closing the tab, clearing browser data, or changing devices may lose it. Save a backup before paying; the Lab cannot recover your original puzzle.</p>
           <button className={styles.secondaryButton} type="button" onClick={() => savePurchaseBackup("wordsearch", purchasePayload())}>Save purchase backup (.json)</button>
           <button className={styles.buyButton} type="button" disabled={checkoutState === "loading"} onClick={startCheckout}>{checkoutState === "loading" ? "Opening checkout..." : "Get the printable PDF · $3"}</button>{checkoutError && <p className={styles.error}>{checkoutError}</p>}<small>Your words are used only to build this purchase. The Lab does not keep a recoverable copy.</small></div>}
       </section>
