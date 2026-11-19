@@ -5,6 +5,7 @@ import {
   formatGuideDate,
   guidePath,
   guides,
+  guidesIndex,
   guidesUpdatedAt,
   priceDollars,
   requireClick,
@@ -22,9 +23,8 @@ const splitter = requireClick("gift-budget-splitter");
 const seating = requireClick("take-your-seat");
 
 const pagePath = "/guides";
-const title = "Guides for Gifts, Secret Santa, and Seating";
-const description =
-  "Practical notes from Nice Little Click Lab on personalized gifts under $5, a fair Secret Santa split, and a holiday dinner seating chart.";
+const title = guidesIndex.title;
+const description = guidesIndex.description;
 
 export const metadata: Metadata = socialMetadata({
   title,

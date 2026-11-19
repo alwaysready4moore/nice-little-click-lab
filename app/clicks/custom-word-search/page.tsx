@@ -5,11 +5,14 @@ import {
   breadcrumbStructuredData,
   faqStructuredData,
   organizationId,
+  shareImagesForCard,
 } from "@/lib/seo";
+import { clickShareCard } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 import { CustomWordSearchBuilder } from "./CustomWordSearchBuilder";
 
 const pagePath = "/clicks/custom-word-search";
+const share = shareImagesForCard(clickShareCard("custom-word-search"), pagePath);
 
 export const metadata: Metadata = {
   title: "Custom Word Search Gift Maker",
@@ -22,14 +25,14 @@ export const metadata: Metadata = {
       "Make a personalized printable word search from the words only your person would choose.",
     url: pagePath,
     type: "website",
-    images: [siteConfig.socialImage],
+    images: share.openGraphImages,
   },
   twitter: {
     card: "summary_large_image",
     title: "Custom Word Search Gift Maker",
     description:
       "Build a personalized printable word search and answer key for $3.",
-    images: [siteConfig.socialImage],
+    images: share.twitterImages,
   },
 };
 
@@ -69,7 +72,7 @@ const structuredData = {
       name: "Custom Word Search Gift",
       sku: "CLICK-004",
       url: `${siteConfig.url}${pagePath}`,
-      image: `${siteConfig.url}${siteConfig.socialImage}`,
+      image: share.url,
       description:
         "A printable personalized word search made from 10 to 30 customer-supplied words, with a separate answer key.",
       category: "Personalized digital gift",

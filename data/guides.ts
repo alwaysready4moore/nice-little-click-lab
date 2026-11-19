@@ -2,6 +2,12 @@ import { clicks, type Click } from "@/data/clicks";
 
 export const guidesUpdatedAt = "2026-11-08";
 
+export const guidesIndex = {
+  title: "Guides for Gifts, Secret Santa, and Seating",
+  description:
+    "Practical notes from Nice Little Click Lab on personalized gifts under $5, a fair Secret Santa split, and a holiday dinner seating chart.",
+} as const;
+
 export function requireClick(slug: string): Click {
   const click = clicks.find((item) => item.slug === slug);
   if (!click) {

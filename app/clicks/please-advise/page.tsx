@@ -6,10 +6,13 @@ import {
   breadcrumbStructuredData,
   faqStructuredData,
   organizationId,
+  shareImagesForCard,
 } from "@/lib/seo";
+import { clickShareCard } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 
 const pagePath = "/clicks/please-advise";
+const share = shareImagesForCard(clickShareCard("please-advise"), pagePath);
 
 export const metadata: Metadata = {
   title: "Please Advise: Free Workplace Email Game",
@@ -22,14 +25,14 @@ export const metadata: Metadata = {
       "A tiny inbox survival game about choosing the least disastrous email response.",
     url: pagePath,
     type: "website",
-    images: [siteConfig.socialImage],
+    images: share.openGraphImages,
   },
   twitter: {
     card: "summary_large_image",
     title: "Please Advise: Free Workplace Email Game",
     description:
       "Choose Reply, Reply All, or Spam / Ignore before the timer runs out.",
-    images: [siteConfig.socialImage],
+    images: share.twitterImages,
   },
 };
 
@@ -68,7 +71,7 @@ const gameStructuredData = {
       operatingSystem: "Web",
       browserRequirements: "Requires JavaScript and a modern web browser",
       url: `${siteConfig.url}${pagePath}`,
-      image: `${siteConfig.url}${siteConfig.socialImage}`,
+      image: share.url,
       description:
         "A free fictional workplace email game in which players choose Reply, Reply All, or Spam / Ignore.",
       inLanguage: siteConfig.locale,

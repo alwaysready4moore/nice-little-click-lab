@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { FaqItem } from "@/components/seo/FaqSection";
+import { shareCardForPath } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 
 export const organizationId = `${siteConfig.url}/#organization`;
@@ -7,6 +8,37 @@ export const websiteId = `${siteConfig.url}/#website`;
 
 export function absoluteUrl(path: string) {
   return new URL(path, siteConfig.url).toString();
+}
+
+export function shareImageUrl(path: string) {
+  if (!path.startsWith("/")) {
+    throw new Error(`Share image path must start with /: ${path}`);
+  }
+  const route = `${path.replace(/\/$/, "")}/opengraph-image`;
+  const url = absoluteUrl(route);
+  const parsed = new URL(url);
+  const site = new URL(siteConfig.url);
+  if (parsed.origin !== site.origin || parsed.host.startsWith("www.")) {
+    throw new Error(`Share image URL must use the apex origin ${site.origin}, got ${url}`);
+  }
+  return url;
+}
+
+export function shareImages(path: string, alt: string) {
+  const url = shareImageUrl(path);
+  const image = { url, width: 1200, height: 630, alt };
+  return {
+    url,
+    openGraphImages: [image],
+    twitterImages: [image],
+  };
+}
+
+export function shareImagesForCard(card: { path: string; alt: string }, pagePath = card.path) {
+  if (pagePath !== card.path) {
+    throw new Error(`Share image path ${card.path} does not match ${pagePath}`);
+  }
+  return shareImages(pagePath, card.alt);
 }
 
 export function breadcrumbStructuredData(
@@ -29,13 +61,16 @@ export function socialMetadata({
   path,
   type = "website",
   publishedTime,
+  imageAlt,
 }: {
   title: string;
   description: string;
   path: string;
   type?: "website" | "article";
   publishedTime?: string;
+  imageAlt?: string;
 }): Metadata {
+  const share = shareImages(path, imageAlt ?? shareCardForPath(path)?.alt ?? title);
   return {
     title,
     description,
@@ -45,7 +80,7 @@ export function socialMetadata({
       description,
       url: path,
       type,
-      images: [siteConfig.socialImage],
+      images: share.openGraphImages,
       ...(publishedTime
         ? { publishedTime, modifiedTime: publishedTime }
         : {}),
@@ -54,7 +89,7 @@ export function socialMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [siteConfig.socialImage],
+      images: share.twitterImages,
     },
   };
 }
@@ -74,7 +109,7 @@ export function articleStructuredData(article: {
     description: article.description,
     url,
     mainEntityOfPage: url,
-    image: absoluteUrl(siteConfig.socialImage),
+    image: shareImageUrl(article.path),
     datePublished: article.datePublished,
     dateModified: article.dateModified,
     inLanguage: siteConfig.locale,
@@ -100,7 +135,7 @@ export function howToStructuredData(howTo: {
     name: howTo.name,
     description: howTo.description,
     url: absoluteUrl(howTo.path),
-    image: absoluteUrl(siteConfig.socialImage),
+    image: shareImageUrl(howTo.path),
     inLanguage: siteConfig.locale,
     step: howTo.steps.map((step, index) => ({
       "@type": "HowToStep",

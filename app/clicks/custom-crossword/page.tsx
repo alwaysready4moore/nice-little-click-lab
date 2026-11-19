@@ -5,11 +5,14 @@ import {
   breadcrumbStructuredData,
   faqStructuredData,
   organizationId,
+  shareImagesForCard,
 } from "@/lib/seo";
+import { clickShareCard } from "@/lib/share-card";
 import { siteConfig } from "@/lib/site";
 import { CustomCrosswordBuilder } from "./CustomCrosswordBuilder";
 
 const pagePath = "/clicks/custom-crossword";
+const share = shareImagesForCard(clickShareCard("custom-crossword"), pagePath);
 
 export const metadata: Metadata = {
   title: "Personalized Crossword Gift Maker",
@@ -22,14 +25,14 @@ export const metadata: Metadata = {
       "Turn 8 to 15 memories into a printable custom crossword gift with a separate answer key.",
     url: pagePath,
     type: "website",
-    images: [siteConfig.socialImage],
+    images: share.openGraphImages,
   },
   twitter: {
     card: "summary_large_image",
     title: "Personalized Crossword Gift Maker",
     description:
       "Build a custom crossword from shared memories and download the two-page PDF for $4.",
-    images: [siteConfig.socialImage],
+    images: share.twitterImages,
   },
 };
 
@@ -75,7 +78,7 @@ const productStructuredData = {
       alternateName: "Personalized Crossword Gift Maker",
       sku: "CLICK-002",
       url: `${siteConfig.url}${pagePath}`,
-      image: `${siteConfig.url}${siteConfig.socialImage}`,
+      image: share.url,
       description:
         "A personalized printable crossword made from 8 to 15 answers and clues supplied by the customer, delivered as a two-page PDF with an answer key.",
       category: "Personalized digital gift",
